@@ -116,9 +116,8 @@ namespace TGC.Group.Model
 
         private void RenderHelpText()
         {
-            DrawText.drawText("Con la tecla F se dibuja el bounding box.", 0, 20, Color.OrangeRed);
             DrawText.drawText("Camera position: \n" + Camara.Position, 0, 40, Color.OrangeRed);
-            DrawText.drawText("Camera LookAt: \n" + Camara.LookAt, 0, 120, Color.OrangeRed);            
+            DrawText.drawText("Camera LookAt: \n" + Camara.LookAt, 200, 40, Color.OrangeRed);            
         }
 
         private void LoadScene()
@@ -142,11 +141,13 @@ namespace TGC.Group.Model
         private void InitCamera()
         {
             // Defino las matrices de Posición y LookAt
-            var cameraPosition = new Vector3(1500, 850, 1900);
+            var cameraPosition = new Vector3(10500, 400, 4500);
             var cameraLookAt = new Vector3(0, 0, -1);
+            var cameraMoveSpeed = 200f;
+            var cameraJumpSpeed = 200f;
 
             // Creo la cámara y defino la Posición y LookAt
-            Camara = new TgcFpsCamera(Input);
+            Camara = new TgcFpsCamera(cameraPosition,cameraMoveSpeed,cameraJumpSpeed,Input);
             Camara.SetCamera(cameraPosition, cameraLookAt);
         }
 
