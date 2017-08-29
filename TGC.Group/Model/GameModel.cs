@@ -17,31 +17,37 @@ using TGC.Core.UserControls;
 using TGC.Core.UserControls.Modifier;
 using TGC.Core.Sound;
 using TGC.Core.Shaders;
-
+using System;
 
 namespace TGC.Group.Model
 {
     public class GameModel : TgcExample
     {
-
         // ***********************************************************
         // Parametros del HeightMap
         // ***********************************************************
-        
-            private string currentHeightmap;
-            private float currentScaleXZ;
-            private float currentScaleY;
-            private string currentTexture;
-            private Texture terrainTexture;
-            private int totalVertices;
-            private VertexBuffer vbTerrain;
-            
+
+        private const float sceneScaleY = 5f;
+        private const float sceneScaleXZ = 20f;
+        private Texture terrainTexture;
+        private VertexBuffer vbTerrain;
+        private int totalVertices;
+
         // ***********************************************************
 
-            //public TgcScene currentScene;
-            private TgcSceneLoader loader;
-            private bool ShowBoundingBox { get; set; }
+        private TgcSceneLoader loader;
+        private bool ShowBoundingBox { get; set; }
 
+        private string sceneHeightmapPath;
+        private string terrainTexturePath;
+        private string palmMeshPath;
+        private string rockMeshPath;
+        private string plantMeshPath;
+
+        private TgcMesh palmModel;
+        private TgcMesh rockModel;
+        private TgcMesh plantModel;
+        private List<TgcMesh> sceneMeshes;
 
         public GameModel(string mediaDir, string shadersDir) : base(mediaDir, shadersDir)
         {
@@ -50,12 +56,28 @@ namespace TGC.Group.Model
             Description = Game.Default.Description;
 
             loader = new TgcSceneLoader();
+            sceneMeshes = new List<TgcMesh>();
+
+            sceneHeightmapPath = MediaDir + "Isla\\isla_heightmap.png";
+            terrainTexturePath = MediaDir + "Isla\\isla_textura.png";
+            palmMeshPath = MediaDir + "Palmera\\Palmera-TgcScene.xml";
+            rockMeshPath = MediaDir + "Roca\\Roca-TgcScene.xml";
+            plantMeshPath = MediaDir + "Planta3\\Planta3-TgcScene.xml";
         }
 
         public override void Init()
         {
             LoadScene();
             InitCamera();
+
+            palmModel = loader.loadSceneFromFile(palmMeshPath).Meshes[0];
+            CreateObjectsFromModel(palmModel, 200, new Vector3(7700, 500, 4300), new Vector3(0.5f, 0.5f, 0.5f), 1000);
+
+            rockModel = loader.loadSceneFromFile(rockMeshPath).Meshes[0];
+            CreateObjectsFromModel(rockModel, 150, new Vector3(3500, 630, 5000), new Vector3(1.5f, 1.5f, 1.5f), 800);
+
+            plantModel = loader.loadSceneFromFile(plantMeshPath).Meshes[0];
+            CreateObjectsFromModel(plantModel, 180, new Vector3(5000, 590, 3000), new Vector3(1, 1, 1), 1200);
         }
 
         public override void Update()
@@ -67,93 +89,99 @@ namespace TGC.Group.Model
         public override void Render()
         {
             PreRender();
-            //currentScene.renderAll(ShowBoundingBox);
-
-
-            //Ver si cambio el heightmap
-            var selectedHeightmap = currentHeightmap;
-            if (currentHeightmap != selectedHeightmap)
-            {
-                currentHeightmap = selectedHeightmap;
-                createHeightMapMesh(D3DDevice.Instance.Device, currentHeightmap, currentScaleXZ, currentScaleY);
-            }
-
-            //Ver si cambio alguno de los valores de escala
-            var selectedScaleXZ = currentScaleXZ;
-            var selectedScaleY = currentScaleY;
-            if (currentScaleXZ != selectedScaleXZ || currentScaleY != selectedScaleY)
-            {
-                currentScaleXZ = selectedScaleXZ;
-                currentScaleY = selectedScaleY;
-                createHeightMapMesh(D3DDevice.Instance.Device, currentHeightmap, currentScaleXZ, currentScaleY);
-            }
-
-            //Ver si cambio la textura del terreno
-            var selectedTexture = currentTexture;
-            if (currentTexture != selectedTexture)
-            {
-                currentTexture = selectedTexture;
-                loadTerrainTexture(D3DDevice.Instance.Device, currentTexture);
-            }
-
-            //Render terrain
-            D3DDevice.Instance.Device.SetTexture(0, terrainTexture);
-            D3DDevice.Instance.Device.VertexFormat = CustomVertex.PositionTextured.Format;
-            D3DDevice.Instance.Device.SetStreamSource(0, vbTerrain, 0);
-            D3DDevice.Instance.Device.DrawPrimitives(PrimitiveType.TriangleList, 0, totalVertices / 3);
-
-
+            RenderTerrain();
+            RenderSceneMeshes();
             RenderHelpText();
             PostRender();
         }
 
         public override void Dispose()
         {
-            //currentScene.disposeAll();
-
             vbTerrain.Dispose();
             terrainTexture.Dispose();
+            palmModel.dispose();
+            rockModel.dispose();
+        }
+
+        private void CreateObjectsFromModel(TgcMesh model, int count, Vector3 center, Vector3 scale, int sparse)
+        {
+            var rnd = new Random();
+
+            // TODO: buscar una forma no tan chota de tener una distribucion pareja
+            var rows = (int)Math.Sqrt(count);
+            var cols = (int)Math.Sqrt(count);
+
+            for (var i = 0; i < rows; i++)
+            {
+                for (var j = 0; j < cols; j++)
+                {
+                    var instance = model.createMeshInstance(model.Name + i + "_" + j);
+
+                    instance.AutoTransformEnable = true;
+
+                    // var heightMap = LoadHeightMap(sceneHeightmapPath);
+
+                    var x = center.X + rnd.Next(-sparse, sparse);
+                    var y = center.Y; // TODO: AJUSTAR ESTA VARIABLE A LA ALTURA DEL HEIGHTMAP EN LA POSICION ACTUAL
+                    var z = center.Z + rnd.Next(-sparse, sparse);
+
+                    instance.move(x, y, z);
+                    instance.Scale = scale;
+
+                    sceneMeshes.Add(instance);
+                }
+            }
+        }
+
+        private void RenderSceneMeshes()
+        {
+            foreach (var mesh in sceneMeshes)
+            {
+                mesh.render();
+            }
+        }
+
+        private void RenderTerrain()
+        {
+            D3DDevice.Instance.Device.SetTexture(0, terrainTexture);
+            D3DDevice.Instance.Device.VertexFormat = CustomVertex.PositionTextured.Format;
+            D3DDevice.Instance.Device.SetStreamSource(0, vbTerrain, 0);
+            D3DDevice.Instance.Device.DrawPrimitives(PrimitiveType.TriangleList, 0, totalVertices / 3);
         }
 
         private void RenderHelpText()
         {
-            DrawText.drawText("Camera position: \n" + Camara.Position, 0, 40, Color.OrangeRed);
-            DrawText.drawText("Camera LookAt: \n" + Camara.LookAt, 200, 40, Color.OrangeRed);            
+            DrawText.drawText("Camera position: \n" + Camara.Position, 0, 20, Color.OrangeRed);
+            DrawText.drawText("Camera LookAt: \n" + Camara.LookAt, 0, 100, Color.OrangeRed);
+            DrawText.drawText("Mesh count: \n" + sceneMeshes.Count, 0, 180, Color.OrangeRed);
         }
 
         private void LoadScene()
         {
-            //currentScene = loader.loadSceneFromFile(MediaDir + "Isla\\isla-TgcScene.xml");
+            createHeightMapMesh(D3DDevice.Instance.Device, sceneHeightmapPath, sceneScaleXZ, sceneScaleY);
+            LoadTerrainTexture(D3DDevice.Instance.Device, terrainTexturePath);
+        }
 
-
-            //Heighmap de la Isla
-            currentHeightmap = MediaDir + "Isla\\isla_heightmap.png";
-
-            currentScaleXZ = 50f;
-            currentScaleY = 1.5f;
-            createHeightMapMesh(D3DDevice.Instance.Device, currentHeightmap, currentScaleXZ, currentScaleY);
-
-            //Textura de la Isla
-            currentTexture = MediaDir + "Isla\\isla_textura.png";
-            loadTerrainTexture(D3DDevice.Instance.Device, currentTexture);
-
+        private void LoadTerrainTexture(Microsoft.DirectX.Direct3D.Device d3dDevice, string path)
+        {
+            //Rotar e invertir textura
+            var b = (Bitmap)Image.FromFile(path);
+            b.RotateFlip(RotateFlipType.Rotate90FlipX);
+            terrainTexture = Texture.FromBitmap(d3dDevice, b, Usage.None, Pool.Managed);
         }
 
         private void InitCamera()
         {
             // Defino las matrices de Posición y LookAt
-            var cameraPosition = new Vector3(10500, 400, 4500);
+            var cameraPosition = new Vector3(10500, 1600, 4500);
             var cameraLookAt = new Vector3(0, 0, -1);
-            var cameraMoveSpeed = 200f;
-            var cameraJumpSpeed = 200f;
+            var cameraMoveSpeed = 500f;
+            var cameraJumpSpeed = 500f;
 
             // Creo la cámara y defino la Posición y LookAt
             Camara = new TgcFpsCamera(cameraPosition,cameraMoveSpeed,cameraJumpSpeed,Input);
             Camara.SetCamera(cameraPosition, cameraLookAt);
         }
-
-
-
 
         /// <summary>
         ///     Crea y carga el VertexBuffer en base a una textura de Heightmap
@@ -161,7 +189,7 @@ namespace TGC.Group.Model
         private void createHeightMapMesh(Microsoft.DirectX.Direct3D.Device d3dDevice, string path, float scaleXZ, float scaleY)
         {
             //parsear bitmap y cargar matriz de alturas
-            var heightmap = loadHeightMap(path);
+            var heightmap = LoadHeightMap(path);
 
             //Crear vertexBuffer
             totalVertices = 2 * 3 * (heightmap.GetLength(0) - 1) * (heightmap.GetLength(1) - 1);
@@ -208,21 +236,10 @@ namespace TGC.Group.Model
         }
 
         /// <summary>
-        ///     Cargar textura del Terreno
-        /// </summary>
-        private void loadTerrainTexture(Microsoft.DirectX.Direct3D.Device d3dDevice, string path)
-        {
-            //Rotar e invertir textura
-            var b = (Bitmap)Image.FromFile(path);
-            b.RotateFlip(RotateFlipType.Rotate90FlipX);
-            terrainTexture = Texture.FromBitmap(d3dDevice, b, Usage.None, Pool.Managed);
-        }
-
-        /// <summary>
         ///     Cargar Bitmap y obtener el valor en escala de gris de Y
         ///     para cada coordenada (x,z)
         /// </summary>
-        private int[,] loadHeightMap(string path)
+        private int[,] LoadHeightMap(string path)
         {
             //Cargar bitmap desde el FileSystem
             var bitmap = (Bitmap)Image.FromFile(path);
