@@ -34,6 +34,16 @@ namespace TGC.Group.Model
         private int totalVertices;
 
         // ***********************************************************
+        // Parametros del SkyBox
+        // ***********************************************************
+
+        private TgcSkyBox skyBox;
+        private string skyTexturePath;
+        private Vector3 skyBoxCenter = new Vector3(0, 0, 0);
+        private Vector3 skyBoxSize = new Vector3(30000, 30000, 30000);
+        private const float skyBoxSkyEpsilon = 25f;
+
+        // ***********************************************************
 
         private TgcSceneLoader loader;
         private bool ShowBoundingBox { get; set; }
@@ -63,6 +73,7 @@ namespace TGC.Group.Model
             palmMeshPath = MediaDir + "Palmera\\Palmera-TgcScene.xml";
             rockMeshPath = MediaDir + "Roca\\Roca-TgcScene.xml";
             plantMeshPath = MediaDir + "Planta3\\Planta3-TgcScene.xml";
+            skyTexturePath = MediaDir + "SkyBox\\";
         }
 
         public override void Init()
@@ -83,6 +94,14 @@ namespace TGC.Group.Model
         public override void Update()
         {
             PreUpdate();
+
+            // SkyBox: Se cambia el valor por defecto del farplane para evitar cliping de farplane.
+            D3DDevice.Instance.Device.Transform.Projection =
+                Matrix.PerspectiveFovLH(D3DDevice.Instance.FieldOfView,
+                    D3DDevice.Instance.AspectRatio,
+                    D3DDevice.Instance.ZNearPlaneDistance,
+                    D3DDevice.Instance.ZFarPlaneDistance * 2f);
+
             Camara.UpdateCamera(ElapsedTime);
         }
 
@@ -92,22 +111,38 @@ namespace TGC.Group.Model
             RenderTerrain();
             RenderSceneMeshes();
             RenderHelpText();
+            RenderSkyBox();
             PostRender();
+        }
+
+        private void RenderSkyBox()
+        {
+            //Renderizar SkyBox
+            skyBox.render();
         }
 
         public override void Dispose()
         {
             vbTerrain.Dispose();
             terrainTexture.Dispose();
+
+            // Se liberan los elementos de la escena
             palmModel.dispose();
             rockModel.dispose();
+            plantModel.dispose();
+
+            // Se libera Lista de Mesh
+            sceneMeshes.Clear();
+
+            //Liberar recursos del SkyBox
+            skyBox.dispose();
         }
 
         private void CreateObjectsFromModel(TgcMesh model, int count, Vector3 center, Vector3 scale, int sparse)
         {
             var rnd = new Random();
 
-            // TODO: buscar una forma no tan chota de tener una distribucion pareja
+            // TODO: buscar una mejor forma de tener una distribucion pareja
             var rows = (int)Math.Sqrt(count);
             var cols = (int)Math.Sqrt(count);
 
@@ -118,8 +153,6 @@ namespace TGC.Group.Model
                     var instance = model.createMeshInstance(model.Name + i + "_" + j);
 
                     instance.AutoTransformEnable = true;
-
-                    // var heightMap = LoadHeightMap(sceneHeightmapPath);
 
                     var x = center.X + rnd.Next(-sparse, sparse);
                     var y = center.Y; // TODO: AJUSTAR ESTA VARIABLE A LA ALTURA DEL HEIGHTMAP EN LA POSICION ACTUAL
@@ -158,8 +191,31 @@ namespace TGC.Group.Model
 
         private void LoadScene()
         {
+            createSkyBox();
             createHeightMapMesh(D3DDevice.Instance.Device, sceneHeightmapPath, sceneScaleXZ, sceneScaleY);
             LoadTerrainTexture(D3DDevice.Instance.Device, terrainTexturePath);
+        }
+
+        private void createSkyBox()
+        {
+            //Crear SkyBox
+            skyBox = new TgcSkyBox();
+            skyBox.Center = skyBoxCenter;
+            skyBox.Size = skyBoxSize;
+
+            //Configurar las texturas para cada una de las 6 caras
+            skyBox.setFaceTexture(TgcSkyBox.SkyFaces.Up, skyTexturePath + "lostatseaday_up.jpg");
+            skyBox.setFaceTexture(TgcSkyBox.SkyFaces.Down, skyTexturePath + "lostatseaday_dn.jpg");
+            skyBox.setFaceTexture(TgcSkyBox.SkyFaces.Left, skyTexturePath + "lostatseaday_lf.jpg");
+            skyBox.setFaceTexture(TgcSkyBox.SkyFaces.Right, skyTexturePath + "lostatseaday_rt.jpg");
+
+            //Hay veces es necesario invertir las texturas Front y Back si se pasa de un sistema RightHanded a uno LeftHanded
+            skyBox.setFaceTexture(TgcSkyBox.SkyFaces.Front, skyTexturePath + "lostatseaday_bk.jpg");
+            skyBox.setFaceTexture(TgcSkyBox.SkyFaces.Back, skyTexturePath + "lostatseaday_ft.jpg");
+            skyBox.SkyEpsilon = skyBoxSkyEpsilon;
+
+            //Inicializa todos los valores para crear el SkyBox
+            skyBox.Init();
         }
 
         private void LoadTerrainTexture(Microsoft.DirectX.Direct3D.Device d3dDevice, string path)
