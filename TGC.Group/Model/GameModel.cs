@@ -18,6 +18,7 @@ using TGC.Core.UserControls.Modifier;
 using TGC.Core.Sound;
 using TGC.Core.Shaders;
 using System;
+using System.Linq;
 
 namespace TGC.Group.Model
 {
@@ -28,7 +29,7 @@ namespace TGC.Group.Model
         // ***********************************************************
 
         private TgcSimpleTerrain terrain;
-        private const float sceneScaleY = 5f;
+        private const float sceneScaleY = 10f;
         private const float sceneScaleXZ = 25f;
         private Vector3 terrainCenter = new Vector3(0, 0, 0);
         private string sceneHeightmapPath;
@@ -88,137 +89,6 @@ namespace TGC.Group.Model
             HeightmapSize = new Bitmap(sceneHeightmapPath);
         }
 
-
-        private void CreateObjectsFromModel(TgcMesh model, int count, Vector3 center, Vector3 scale, int sparse)
-        {
-            var rnd = new Random();
-
-            // TODO: buscar una mejor forma de tener una distribucion pareja
-            var rows = (int)Math.Sqrt(count);
-            var cols = (int)Math.Sqrt(count);
-
-
-            float[] scalaVariableObjetos = { 0.5f, 1f, 1.5f, 2f, 2.5f };
-
-            for (var i = 0; i < rows; i++)
-            {
-                for (var j = 0; j < cols; j++)
-                {
-                    var instance = model.createMeshInstance(model.Name + i + "_" + j);
-                    instance.AutoTransformEnable = true;
-
-                    // Escalo el objeto en forma Random
-                    instance.Scale = new Vector3(
-                        scale.X + scalaVariableObjetos[rnd.Next(0, scalaVariableObjetos.Length)], 
-                        scale.Y + scalaVariableObjetos[rnd.Next(0, scalaVariableObjetos.Length)], 
-                        scale.Z + scalaVariableObjetos[rnd.Next(0, scalaVariableObjetos.Length)]);
-
-                    var x = center.X + rnd.Next(-sparse, sparse);
-                    var z = center.Z + rnd.Next(-sparse, sparse);
-
-                    // Posiciono el objeto en el Escenario
-                    instance.Position = new Vector3( x * sceneScaleXZ ,CalcularAlturaTerreno(x, z) * sceneScaleY, z * sceneScaleXZ);
-
-                    // Lo guardo en una Lista de Objetos que están en el Escenario
-                    sceneMeshes.Add(instance);
-                }
-            }
-        }
-
-        private void LoadScene()
-        {
-            //Cargar Heightmap y textura de la Escena
-            terrain = new TgcSimpleTerrain();
-            terrain.loadHeightmap(sceneHeightmapPath, sceneScaleXZ, sceneScaleY, terrainCenter);
-            terrain.loadTexture(terrainTexturePath);
-            terrain.AlphaBlendEnable = true;
-
-            // Calculo el máximo valor del Heightmap
-            maxValorHeightmap = ObtenerMaximo();
-
-            // Cargo el SkyBox
-            createSkyBox();
-        }
-
-        private void createSkyBox()
-        {
-            //Crear SkyBox
-            skyBox = new TgcSkyBox();
-            skyBox.Center = skyBoxCenter;
-            skyBox.Size = skyBoxSize;
-
-            //Configurar las texturas para cada una de las 6 caras
-            skyBox.setFaceTexture(TgcSkyBox.SkyFaces.Up, skyTexturePath + "lostatseaday_up.jpg");
-            skyBox.setFaceTexture(TgcSkyBox.SkyFaces.Down, skyTexturePath + "lostatseaday_dn.jpg");
-            skyBox.setFaceTexture(TgcSkyBox.SkyFaces.Left, skyTexturePath + "lostatseaday_lf.jpg");
-            skyBox.setFaceTexture(TgcSkyBox.SkyFaces.Right, skyTexturePath + "lostatseaday_rt.jpg");
-
-            //Hay veces es necesario invertir las texturas Front y Back si se pasa de un sistema RightHanded a uno LeftHanded
-            skyBox.setFaceTexture(TgcSkyBox.SkyFaces.Front, skyTexturePath + "lostatseaday_bk.jpg");
-            skyBox.setFaceTexture(TgcSkyBox.SkyFaces.Back, skyTexturePath + "lostatseaday_ft.jpg");
-            skyBox.SkyEpsilon = skyBoxSkyEpsilon;
-
-            //Inicializa todos los valores para crear el SkyBox
-            skyBox.Init();
-        }
-
-        public int ObtenerMaximo()
-        {
-
-            var maximoElemento = 0;
-            for (var i = 0; i < terrain.HeightmapData.GetLength(0); i++)
-            {
-                for (var j = 0; j < terrain.HeightmapData.GetLength(0); j++)
-                {
-                    if (terrain.HeightmapData[i, j] > maximoElemento)
-                        maximoElemento = terrain.HeightmapData[i, j];
-                }
-            }
-            return maximoElemento;
-        }
-
-        // Las coordenas x,z son Originales (sin Escalado) y el z devuelto es Original también (sin Escalado)
-        public float CalcularAlturaTerreno(float x, float z)
-        {
-            // Calculo las coordenadas en la Matriz de Heightmap
-            var pos_i = x + (HeightmapSize.Width / 2);
-            var pos_j = z + (HeightmapSize.Width / 2);
-
-            var pi = (int)pos_i;
-            var fracc_i = pos_i - pi;
-            var pj = (int)pos_j;
-            var fracc_j = pos_j - pj;
-
-            if (pi < 0)
-                pi = 0;
-            else if (pi > (HeightmapSize.Width-1))
-                pi = (HeightmapSize.Width-1);
-
-            if (pj < 0)
-                pj = 0;
-            else if (pj > (HeightmapSize.Width-1))
-                pj = (HeightmapSize.Width-1);
-
-            var pi1 = pi + 1;
-            var pj1 = pj + 1;
-            if (pi1 > (HeightmapSize.Width-1))
-                pi1 = (HeightmapSize.Width-1);
-            if (pj1 > (HeightmapSize.Width-1))
-                pj1 = (HeightmapSize.Width-1);
-
-            // 2x2 percent closest filtering usual:
-            var H0 = terrain.HeightmapData[pi, pj];
-            var H1 = terrain.HeightmapData[pi1, pj];
-            var H2 = terrain.HeightmapData[pi, pj1];
-            var H3 = terrain.HeightmapData[pi1, pj1];
-            var H = (H0 * (1 - fracc_i) + H1 * fracc_i) * (1 - fracc_j) +
-                    (H2 * (1 - fracc_i) + H3 * fracc_i) * fracc_j;
-
-            return H;
-        }
-
-
-
         public override void Init()
         {
             LoadScene();
@@ -229,13 +99,13 @@ namespace TGC.Group.Model
             // **************************************************************************************
 
             palmModel = loader.loadSceneFromFile(palmMeshPath).Meshes[0];
-            CreateObjectsFromModel(palmModel, 150, new Vector3(100, 0, -106), new Vector3(0.5f, 0.5f, 0.5f), 30);
+            CreateObjectsFromModel(palmModel, 200, new Vector3(100, 0, -90), new Vector3(0.5f, 0.5f, 0.5f), 80);
 
             rockModel = loader.loadSceneFromFile(rockMeshPath).Meshes[0];
-            CreateObjectsFromModel(rockModel, 200, new Vector3(-56, 0, 44), new Vector3(3.5f, 3.5f, 3.5f), 50);
+            CreateObjectsFromModel(rockModel, 250, new Vector3(-56, 0, 32), new Vector3(0.5f, 0.5f, 0.5f), 50);
 
             plantModel = loader.loadSceneFromFile(plantMeshPath).Meshes[0];
-            CreateObjectsFromModel(plantModel, 180, new Vector3(-115, 0, -51), new Vector3(2, 2, 2), 50);
+            CreateObjectsFromModel(plantModel, 200, new Vector3(-30, 0, -70), new Vector3(0.4f, 0.4f, 0.4f), 80);
 
         }
 
@@ -277,6 +147,116 @@ namespace TGC.Group.Model
 
             //Liberar recursos del SkyBox
             skyBox.dispose();
+        }
+
+        private void CreateObjectsFromModel(TgcMesh model, int count, Vector3 center, Vector3 scale, int sparse)
+        {
+            var rnd = new Random();
+
+            // TODO: buscar una mejor forma de tener una distribucion pareja
+            var rows = (int)Math.Sqrt(count);
+            var cols = (int)Math.Sqrt(count);
+
+
+            float[] scalaVariableObjetos = { 1f, 1.5f, 2f, 2.5f };
+
+            for (var i = 0; i < rows; i++)
+            {
+                for (var j = 0; j < cols; j++)
+                {
+                    var instance = model.createMeshInstance(model.Name + i + "_" + j);
+                    instance.AutoTransformEnable = true;
+
+                    // Escalo el objeto en forma Random
+                    instance.Scale = scale * scalaVariableObjetos[rnd.Next(0, scalaVariableObjetos.Length)];
+
+                    var x = center.X + rnd.Next(-sparse, sparse);
+                    var z = center.Z + rnd.Next(-sparse, sparse);
+
+                    // Posiciono el objeto en el Escenario
+                    instance.Position = new Vector3( x * sceneScaleXZ ,CalcularAlturaTerreno(x, z) * sceneScaleY, z * sceneScaleXZ);
+
+                    // Lo guardo en una Lista de Objetos que están en el Escenario
+                    sceneMeshes.Add(instance);
+                }
+            }
+        }
+
+        private void LoadScene()
+        {
+            //Cargar Heightmap y textura de la Escena
+            terrain = new TgcSimpleTerrain();
+            terrain.loadHeightmap(sceneHeightmapPath, sceneScaleXZ, sceneScaleY, terrainCenter);
+            terrain.loadTexture(terrainTexturePath);
+            terrain.AlphaBlendEnable = true;
+
+            // Calculo el máximo valor del Heightmap
+            maxValorHeightmap = terrain.HeightmapData.Cast<int>().Max();
+
+            // Cargo el SkyBox
+            CreateSkyBox();
+        }
+
+        private void CreateSkyBox()
+        {
+            //Crear SkyBox
+            skyBox = new TgcSkyBox();
+            skyBox.Center = skyBoxCenter;
+            skyBox.Size = skyBoxSize;
+
+            //Configurar las texturas para cada una de las 6 caras
+            skyBox.setFaceTexture(TgcSkyBox.SkyFaces.Up, skyTexturePath + "lostatseaday_up.jpg");
+            skyBox.setFaceTexture(TgcSkyBox.SkyFaces.Down, skyTexturePath + "lostatseaday_dn.jpg");
+            skyBox.setFaceTexture(TgcSkyBox.SkyFaces.Left, skyTexturePath + "lostatseaday_lf.jpg");
+            skyBox.setFaceTexture(TgcSkyBox.SkyFaces.Right, skyTexturePath + "lostatseaday_rt.jpg");
+
+            //Hay veces es necesario invertir las texturas Front y Back si se pasa de un sistema RightHanded a uno LeftHanded
+            skyBox.setFaceTexture(TgcSkyBox.SkyFaces.Front, skyTexturePath + "lostatseaday_bk.jpg");
+            skyBox.setFaceTexture(TgcSkyBox.SkyFaces.Back, skyTexturePath + "lostatseaday_ft.jpg");
+            skyBox.SkyEpsilon = skyBoxSkyEpsilon;
+
+            //Inicializa todos los valores para crear el SkyBox
+            skyBox.Init();
+        }
+
+        // Las coordenas x,z son Originales (sin Escalado) y el z devuelto es Original también (sin Escalado)
+        public float CalcularAlturaTerreno(float x, float z)
+        {
+            // Calculo las coordenadas en la Matriz de Heightmap
+            var pos_i = x + (HeightmapSize.Width / 2);
+            var pos_j = z + (HeightmapSize.Width / 2);
+
+            var pi = (int)pos_i;
+            var fracc_i = pos_i - pi;
+            var pj = (int)pos_j;
+            var fracc_j = pos_j - pj;
+
+            if (pi < 0)
+                pi = 0;
+            else if (pi > (HeightmapSize.Width-1))
+                pi = (HeightmapSize.Width-1);
+
+            if (pj < 0)
+                pj = 0;
+            else if (pj > (HeightmapSize.Width-1))
+                pj = (HeightmapSize.Width-1);
+
+            var pi1 = pi + 1;
+            var pj1 = pj + 1;
+            if (pi1 > (HeightmapSize.Width-1))
+                pi1 = (HeightmapSize.Width-1);
+            if (pj1 > (HeightmapSize.Width-1))
+                pj1 = (HeightmapSize.Width-1);
+
+            // 2x2 percent closest filtering usual:
+            var H0 = terrain.HeightmapData[pi, pj];
+            var H1 = terrain.HeightmapData[pi1, pj];
+            var H2 = terrain.HeightmapData[pi, pj1];
+            var H3 = terrain.HeightmapData[pi1, pj1];
+            var H = (H0 * (1 - fracc_i) + H1 * fracc_i) * (1 - fracc_j) +
+                    (H2 * (1 - fracc_i) + H3 * fracc_i) * fracc_j;
+
+            return H;
         }
 
         private void InitCamera()
