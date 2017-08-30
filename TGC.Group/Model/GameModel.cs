@@ -35,19 +35,13 @@ namespace TGC.Group.Model
         private string terrainTexturePath;
         private Bitmap HeightmapSize;
 
-        // Máximo valor del Heightmap
-        private int maxValorHeightmap;
-
-        // Punto más alto ya escalado de la Escena 
-        private const int MAXIMA_ALTURA_ESCENA = 1000;
-
         // ***********************************************************
         // Parametros del SkyBox
         // ***********************************************************
 
         private TgcSkyBox skyBox;
         private string skyTexturePath;
-        private Vector3 skyBoxCenter = new Vector3(0, 0, 0);
+        private Vector3 skyBoxCenter = new Vector3(0, 128 * sceneScaleY, 0);
         private Vector3 skyBoxSize = new Vector3(800 * sceneScaleXZ, 800 * sceneScaleXZ, 800 * sceneScaleXZ);
         private const float skyBoxSkyEpsilon = 30f;
 
@@ -133,9 +127,6 @@ namespace TGC.Group.Model
             terrain.loadTexture(terrainTexturePath);
             terrain.AlphaBlendEnable = true;
 
-            // Calculo el máximo valor del Heightmap
-            maxValorHeightmap = ObtenerMaximo();
-
             // Cargo el SkyBox
             createSkyBox();
         }
@@ -160,21 +151,6 @@ namespace TGC.Group.Model
 
             //Inicializa todos los valores para crear el SkyBox
             skyBox.Init();
-        }
-
-        public int ObtenerMaximo()
-        {
-
-            var maximoElemento = 0;
-            for (var i = 0; i < terrain.HeightmapData.GetLength(0); i++)
-            {
-                for (var j = 0; j < terrain.HeightmapData.GetLength(0); j++)
-                {
-                    if (terrain.HeightmapData[i, j] > maximoElemento)
-                        maximoElemento = terrain.HeightmapData[i, j];
-                }
-            }
-            return maximoElemento;
         }
 
         // Las coordenas x,z son Originales (sin Escalado) y el z devuelto es Original también (sin Escalado)
