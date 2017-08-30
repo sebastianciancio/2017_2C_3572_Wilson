@@ -48,8 +48,8 @@ namespace TGC.Group.Model
         private TgcSkyBox skyBox;
         private string skyTexturePath;
         private Vector3 skyBoxCenter = new Vector3(0, 0, 0);
-        private Vector3 skyBoxSize = new Vector3(30000, 30000, 30000);
-        private const float skyBoxSkyEpsilon = 50f;
+        private Vector3 skyBoxSize = new Vector3(800 * sceneScaleXZ, 800 * sceneScaleXZ, 800 * sceneScaleXZ);
+        private const float skyBoxSkyEpsilon = 30f;
 
         // ***********************************************************
         // Parametros de los elementos Mesh del Escenario
