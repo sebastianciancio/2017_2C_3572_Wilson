@@ -18,6 +18,7 @@ using TGC.Core.UserControls.Modifier;
 using TGC.Core.Sound;
 using TGC.Core.Shaders;
 using System;
+using System.Linq;
 
 namespace TGC.Group.Model
 {
@@ -28,7 +29,7 @@ namespace TGC.Group.Model
         // ***********************************************************
 
         private TgcSimpleTerrain terrain;
-        private const float sceneScaleY = 5f;
+        private const float sceneScaleY = 10f;
         private const float sceneScaleXZ = 25f;
         private Vector3 terrainCenter = new Vector3(0, 0, 0);
         private string sceneHeightmapPath;
@@ -82,6 +83,65 @@ namespace TGC.Group.Model
             HeightmapSize = new Bitmap(sceneHeightmapPath);
         }
 
+        public override void Init()
+        {
+            LoadScene();
+            InitCamera();
+
+            // ***************************************************************************************
+            // La ubicacion de los Mesh es en coordenadas Originales del HeightMap (sin escalado) [-256,256]
+            // **************************************************************************************
+
+            palmModel = loader.loadSceneFromFile(palmMeshPath).Meshes[0];
+            CreateObjectsFromModel(palmModel, 200, new Vector3(100, 0, -90), new Vector3(0.5f, 0.5f, 0.5f), 80);
+
+            rockModel = loader.loadSceneFromFile(rockMeshPath).Meshes[0];
+            CreateObjectsFromModel(rockModel, 250, new Vector3(-56, 0, 32), new Vector3(0.5f, 0.5f, 0.5f), 50);
+
+            plantModel = loader.loadSceneFromFile(plantMeshPath).Meshes[0];
+            CreateObjectsFromModel(plantModel, 200, new Vector3(-30, 0, -70), new Vector3(0.4f, 0.4f, 0.4f), 80);
+
+        }
+
+        public override void Update()
+        {
+            PreUpdate();
+
+            // SkyBox: Se cambia el valor por defecto del farplane para evitar cliping de farplane.
+            D3DDevice.Instance.Device.Transform.Projection =
+                Matrix.PerspectiveFovLH(D3DDevice.Instance.FieldOfView,
+                    D3DDevice.Instance.AspectRatio,
+                    D3DDevice.Instance.ZNearPlaneDistance,
+                    D3DDevice.Instance.ZFarPlaneDistance * 2f);
+
+            Camara.UpdateCamera(ElapsedTime);
+        }
+
+        public override void Render()
+        {
+            PreRender();
+            RenderTerrain();
+            RenderSceneMeshes();
+            RenderHelpText();
+            RenderSkyBox();
+            PostRender();
+        }
+
+        public override void Dispose()
+        {
+            terrain.dispose();
+
+            // Se liberan los elementos de la escena
+            palmModel.dispose();
+            rockModel.dispose();
+            plantModel.dispose();
+
+            // Se libera Lista de Mesh
+            sceneMeshes.Clear();
+
+            //Liberar recursos del SkyBox
+            skyBox.dispose();
+        }
 
         private void CreateObjectsFromModel(TgcMesh model, int count, Vector3 center, Vector3 scale, int sparse)
         {
@@ -92,7 +152,7 @@ namespace TGC.Group.Model
             var cols = (int)Math.Sqrt(count);
 
 
-            float[] scalaVariableObjetos = { 0.5f, 1f, 1.5f, 2f, 2.5f };
+            float[] scalaVariableObjetos = { 1f, 1.5f, 2f, 2.5f };
 
             for (var i = 0; i < rows; i++)
             {
@@ -102,10 +162,7 @@ namespace TGC.Group.Model
                     instance.AutoTransformEnable = true;
 
                     // Escalo el objeto en forma Random
-                    instance.Scale = new Vector3(
-                        scale.X + scalaVariableObjetos[rnd.Next(0, scalaVariableObjetos.Length)], 
-                        scale.Y + scalaVariableObjetos[rnd.Next(0, scalaVariableObjetos.Length)], 
-                        scale.Z + scalaVariableObjetos[rnd.Next(0, scalaVariableObjetos.Length)]);
+                    instance.Scale = scale * scalaVariableObjetos[rnd.Next(0, scalaVariableObjetos.Length)];
 
                     var x = center.X + rnd.Next(-sparse, sparse);
                     var z = center.Z + rnd.Next(-sparse, sparse);
@@ -128,10 +185,10 @@ namespace TGC.Group.Model
             terrain.AlphaBlendEnable = true;
 
             // Cargo el SkyBox
-            createSkyBox();
+            CreateSkyBox();
         }
 
-        private void createSkyBox()
+        private void CreateSkyBox()
         {
             //Crear SkyBox
             skyBox = new TgcSkyBox();
@@ -191,68 +248,6 @@ namespace TGC.Group.Model
                     (H2 * (1 - fracc_i) + H3 * fracc_i) * fracc_j;
 
             return H;
-        }
-
-
-
-        public override void Init()
-        {
-            LoadScene();
-            InitCamera();
-
-            // ***************************************************************************************
-            // La ubicacion de los Mesh es en coordenadas Originales del HeightMap (sin escalado) [-256,256]
-            // **************************************************************************************
-
-            palmModel = loader.loadSceneFromFile(palmMeshPath).Meshes[0];
-            CreateObjectsFromModel(palmModel, 150, new Vector3(100, 0, -106), new Vector3(0.5f, 0.5f, 0.5f), 30);
-
-            rockModel = loader.loadSceneFromFile(rockMeshPath).Meshes[0];
-            CreateObjectsFromModel(rockModel, 200, new Vector3(-56, 0, 44), new Vector3(3.5f, 3.5f, 3.5f), 50);
-
-            plantModel = loader.loadSceneFromFile(plantMeshPath).Meshes[0];
-            CreateObjectsFromModel(plantModel, 180, new Vector3(-115, 0, -51), new Vector3(2, 2, 2), 50);
-
-        }
-
-        public override void Update()
-        {
-            PreUpdate();
-
-            // SkyBox: Se cambia el valor por defecto del farplane para evitar cliping de farplane.
-            D3DDevice.Instance.Device.Transform.Projection =
-                Matrix.PerspectiveFovLH(D3DDevice.Instance.FieldOfView,
-                    D3DDevice.Instance.AspectRatio,
-                    D3DDevice.Instance.ZNearPlaneDistance,
-                    D3DDevice.Instance.ZFarPlaneDistance * 2f);
-
-            Camara.UpdateCamera(ElapsedTime);
-        }
-
-        public override void Render()
-        {
-            PreRender();
-            RenderTerrain();
-            RenderSceneMeshes();
-            RenderHelpText();
-            RenderSkyBox();
-            PostRender();
-        }
-
-        public override void Dispose()
-        {
-            terrain.dispose();
-
-            // Se liberan los elementos de la escena
-            palmModel.dispose();
-            rockModel.dispose();
-            plantModel.dispose();
-
-            // Se libera Lista de Mesh
-            sceneMeshes.Clear();
-
-            //Liberar recursos del SkyBox
-            skyBox.dispose();
         }
 
         private void InitCamera()
