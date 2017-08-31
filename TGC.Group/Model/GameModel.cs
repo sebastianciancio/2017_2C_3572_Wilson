@@ -43,7 +43,7 @@ namespace TGC.Group.Model
         private TgcSkyBox skyBox;
         private string skyTexturePath;
         private Vector3 skyBoxCenter = new Vector3(0, 128 * sceneScaleY, 0);
-        private Vector3 skyBoxSize = new Vector3(800 * sceneScaleXZ, 800 * sceneScaleXZ, 800 * sceneScaleXZ);
+        private Vector3 skyBoxSize = new Vector3(1100 * sceneScaleXZ, 1100 * sceneScaleXZ, 1100 * sceneScaleXZ);
         private const float skyBoxSkyEpsilon = 30f;
 
         // ***********************************************************
@@ -96,10 +96,10 @@ namespace TGC.Group.Model
             CreateObjectsFromModel(palmModel, 200, new Vector3(100, 0, -90), new Vector3(0.5f, 0.5f, 0.5f), 80);
 
             rockModel = loader.loadSceneFromFile(rockMeshPath).Meshes[0];
-            CreateObjectsFromModel(rockModel, 250, new Vector3(-56, 0, 32), new Vector3(0.5f, 0.5f, 0.5f), 50);
+            CreateObjectsFromModel(rockModel, 250, new Vector3(-56, 0, 32), new Vector3(0.9f, 0.9f, 0.9f), 50);
 
             plantModel = loader.loadSceneFromFile(plantMeshPath).Meshes[0];
-            CreateObjectsFromModel(plantModel, 200, new Vector3(-30, 0, -70), new Vector3(0.4f, 0.4f, 0.4f), 80);
+            CreateObjectsFromModel(plantModel, 200, new Vector3(-30, 0, -70), new Vector3(0.8f, 0.8f, 0.8f), 80);
 
         }
 
@@ -169,6 +169,7 @@ namespace TGC.Group.Model
 
                     // Posiciono el objeto en el Escenario
                     instance.Position = new Vector3( x * sceneScaleXZ ,CalcularAlturaTerreno(x, z) * sceneScaleY, z * sceneScaleXZ);
+                    instance.rotateX(FastMath.QUARTER_PI);
 
                     // Lo guardo en una Lista de Objetos que están en el Escenario
                     sceneMeshes.Add(instance);
