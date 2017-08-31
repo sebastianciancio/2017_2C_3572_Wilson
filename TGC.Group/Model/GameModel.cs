@@ -153,6 +153,7 @@ namespace TGC.Group.Model
 
 
             float[] scalaVariableObjetos = { 1f, 1.5f, 2f, 2.5f };
+            float[] scalaRotacionObjetos = { FastMath.QUARTER_PI, FastMath.PI, FastMath.PI_HALF, FastMath.TWO_PI };
 
             for (var i = 0; i < rows; i++)
             {
@@ -169,7 +170,7 @@ namespace TGC.Group.Model
 
                     // Posiciono el objeto en el Escenario
                     instance.Position = new Vector3( x * sceneScaleXZ ,CalcularAlturaTerreno(x, z) * sceneScaleY, z * sceneScaleXZ);
-                    instance.rotateX(FastMath.QUARTER_PI);
+                    instance.rotateY(scalaRotacionObjetos[rnd.Next(0, scalaRotacionObjetos.Length)]);
 
                     // Lo guardo en una Lista de Objetos que están en el Escenario
                     sceneMeshes.Add(instance);
