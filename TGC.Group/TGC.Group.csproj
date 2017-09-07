@@ -91,6 +91,12 @@
     <Compile Include="Model\Camara\CamaraTerceraPersona.cs" />
     <Compile Include="Model\Camara\TgcFpsCamera.cs" />
     <Compile Include="Model\Camara\TgcRotationalCamera.cs" />
+    <Compile Include="Model\Escenario\Escenario.cs" />
+<!--    <Compile Include="Model\Sounds\Musica.cs" />
+    <Compile Include="Model\Sounds\Sonido.cs" />
+    <Compile Include="Model\Drawer2D.cs" />
+    <Compile Include="Model\CustomSprite.cs" />
+    <Compile Include="Model\CustomBitmap.cs" /> -->
     <Compile Include="Model\GameModel.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
