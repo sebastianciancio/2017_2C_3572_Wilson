@@ -17,6 +17,7 @@ using TGC.Core.UserControls;
 using TGC.Core.UserControls.Modifier;
 using TGC.Core.Sound;
 using TGC.Core.Shaders;
+using TGC.Group.Model.Camara;
 using System;
 
 namespace TGC.Group.Model
@@ -287,11 +288,11 @@ namespace TGC.Group.Model
 
             var cameraPosition = new Vector3(posicionCamaraX * sceneScaleXZ, (CalcularAlturaTerreno(posicionCamaraX, posicionCamaraZ) + 1 )* sceneScaleY, posicionCamaraZ * sceneScaleXZ);
             var cameraLookAt = new Vector3(0, 0, -1);
-            var cameraMoveSpeed = 500f;
-            var cameraJumpSpeed = 500f;
+            var cameraMoveSpeed = 10f;
+            var cameraJumpSpeed = 10f;
 
             // Creo la cámara y defino la Posición y LookAt
-            Camara = new TgcFpsCamera(cameraPosition,cameraMoveSpeed,cameraJumpSpeed,Input);
+            Camara = new TgcFpsCamera(Input);
             Camara.SetCamera(cameraPosition, cameraLookAt);
         }
 

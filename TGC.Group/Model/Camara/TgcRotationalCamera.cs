@@ -3,7 +3,7 @@ using TGC.Core.Camara;
 using TGC.Core.Input;
 using TGC.Core.Utils;
 
-namespace TGC.Group.Model
+namespace TGC.Group.Model.Camara
 {
     /// <summary>
     ///     Camara que permite rotar y hacer zoom alrededor de un objeto central

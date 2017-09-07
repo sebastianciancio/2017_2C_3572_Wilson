@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TGC.Group.Model
+namespace TGC.Group.Model.Camara
 {
     public class CamaraTerceraPersona : Core.Camara.TgcCamera
     {
