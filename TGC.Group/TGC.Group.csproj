@@ -89,9 +89,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Game.settings</DependentUpon>
     </Compile>
-    <Compile Include="Model\Camara\CamaraTerceraPersona.cs" />
     <Compile Include="Model\Camara\TgcFpsCamera.cs" />
-    <Compile Include="Model\Camara\TgcRotationalCamera.cs" />
     <Compile Include="Model\Escenario\Escenario.cs" />
     <!--    <Compile Include="Model\Sounds\Musica.cs" />
     <Compile Include="Model\Sounds\Sonido.cs" />

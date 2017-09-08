@@ -27,17 +27,16 @@ namespace TGC.Group.Model.EscenarioGame
     public class Escenario
     {
         private string MediaDir;
-        private TgcD3dInput Input;
         private float ElapsedTime;
-        public TgcFpsCamera Camara;
-        
+        private float sceneScaleXZ;
+        private float sceneScaleY;
+        private TgcCamera Camara;
+
         // ***********************************************************
         // Parametros del HeightMap
         // ***********************************************************
 
-        public TgcSimpleTerrain terrain;
-        private const float sceneScaleY = 10f;
-        private const float sceneScaleXZ = 25f;
+        private TgcSimpleTerrain terrain;
         private Vector3 terrainCenter = new Vector3(0, 0, 0);
         private string sceneHeightmapPath;
         private string terrainTexturePath;
@@ -49,9 +48,9 @@ namespace TGC.Group.Model.EscenarioGame
 
         private TgcSkyBox skyBox;
         private string skyTexturePath;
-        private Vector3 skyBoxCenter = new Vector3(0, 128 * sceneScaleY, 0);
-        private Vector3 skyBoxSize = new Vector3(1100 * sceneScaleXZ, 1100 * sceneScaleXZ, 1100 * sceneScaleXZ);
-        private const float skyBoxSkyEpsilon = 30f;
+        private Vector3 skyBoxCenter;
+        private Vector3 skyBoxSize;
+        private float skyBoxSkyEpsilon;
 
         // ***********************************************************
         // Parametros de los elementos Mesh del Escenario
@@ -83,12 +82,23 @@ namespace TGC.Group.Model.EscenarioGame
 
         public Escenario(GameModel env,TgcD3dInput input,TgcText2D draw)
         {    
+            // Declaro las propiedades
             this.MediaDir = env.MediaDir;
             this.ElapsedTime = env.ElapsedTime;
             this.draw = draw;
             this.input = input;
+            this.sceneScaleXZ = env.sceneScaleXZ;
+            this.sceneScaleY = env.sceneScaleY;
             myInstance = this;
             var d3dDevice = D3DDevice.Instance.Device;
+            this.Camara = env.Camara;
+
+
+            // Inicializo el SkyBox
+            skyBoxCenter = new Vector3(0, 128 * sceneScaleY, 0);
+            skyBoxSize = new Vector3(1100 * sceneScaleXZ, 1100 * sceneScaleXZ, 1100 * sceneScaleXZ);
+            skyBoxSkyEpsilon = 30f;
+
 
 
             loader = new TgcSceneLoader();
@@ -103,7 +113,7 @@ namespace TGC.Group.Model.EscenarioGame
 
             HeightmapSize = new Bitmap(sceneHeightmapPath);
 
-            this.LoadScene();
+            LoadScene();
 
             // ***************************************************************************************
             // La ubicacion de los Mesh es en coordenadas Originales del HeightMap (sin escalado) [-256,256]
@@ -120,13 +130,13 @@ namespace TGC.Group.Model.EscenarioGame
 
             // **************************************************************************************
 
-            this.InitCamera();
+            
         }
 
 
         public void Update()
         {
-            Camara.UpdateCamera(ElapsedTime);
+            
         }
 
         public void Render()
@@ -184,6 +194,7 @@ namespace TGC.Group.Model.EscenarioGame
 
                     // Lo guardo en una Lista de Objetos que están en el Escenario
                     sceneMeshes.Add(instance);
+
                 }
             }
         }
@@ -193,14 +204,10 @@ namespace TGC.Group.Model.EscenarioGame
             //Cargar Heightmap y textura de la Escena
             terrain = new TgcSimpleTerrain();
             terrain.loadHeightmap(sceneHeightmapPath, sceneScaleXZ, sceneScaleY, terrainCenter);
-            terrain.AlphaBlendEnable = true;
             terrain.loadTexture(terrainTexturePath);
-
-
-
+            terrain.AlphaBlendEnable = true;
             // Cargo el SkyBox
             CreateSkyBox();
-
 
             // Cargo HUD
             //spriteDrawer = new Drawer2D();
@@ -290,29 +297,14 @@ namespace TGC.Group.Model.EscenarioGame
         private void RenderHelpText()
         {
             
-            this.draw.drawText("Camera position: \n" + Camara.Position, 0, 20, Color.OrangeRed);
-            this.draw.drawText("Camera LookAt: \n" + Camara.LookAt, 0, 100, Color.OrangeRed);
+            this.draw.drawText("Camera position: \n" + this.Camara.Position, 0, 20, Color.OrangeRed);
+            this.draw.drawText("Camera LookAt: \n" + this.Camara.LookAt, 0, 100, Color.OrangeRed);
             this.draw.drawText("Mesh count: \n" + sceneMeshes.Count, 0, 180, Color.OrangeRed);
-            this.draw.drawText("Camera (Coordenada X Original): \n" + ((Camara.Position.X / sceneScaleXZ) - (HeightmapSize.Width / 2)), 200, 20, Color.OrangeRed);
-            this.draw.drawText("Camera (Coordenada Z Original): \n" + ((Camara.Position.Z / sceneScaleXZ) + (HeightmapSize.Width / 2)), 200, 100, Color.OrangeRed);
-            
-    }
-
-        private void InitCamera()
-        {
-            // Usar Coordenadas Originales del HeightMap [-256,256]
-            var posicionCamaraX = 0;
-            var posicionCamaraZ = 0;
-
-            var cameraPosition = new Vector3(posicionCamaraX * sceneScaleXZ, (CalcularAlturaTerreno(posicionCamaraX, posicionCamaraZ) + 1 )* sceneScaleY, posicionCamaraZ * sceneScaleXZ);
-            var cameraLookAt = new Vector3(0, 0, -1);
-            var cameraMoveSpeed = 500f;
-            var cameraJumpSpeed = 500f;
-
-            // Creo la cámara y defino la Posición y LookAt
-            Camara = new TgcFpsCamera(cameraPosition,cameraMoveSpeed,cameraJumpSpeed,this.input);
-            Camara.SetCamera(cameraPosition, cameraLookAt);
+            this.draw.drawText("Camera (Coordenada X Original): \n" + ((this.Camara.Position.X / sceneScaleXZ) - (HeightmapSize.Width / 2)), 200, 20, Color.OrangeRed);
+            this.draw.drawText("Camera (Coordenada Z Original): \n" + ((this.Camara.Position.Z / sceneScaleXZ) + (HeightmapSize.Width / 2)), 200, 100, Color.OrangeRed);
         }
+
+
 
     }
 }
