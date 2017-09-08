@@ -31,6 +31,7 @@ namespace TGC.Group.Model
         public Escenario terreno;
 
         // ***********************************************************
+        
 
         public GameModel(string mediaDir, string shadersDir) : base(mediaDir, shadersDir)
         {
@@ -57,7 +58,6 @@ namespace TGC.Group.Model
                     D3DDevice.Instance.ZFarPlaneDistance * 2f);
 
             terreno.Update();
-
         }
 
         public override void Render()
@@ -74,6 +74,5 @@ namespace TGC.Group.Model
         {
             terreno.Dispose();
         }
-
     }
 }

@@ -24,6 +24,7 @@ namespace TGC.Group.Model
     public class Escenario
     {
         private string MediaDir;
+        private TgcD3dInput Input;
         private float ElapsedTime;
         public TgcFpsCamera Camara;
         
@@ -31,7 +32,7 @@ namespace TGC.Group.Model
         // Parametros del HeightMap
         // ***********************************************************
 
-        private TgcSimpleTerrain terrain;
+        public TgcSimpleTerrain terrain;
         private const float sceneScaleY = 10f;
         private const float sceneScaleXZ = 25f;
         private Vector3 terrainCenter = new Vector3(0, 0, 0);
@@ -78,38 +79,39 @@ namespace TGC.Group.Model
         public Escenario(GameModel env)
         {    
             this.MediaDir = env.MediaDir;
+            this.Input = env.Input;
             this.ElapsedTime = env.ElapsedTime;
 
             loader = new TgcSceneLoader();
             sceneMeshes = new List<TgcMesh>();
 
-            sceneHeightmapPath = MediaDir + "Isla\\isla_heightmap.png";
-            terrainTexturePath = MediaDir + "Isla\\isla_textura.png";
-            palmMeshPath = MediaDir + "Palmera\\Palmera-TgcScene.xml";
-            rockMeshPath = MediaDir + "Roca\\Roca-TgcScene.xml";
-            plantMeshPath = MediaDir + "Planta3\\Planta3-TgcScene.xml";
-            skyTexturePath = MediaDir + "SkyBox\\";
+            sceneHeightmapPath = this.MediaDir + "Isla\\isla_heightmap.png";
+            terrainTexturePath = this.MediaDir + "Isla\\isla_textura.png";
+            palmMeshPath = this.MediaDir + "Palmera\\Palmera-TgcScene.xml";
+            rockMeshPath = this.MediaDir + "Roca\\Roca-TgcScene.xml";
+            plantMeshPath = this.MediaDir + "Planta3\\Planta3-TgcScene.xml";
+            skyTexturePath = this.MediaDir + "SkyBox\\";
 
             HeightmapSize = new Bitmap(sceneHeightmapPath);
 
-            LoadScene();
+            this.LoadScene();
 
             // ***************************************************************************************
             // La ubicacion de los Mesh es en coordenadas Originales del HeightMap (sin escalado) [-256,256]
             // **************************************************************************************
 
             palmModel = loader.loadSceneFromFile(palmMeshPath).Meshes[0];
-            CreateObjectsFromModel(palmModel, 200, new Vector3(100, 0, -90), new Vector3(0.5f, 0.5f, 0.5f), 80);
+            this.CreateObjectsFromModel(palmModel, 200, new Vector3(100, 0, -90), new Vector3(0.5f, 0.5f, 0.5f), 80);
 
             rockModel = loader.loadSceneFromFile(rockMeshPath).Meshes[0];
-            CreateObjectsFromModel(rockModel, 250, new Vector3(-56, 0, 32), new Vector3(0.9f, 0.9f, 0.9f), 50);
+            this.CreateObjectsFromModel(rockModel, 250, new Vector3(-56, 0, 32), new Vector3(0.9f, 0.9f, 0.9f), 50);
 
             plantModel = loader.loadSceneFromFile(plantMeshPath).Meshes[0];
-            CreateObjectsFromModel(plantModel, 200, new Vector3(-30, 0, -70), new Vector3(0.8f, 0.8f, 0.8f), 80);
+            this.CreateObjectsFromModel(plantModel, 200, new Vector3(-30, 0, -70), new Vector3(0.8f, 0.8f, 0.8f), 80);
 
             // **************************************************************************************
 
-            InitCamera();
+            this.InitCamera();
         }
 
 
@@ -298,7 +300,7 @@ namespace TGC.Group.Model
             var cameraJumpSpeed = 500f;
 
             // Creo la cámara y defino la Posición y LookAt
-            Camara = new TgcFpsCamera(cameraPosition,cameraMoveSpeed,cameraJumpSpeed, Input);
+            Camara = new TgcFpsCamera(cameraPosition,cameraMoveSpeed,cameraJumpSpeed, this.Input);
             Camara.SetCamera(cameraPosition, cameraLookAt);
         }
 
