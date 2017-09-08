@@ -61,11 +61,25 @@ namespace TGC.Group.Model.EscenarioGame
         private string palmMeshPath;
         private string rockMeshPath;
         private string plantMeshPath;
+        private string arbolMeshPath;
+        private string arbolFrutalMeshPath;
+        private string frutaMeshPath;
+        private string pinoMeshPath;
+        private string palm2MeshPath;
+        private string palm3MeshPath;
+
         private TgcScene loaderScene;
 
         private TgcMesh palmModel;
         private TgcMesh rockModel;
         private TgcMesh plantModel;
+        private TgcMesh arbolModel;
+        private TgcMesh arbolFrutalModel;
+        private TgcMesh frutaModel;
+        private TgcMesh pinoModel;
+        private TgcMesh palm2Model;
+        private TgcMesh palm3Model;
+
         private List<TgcMesh> sceneMeshes;
 
         // ***********************************************************
@@ -109,6 +123,13 @@ namespace TGC.Group.Model.EscenarioGame
             palmMeshPath = this.MediaDir + "Palmera\\Palmera-TgcScene.xml";
             rockMeshPath = this.MediaDir + "Roca\\Roca-TgcScene.xml";
             plantMeshPath = this.MediaDir + "Planta3\\Planta3-TgcScene.xml";
+            arbolMeshPath = this.MediaDir + "ArbolSelvatico\\ArbolSelvatico-TgcScene.xml";
+            arbolFrutalMeshPath = this.MediaDir + "ArbustoFruta\\Peach-TgcScene.xml";
+            frutaMeshPath = this.MediaDir + "Fruta\\Fruta-TgcScene.xml";
+            pinoMeshPath = this.MediaDir + "Pino\\Pino-TgcScene.xml";
+            palm2MeshPath = this.MediaDir + "Palmera2\\Palmera2-TgcScene.xml";
+            palm3MeshPath = this.MediaDir + "Palmera3\\Palmera3-TgcScene.xml";
+
             skyTexturePath = this.MediaDir + "SkyBox\\";
 
             HeightmapSize = new Bitmap(sceneHeightmapPath);
@@ -120,17 +141,34 @@ namespace TGC.Group.Model.EscenarioGame
             // **************************************************************************************
 
             palmModel = loader.loadSceneFromFile(palmMeshPath).Meshes[0];
-            this.CreateObjectsFromModel(palmModel, 200, new Vector3(100, 0, -90), new Vector3(0.5f, 0.5f, 0.5f), 80);
+            CreateObjectsFromModel(palmModel, 200, new Vector3(100, 0, -90), new Vector3(0.5f, 0.5f, 0.5f), 80);
 
             rockModel = loader.loadSceneFromFile(rockMeshPath).Meshes[0];
-            this.CreateObjectsFromModel(rockModel, 250, new Vector3(-56, 0, 32), new Vector3(0.9f, 0.9f, 0.9f), 50);
+            CreateObjectsFromModel(rockModel, 250, new Vector3(-56, 0, 32), new Vector3(0.9f, 0.9f, 0.9f), 50);
 
             plantModel = loader.loadSceneFromFile(plantMeshPath).Meshes[0];
-            this.CreateObjectsFromModel(plantModel, 200, new Vector3(-30, 0, -70), new Vector3(0.8f, 0.8f, 0.8f), 80);
+            CreateObjectsFromModel(plantModel, 30, new Vector3(-30, 0, -70), new Vector3(0.8f, 0.8f, 0.8f), 80);
+
+            arbolModel = loader.loadSceneFromFile(arbolMeshPath).Meshes[0];
+            CreateObjectsFromModel(arbolModel, 30, new Vector3(-30, 0, -10), new Vector3(0.8f, 0.8f, 0.8f), 80);
+
+            arbolFrutalModel = loader.loadSceneFromFile(arbolFrutalMeshPath).Meshes[0];
+            CreateObjectsFromModel(arbolFrutalModel, 30, new Vector3(-50, 0, -20), new Vector3(0.8f, 0.8f, 0.8f), 80);
+
+            frutaModel = loader.loadSceneFromFile(frutaMeshPath).Meshes[0];
+            CreateObjectsFromModel(frutaModel, 30, new Vector3(-40, 0, -30), new Vector3(0.8f, 0.8f, 0.8f), 80);
+
+            pinoModel = loader.loadSceneFromFile(pinoMeshPath).Meshes[0];
+            CreateObjectsFromModel(pinoModel, 30, new Vector3(-30, 0, -40), new Vector3(0.8f, 0.8f, 0.8f), 80);
+
+            palm2Model = loader.loadSceneFromFile(palm2MeshPath).Meshes[0];
+            CreateObjectsFromModel(palm2Model, 30, new Vector3(-20, 0, -50), new Vector3(0.8f, 0.8f, 0.8f), 80);
+
+            palm3Model = loader.loadSceneFromFile(palm3MeshPath).Meshes[0];
+            CreateObjectsFromModel(palm3Model, 30, new Vector3(-10, 0, -60), new Vector3(0.8f, 0.8f, 0.8f), 80);
+
 
             // **************************************************************************************
-
-            
         }
 
 
@@ -155,6 +193,12 @@ namespace TGC.Group.Model.EscenarioGame
             palmModel.dispose();
             rockModel.dispose();
             plantModel.dispose();
+            arbolModel.dispose();
+            arbolFrutalModel.dispose();
+            frutaModel.dispose();
+            pinoModel.dispose();
+            palm2Model.dispose();
+            palm3Model.dispose();
 
             // Se libera Lista de Mesh
             sceneMeshes.Clear();

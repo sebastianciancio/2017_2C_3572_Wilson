@@ -65,7 +65,7 @@ namespace TGC.Group.Model
                 Matrix.PerspectiveFovLH(D3DDevice.Instance.FieldOfView,
                     D3DDevice.Instance.AspectRatio,
                     D3DDevice.Instance.ZNearPlaneDistance,
-                    D3DDevice.Instance.ZFarPlaneDistance * 20f);
+                    D3DDevice.Instance.ZFarPlaneDistance * 3f);
 
             // Actualizo el Terreno
             terreno.Update();
