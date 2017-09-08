@@ -1,4 +1,5 @@
 ﻿
+
 using Microsoft.DirectX;
 using Microsoft.DirectX.Direct3D;
 using Microsoft.DirectX.DirectInput;
@@ -7,7 +8,7 @@ using TGC.Core.Direct3D;
 using TGC.Core.Example;
 using TGC.Core.Geometry;
 using TGC.Core.Input;
-using TGC.Core.SceneLoader; 
+using TGC.Core.SceneLoader;
 using TGC.Core.Textures;
 using TGC.Core.Utils;
 using TGC.Core.Text;
@@ -17,9 +18,9 @@ using TGC.Core.UserControls;
 using TGC.Core.UserControls.Modifier;
 using TGC.Core.Sound;
 using TGC.Core.Shaders;
-using TGC.Group.Model.Camara;
 using System;
 using System.Linq;
+using TGC.Group.Model.EscenarioGame;
 
 namespace TGC.Group.Model
 {
@@ -38,12 +39,13 @@ namespace TGC.Group.Model
             Category = Game.Default.Category;
             Name = Game.Default.Name;
             Description = Game.Default.Description;
+        
         }
 
         public override void Init()
         {
             // Creo el Escenario
-            terreno = new Escenario(this);
+            terreno = new Escenario(this,Input,DrawText);
         }
 
         public override void Update()
@@ -58,59 +60,14 @@ namespace TGC.Group.Model
                     D3DDevice.Instance.ZFarPlaneDistance * 2f);
 
             terreno.Update();
-
         }
 
         public override void Render()
         {
             PreRender();
 
-        public override void Dispose()
-        {
-            terrain.dispose();
-
-            // Se liberan los elementos de la escena
-            palmModel.dispose();
-            rockModel.dispose();
-            plantModel.dispose();
-
-            // Se libera Lista de Mesh
-            sceneMeshes.Clear();
-
-            //Liberar recursos del SkyBox
-            skyBox.dispose();
-        }
-
-        private void InitCamera()
-        {
-            // Usar Coordenadas Originales del HeightMap [-256,256]
-            var posicionCamaraX = 0;
-            var posicionCamaraZ = 0;
-
-            var cameraPosition = new Vector3(posicionCamaraX * sceneScaleXZ, (CalcularAlturaTerreno(posicionCamaraX, posicionCamaraZ) + 1 )* sceneScaleY, posicionCamaraZ * sceneScaleXZ);
-            var cameraLookAt = new Vector3(0, 0, -1);
-            var cameraMoveSpeed = 10f;
-            var cameraJumpSpeed = 10f;
-
-            // Creo la cámara y defino la Posición y LookAt
-            Camara = new TgcFpsCamera(Input);
-            Camara.SetCamera(cameraPosition, cameraLookAt);
-        }
-
-        private void RenderSkyBox()
-        {
-            //Renderizar SkyBox
-            skyBox.render();
-        }
-
-        private void RenderSceneMeshes()
-        {
-            foreach (var mesh in sceneMeshes)
-            {
-                mesh.render();
-            }
-        }
-
+            // Renderizo el Escenario
+            terreno.Render();
 
             PostRender();
         }

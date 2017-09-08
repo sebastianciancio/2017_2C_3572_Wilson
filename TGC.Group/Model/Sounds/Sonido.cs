@@ -10,7 +10,7 @@ using TGC.Core.Text;
 using TGC.Core.UserControls;
 using TGC.Core.UserControls.Modifier;
 
-namespace TGC.Group.Model
+namespace TGC.Group.Model.Sounds
 {
     /// <summary>
     ///     Ejemplo PlayMp3:

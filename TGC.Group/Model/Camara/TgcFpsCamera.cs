@@ -7,7 +7,7 @@ using TGC.Core.Direct3D;
 using TGC.Core.Input;
 using TGC.Core.Utils;
 
-namespace TGC.Group.Model
+namespace TGC.Group.Model.Camara
 {
     /// <summary>
     ///     Camara en primera persona que utiliza matrices de rotacion, solo almacena las rotaciones en updown y costados.

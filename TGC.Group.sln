@@ -1,9 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25123.0
+# Visual Studio 15
+VisualStudioVersion = 15.0.26730.3
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TGC.Group", "TGC.Group\TGC.Group.csproj", "{6CB42457-A2B1-4472-846E-1AB760B3226B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TGCPrueba.Group", "G:\TGC-WILSON\2017_2C_3572_Wilson-master\TGC.Group\TGCPrueba.Group.csproj", "{4A25CFC9-B68B-45D1-AB22-4607429EE17C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,8 +17,15 @@ Global
 		{6CB42457-A2B1-4472-846E-1AB760B3226B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6CB42457-A2B1-4472-846E-1AB760B3226B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6CB42457-A2B1-4472-846E-1AB760B3226B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4A25CFC9-B68B-45D1-AB22-4607429EE17C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4A25CFC9-B68B-45D1-AB22-4607429EE17C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4A25CFC9-B68B-45D1-AB22-4607429EE17C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4A25CFC9-B68B-45D1-AB22-4607429EE17C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {0394D0E4-1D54-4681-AEFF-F3CAC1CE1376}
 	EndGlobalSection
 EndGlobal
