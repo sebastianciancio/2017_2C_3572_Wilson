@@ -1,3 +1,4 @@
+﻿
 
 using Microsoft.DirectX;
 using Microsoft.DirectX.Direct3D;
@@ -7,7 +8,7 @@ using TGC.Core.Direct3D;
 using TGC.Core.Example;
 using TGC.Core.Geometry;
 using TGC.Core.Input;
-using TGC.Core.SceneLoader; 
+using TGC.Core.SceneLoader;
 using TGC.Core.Textures;
 using TGC.Core.Utils;
 using TGC.Core.Text;
@@ -19,6 +20,7 @@ using TGC.Core.Sound;
 using TGC.Core.Shaders;
 using System;
 using System.Linq;
+using TGC.Group.Model.EscenarioGame;
 
 namespace TGC.Group.Model
 {
@@ -38,12 +40,13 @@ namespace TGC.Group.Model
             Category = Game.Default.Category;
             Name = Game.Default.Name;
             Description = Game.Default.Description;
+        
         }
 
         public override void Init()
         {
             // Creo el Escenario
-            terreno = new Escenario(this);
+            terreno = new Escenario(this,Input,DrawText);
         }
 
         public override void Update()

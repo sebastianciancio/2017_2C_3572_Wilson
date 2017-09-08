@@ -7,7 +7,7 @@ using TGC.Core.Direct3D;
 using TGC.Core.Input;
 using TGC.Core.Utils;
 
-namespace TGC.Group.Model
+namespace TGC.Group.Model.Camara
 {
     /// <summary>
     ///     Camara en primera persona que utiliza matrices de rotacion, solo almacena las rotaciones en updown y costados.
@@ -39,8 +39,8 @@ namespace TGC.Group.Model
                 D3DDevice.Instance.Device.Viewport.Width / 2,
                 D3DDevice.Instance.Device.Viewport.Height / 2);
             RotationSpeed = 0.01f;
-            MovementSpeed = 100f;
-            JumpSpeed = 100f;
+            MovementSpeed = 50f;
+            JumpSpeed =50f;
             directionView = new Vector3(0, 0, -1);
             leftrightRot = FastMath.PI_HALF;
             updownRot = -FastMath.PI / 10.0f;

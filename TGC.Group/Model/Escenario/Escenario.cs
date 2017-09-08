@@ -18,8 +18,11 @@ using TGC.Core.Sound;
 using TGC.Core.Shaders;
 using System;
 using System.Linq;
+using TGC.Group.Model.Camara;
+using TGC.Core.Camara;
 
-namespace TGC.Group.Model
+
+namespace TGC.Group.Model.EscenarioGame
 {
     public class Escenario
     {
@@ -59,6 +62,7 @@ namespace TGC.Group.Model
         private string palmMeshPath;
         private string rockMeshPath;
         private string plantMeshPath;
+        private TgcScene loaderScene;
 
         private TgcMesh palmModel;
         private TgcMesh rockModel;
@@ -68,7 +72,8 @@ namespace TGC.Group.Model
         // ***********************************************************
 
         private static Escenario myInstance;
-        private object DrawText;
+        private TgcD3dInput input;
+        private TgcText2D draw;
 
         public static Escenario getInstance()
         {
@@ -76,11 +81,15 @@ namespace TGC.Group.Model
         }
 
 
-        public Escenario(GameModel env)
+        public Escenario(GameModel env,TgcD3dInput input,TgcText2D draw)
         {    
             this.MediaDir = env.MediaDir;
-            this.Input = env.Input;
             this.ElapsedTime = env.ElapsedTime;
+            this.draw = draw;
+            this.input = input;
+            myInstance = this;
+            var d3dDevice = D3DDevice.Instance.Device;
+
 
             loader = new TgcSceneLoader();
             sceneMeshes = new List<TgcMesh>();
@@ -186,7 +195,8 @@ namespace TGC.Group.Model
             terrain.loadHeightmap(sceneHeightmapPath, sceneScaleXZ, sceneScaleY, terrainCenter);
             terrain.AlphaBlendEnable = true;
             terrain.loadTexture(terrainTexturePath);
-            
+
+
 
             // Cargo el SkyBox
             CreateSkyBox();
@@ -279,13 +289,13 @@ namespace TGC.Group.Model
 
         private void RenderHelpText()
         {
-/*
-            DrawText.drawText("Camera position: \n" + Camara.Position, 0, 20, Color.OrangeRed);
-            DrawText.drawText("Camera LookAt: \n" + Camara.LookAt, 0, 100, Color.OrangeRed);
-            DrawText.drawText("Mesh count: \n" + sceneMeshes.Count, 0, 180, Color.OrangeRed);
-			DrawText.drawText("Camera (Coordenada X Original): \n" + ((Camara.Position.X / sceneScaleXZ) - (HeightmapSize.Width / 2)), 200, 20, Color.OrangeRed);
-			DrawText.drawText("Camera (Coordenada Z Original): \n" + ((Camara.Position.Z / sceneScaleXZ) + (HeightmapSize.Width / 2)), 200, 100, Color.OrangeRed);
-*/
+            
+            this.draw.drawText("Camera position: \n" + Camara.Position, 0, 20, Color.OrangeRed);
+            this.draw.drawText("Camera LookAt: \n" + Camara.LookAt, 0, 100, Color.OrangeRed);
+            this.draw.drawText("Mesh count: \n" + sceneMeshes.Count, 0, 180, Color.OrangeRed);
+            this.draw.drawText("Camera (Coordenada X Original): \n" + ((Camara.Position.X / sceneScaleXZ) - (HeightmapSize.Width / 2)), 200, 20, Color.OrangeRed);
+            this.draw.drawText("Camera (Coordenada Z Original): \n" + ((Camara.Position.Z / sceneScaleXZ) + (HeightmapSize.Width / 2)), 200, 100, Color.OrangeRed);
+            
     }
 
         private void InitCamera()
@@ -300,7 +310,7 @@ namespace TGC.Group.Model
             var cameraJumpSpeed = 500f;
 
             // Creo la cámara y defino la Posición y LookAt
-            Camara = new TgcFpsCamera(cameraPosition,cameraMoveSpeed,cameraJumpSpeed, this.Input);
+            Camara = new TgcFpsCamera(cameraPosition,cameraMoveSpeed,cameraJumpSpeed,this.input);
             Camara.SetCamera(cameraPosition, cameraLookAt);
         }
 
