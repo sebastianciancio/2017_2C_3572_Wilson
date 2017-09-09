@@ -187,6 +187,7 @@ namespace TGC.Group.Model.EscenarioGame
 
         public void Dispose()
         {
+            // Se libera el Terreno
             terrain.dispose();
 
             // Se liberan los elementos de la escena
@@ -235,6 +236,7 @@ namespace TGC.Group.Model.EscenarioGame
                     // Posiciono el objeto en el Escenario
                     instance.Position = new Vector3( x * sceneScaleXZ ,CalcularAlturaTerreno(x, z) * sceneScaleY, z * sceneScaleXZ);
                     instance.rotateY(scalaRotacionObjetos[rnd.Next(0, scalaRotacionObjetos.Length)]);
+                    instance.AlphaBlendEnable = true;
 
                     // Lo guardo en una Lista de Objetos que están en el Escenario
                     sceneMeshes.Add(instance);
@@ -341,11 +343,11 @@ namespace TGC.Group.Model.EscenarioGame
         private void RenderHelpText()
         {
             
-            this.draw.drawText("Camera position: \n" + this.Camara.Position, 0, 20, Color.OrangeRed);
-            this.draw.drawText("Camera LookAt: \n" + this.Camara.LookAt, 0, 100, Color.OrangeRed);
+            this.draw.drawText("Camera position: \n" + Camara.Position, 0, 20, Color.OrangeRed);
+            this.draw.drawText("Camera LookAt: \n" + Camara.LookAt, 0, 100, Color.OrangeRed);
             this.draw.drawText("Mesh count: \n" + sceneMeshes.Count, 0, 180, Color.OrangeRed);
-            this.draw.drawText("Camera (Coordenada X Original): \n" + ((this.Camara.Position.X / sceneScaleXZ) - (HeightmapSize.Width / 2)), 200, 20, Color.OrangeRed);
-            this.draw.drawText("Camera (Coordenada Z Original): \n" + ((this.Camara.Position.Z / sceneScaleXZ) + (HeightmapSize.Width / 2)), 200, 100, Color.OrangeRed);
+            this.draw.drawText("Camera (Coordenada X Original): \n" + ((Camara.Position.X / sceneScaleXZ) - (HeightmapSize.Width / 2)), 200, 20, Color.OrangeRed);
+            this.draw.drawText("Camera (Coordenada Z Original): \n" + ((Camara.Position.Z / sceneScaleXZ) + (HeightmapSize.Width / 2)), 200, 100, Color.OrangeRed);
         }
 
 

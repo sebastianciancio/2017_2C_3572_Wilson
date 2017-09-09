@@ -94,12 +94,13 @@ namespace TGC.Group.Model
         {
             // Usar Coordenadas Originales del HeightMap [-256,256]
             var posicionCamaraX = 0;
-            var posicionCamaraZ = 0;
+            var posicionCamaraZ = -90;
+            var alturaOjos = 15f;
 
-            var cameraPosition = new Vector3(posicionCamaraX * sceneScaleXZ, (terreno.CalcularAlturaTerreno(posicionCamaraX, posicionCamaraZ) + 1 )* sceneScaleY, posicionCamaraZ * sceneScaleXZ);
-            var cameraLookAt = new Vector3(0, 0, -1);
-            var cameraMoveSpeed = 500f;
-            var cameraJumpSpeed = 500f;
+            var cameraPosition = new Vector3(posicionCamaraX * sceneScaleXZ, (terreno.CalcularAlturaTerreno(posicionCamaraX, posicionCamaraZ) + 1 )* sceneScaleY + alturaOjos, posicionCamaraZ * sceneScaleXZ);
+            var cameraLookAt = new Vector3(0, 0.5f, -1);
+            var cameraMoveSpeed = 300f;
+            var cameraJumpSpeed = 300f;
 
             // Creo la cámara y defino la Posición y LookAt
             Camara = new TgcFpsCamera(cameraPosition,cameraMoveSpeed,cameraJumpSpeed,Input);
