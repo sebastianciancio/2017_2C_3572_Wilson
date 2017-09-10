@@ -13,7 +13,7 @@ namespace TGC.Group.Model.Character
         private GameModel env;
         public TgcSkeletalMesh personaje;
 
-        public List<Objeto> Inventario { get; set; };
+        public List<Objeto> Inventario { get; set; }
 
         public float MaxHambre { get; set; } = 100;
         public float MaxSed { get; set; } = 100;
