@@ -1,25 +1,11 @@
 ﻿using Microsoft.DirectX;
-using Microsoft.DirectX.Direct3D;
-using Microsoft.DirectX.DirectInput;
 using System.Drawing;
 using TGC.Core.Direct3D;
 using TGC.Core.Example;
-using TGC.Core.Geometry;
-using TGC.Core.Input;
-using TGC.Core.SceneLoader;
-using TGC.Core.Textures;
-using TGC.Core.Utils;
-using TGC.Core.Text;
-using System.Collections.Generic;
-using TGC.Core.Terrain;
-using TGC.Core.UserControls;
-using TGC.Core.UserControls.Modifier;
-using TGC.Core.Sound;
-using TGC.Core.Shaders;
-using System;
-using System.Linq;
 using TGC.Group.Model.Camara;
 using TGC.Group.Model.EscenarioGame;
+using TGC.Group.Model.Sprite;
+using TGC.Group.Model.Character;
 
 namespace TGC.Group.Model
 {
@@ -29,9 +15,9 @@ namespace TGC.Group.Model
         // Parametros del Juego
         // ***********************************************************
 
-        public float sceneScaleY;
-        public float sceneScaleXZ;
         public Escenario terreno;
+        private HUD hud;
+        private Personaje personaje;
 
         // ***********************************************************
 
@@ -40,72 +26,82 @@ namespace TGC.Group.Model
             Category = Game.Default.Category;
             Name = Game.Default.Name;
             Description = Game.Default.Description;
-        
         }
 
         public override void Init()
         {
-            // Inicilializo la Escala del Terreno
-            sceneScaleY = 10f;
-            sceneScaleXZ = 25f;
+            terreno = new Escenario(this);
+            terreno.Init();
 
-            // Creo el Escenario
-            terreno = new Escenario(this,Input,DrawText);
+            personaje = new Personaje(this);
+            personaje.Init();
 
-            // Inicilializo la Camara
+            hud = new HUD(this);
+            hud.Init();
+
             InitCamera();
-        }
-
-        public override void Update()
-        {
-            PreUpdate();
 
             // SkyBox: Se cambia el valor por defecto del farplane para evitar cliping de farplane.
             D3DDevice.Instance.Device.Transform.Projection =
                 Matrix.PerspectiveFovLH(D3DDevice.Instance.FieldOfView,
                     D3DDevice.Instance.AspectRatio,
                     D3DDevice.Instance.ZNearPlaneDistance,
-                    D3DDevice.Instance.ZFarPlaneDistance * 3f);
+                    D3DDevice.Instance.ZFarPlaneDistance * 100f);
+        }
 
-            // Actualizo el Terreno
+        public override void Update()
+        {
+            PreUpdate();
             terreno.Update();
-
-            // Actualizo la Camara
+            personaje.Update(ElapsedTime, Input);
             Camara.UpdateCamera(ElapsedTime);
+            hud.Update(ElapsedTime);
         }
 
         public override void Render()
         {
             PreRender();
-
-            // Renderizo el Escenario
             terreno.Render();
-
+            personaje.Render(ElapsedTime);
+            hud.Render();
+            RenderHelpText();
             PostRender();
         }
 
         public override void Dispose()
         {
             terreno.Dispose();
+            personaje.Dispose();
+            hud.Dispose();
         }
-
 
         private void InitCamera()
         {
             // Usar Coordenadas Originales del HeightMap [-256,256]
             var posicionCamaraX = 0;
             var posicionCamaraZ = -90;
+            var posicionCamaraY = terreno.CalcularAlturaTerreno(posicionCamaraX, posicionCamaraZ) + 1;
+
             var alturaOjos = 15f;
 
-            var cameraPosition = new Vector3(posicionCamaraX * sceneScaleXZ, (terreno.CalcularAlturaTerreno(posicionCamaraX, posicionCamaraZ) + 1 )* sceneScaleY + alturaOjos, posicionCamaraZ * sceneScaleXZ);
+            var cameraPosition = new Vector3(posicionCamaraX * terreno.SceneScaleXZ, posicionCamaraY * terreno.SceneScaleY + alturaOjos, posicionCamaraZ * terreno.SceneScaleXZ);
             var cameraLookAt = new Vector3(0, 0.5f, -1);
-            var cameraMoveSpeed = 300f;
-            var cameraJumpSpeed = 300f;
+            var cameraMoveSpeed = 1000f;
+            var cameraJumpSpeed = 1000f;
 
             // Creo la cámara y defino la Posición y LookAt
-            Camara = new TgcFpsCamera(cameraPosition,cameraMoveSpeed,cameraJumpSpeed,Input);
+            Camara = new TgcFpsCamera(cameraPosition, cameraMoveSpeed, cameraJumpSpeed, Input);
             Camara.SetCamera(cameraPosition, cameraLookAt);
         }
 
+        private void RenderHelpText()
+        {
+            DrawText.drawText("Camera position: \n" + Camara.Position, 0, 20, Color.OrangeRed);
+            DrawText.drawText("Camera LookAt: \n" + Camara.LookAt, 0, 100, Color.OrangeRed);
+            DrawText.drawText("Mesh count: \n" + terreno.SceneMeshes.Count, 0, 180, Color.OrangeRed);
+            DrawText.drawText("Camera (Coordenada X Original): \n" + ((Camara.Position.X / terreno.SceneScaleXZ) - (terreno.HeightmapSize.Width / 2)), 200, 20, Color.OrangeRed);
+            DrawText.drawText("Camera (Coordenada Z Original): \n" + ((Camara.Position.Z / terreno.SceneScaleXZ) + (terreno.HeightmapSize.Width / 2)), 200, 100, Color.OrangeRed);
+            DrawText.drawText("Posicion chaboncito: \n" + personaje.personaje.Position, 0, 220, Color.OrangeRed);
+        }
     }
 }

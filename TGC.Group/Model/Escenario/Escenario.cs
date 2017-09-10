@@ -1,36 +1,20 @@
 using Microsoft.DirectX;
-using Microsoft.DirectX.Direct3D;
-using Microsoft.DirectX.DirectInput;
 using System.Drawing;
-using TGC.Core.Direct3D;
-using TGC.Core.Example;
-using TGC.Core.Geometry;
-using TGC.Core.Input;
 using TGC.Core.SceneLoader; 
-using TGC.Core.Textures;
 using TGC.Core.Utils;
-using TGC.Core.Text;
 using System.Collections.Generic;
 using TGC.Core.Terrain;
-using TGC.Core.UserControls;
-using TGC.Core.UserControls.Modifier;
-using TGC.Core.Sound;
-using TGC.Core.Shaders;
 using System;
-using System.Linq;
-using TGC.Group.Model.Camara;
-using TGC.Core.Camara;
 
 
 namespace TGC.Group.Model.EscenarioGame
 {
     public class Escenario
     {
-        private string MediaDir;
-        private float ElapsedTime;
-        private float sceneScaleXZ;
-        private float sceneScaleY;
-        private TgcCamera Camara;
+        public float SceneScaleXZ { get; set; }
+        public float SceneScaleY { get; set; }
+
+        public float Temperatura { get; set; }
 
         // ***********************************************************
         // Parametros del HeightMap
@@ -40,7 +24,7 @@ namespace TGC.Group.Model.EscenarioGame
         private Vector3 terrainCenter = new Vector3(0, 0, 0);
         private string sceneHeightmapPath;
         private string terrainTexturePath;
-        private Bitmap HeightmapSize;
+        public Bitmap HeightmapSize { get; set; }
 
         // ***********************************************************
         // Parametros del SkyBox
@@ -68,8 +52,6 @@ namespace TGC.Group.Model.EscenarioGame
         private string palm2MeshPath;
         private string palm3MeshPath;
 
-        private TgcScene loaderScene;
-
         private TgcMesh palmModel;
         private TgcMesh rockModel;
         private TgcMesh plantModel;
@@ -80,109 +62,89 @@ namespace TGC.Group.Model.EscenarioGame
         private TgcMesh palm2Model;
         private TgcMesh palm3Model;
 
-        private List<TgcMesh> sceneMeshes;
+        public List<TgcMesh> SceneMeshes { get; set; }
+        private GameModel env;        
 
         // ***********************************************************
 
-        private static Escenario myInstance;
-        private TgcD3dInput input;
-        private TgcText2D draw;
-
-        public static Escenario getInstance()
+        public Escenario(GameModel env)
         {
-            return myInstance;
+            this.env = env;
+
+            sceneHeightmapPath = env.MediaDir + "Isla\\isla_heightmap.png";
+            terrainTexturePath = env.MediaDir + "Isla\\isla_textura.png";
+            palmMeshPath = env.MediaDir + "Palmera\\Palmera-TgcScene.xml";
+            rockMeshPath = env.MediaDir + "Roca\\Roca-TgcScene.xml";
+            plantMeshPath = env.MediaDir + "Planta3\\Planta3-TgcScene.xml";
+            arbolMeshPath = env.MediaDir + "ArbolSelvatico\\ArbolSelvatico-TgcScene.xml";
+            arbolFrutalMeshPath = env.MediaDir + "ArbustoFruta\\Peach-TgcScene.xml";
+            frutaMeshPath = env.MediaDir + "Fruta\\Fruta-TgcScene.xml";
+            pinoMeshPath = env.MediaDir + "Pino\\Pino-TgcScene.xml";
+            palm2MeshPath = env.MediaDir + "Palmera2\\Palmera2-TgcScene.xml";
+            palm3MeshPath = env.MediaDir + "Palmera3\\Palmera3-TgcScene.xml";
+            skyTexturePath = env.MediaDir + "SkyBox\\";
         }
 
-
-        public Escenario(GameModel env,TgcD3dInput input,TgcText2D draw)
-        {    
-            // Declaro las propiedades
-            this.MediaDir = env.MediaDir;
-            this.ElapsedTime = env.ElapsedTime;
-            this.draw = draw;
-            this.input = input;
-            this.sceneScaleXZ = env.sceneScaleXZ;
-            this.sceneScaleY = env.sceneScaleY;
-            myInstance = this;
-            var d3dDevice = D3DDevice.Instance.Device;
-            this.Camara = env.Camara;
-
+        public void Init()
+        {
+            SceneScaleY = 400f;
+            SceneScaleXZ = 2000f;
 
             // Inicializo el SkyBox
-            skyBoxCenter = new Vector3(0, 128 * sceneScaleY, 0);
-            skyBoxSize = new Vector3(1100 * sceneScaleXZ, 1100 * sceneScaleXZ, 1100 * sceneScaleXZ);
+            skyBoxCenter = new Vector3(0, 0, 0);
+            skyBoxSize = new Vector3(500 * SceneScaleXZ, 500 * SceneScaleXZ, 500 * SceneScaleXZ);
             skyBoxSkyEpsilon = 30f;
+            CreateSkyBox();
 
-
-
-            loader = new TgcSceneLoader();
-            sceneMeshes = new List<TgcMesh>();
-
-            sceneHeightmapPath = this.MediaDir + "Isla\\isla_heightmap.png";
-            terrainTexturePath = this.MediaDir + "Isla\\isla_textura.png";
-            palmMeshPath = this.MediaDir + "Palmera\\Palmera-TgcScene.xml";
-            rockMeshPath = this.MediaDir + "Roca\\Roca-TgcScene.xml";
-            plantMeshPath = this.MediaDir + "Planta3\\Planta3-TgcScene.xml";
-            arbolMeshPath = this.MediaDir + "ArbolSelvatico\\ArbolSelvatico-TgcScene.xml";
-            arbolFrutalMeshPath = this.MediaDir + "ArbustoFruta\\Peach-TgcScene.xml";
-            frutaMeshPath = this.MediaDir + "Fruta\\Fruta-TgcScene.xml";
-            pinoMeshPath = this.MediaDir + "Pino\\Pino-TgcScene.xml";
-            palm2MeshPath = this.MediaDir + "Palmera2\\Palmera2-TgcScene.xml";
-            palm3MeshPath = this.MediaDir + "Palmera3\\Palmera3-TgcScene.xml";
-
-            skyTexturePath = this.MediaDir + "SkyBox\\";
-
+            //Cargar Heightmap y textura de la Escena
             HeightmapSize = new Bitmap(sceneHeightmapPath);
+            terrain = new TgcSimpleTerrain();
+            terrain.loadHeightmap(sceneHeightmapPath, SceneScaleXZ, SceneScaleY, terrainCenter);
+            terrain.loadTexture(terrainTexturePath);
+            terrain.AlphaBlendEnable = true;
 
-            LoadScene();
-
-            // ***************************************************************************************
             // La ubicacion de los Mesh es en coordenadas Originales del HeightMap (sin escalado) [-256,256]
-            // **************************************************************************************
+            SceneMeshes = new List<TgcMesh>();
+            loader = new TgcSceneLoader();
 
             palmModel = loader.loadSceneFromFile(palmMeshPath).Meshes[0];
-            CreateObjectsFromModel(palmModel, 200, new Vector3(100, 0, -90), new Vector3(0.5f, 0.5f, 0.5f), 80);
+            CreateObjectsFromModel(palmModel, 400, new Vector3(100, 0, -90), new Vector3(0.5f, 0.5f, 0.5f), 80);
 
             rockModel = loader.loadSceneFromFile(rockMeshPath).Meshes[0];
-            CreateObjectsFromModel(rockModel, 250, new Vector3(-56, 0, 32), new Vector3(0.9f, 0.9f, 0.9f), 50);
+            CreateObjectsFromModel(rockModel, 350, new Vector3(-56, 0, 32), new Vector3(0.9f, 0.9f, 0.9f), 50);
 
             plantModel = loader.loadSceneFromFile(plantMeshPath).Meshes[0];
-            CreateObjectsFromModel(plantModel, 30, new Vector3(-30, 0, -70), new Vector3(0.8f, 0.8f, 0.8f), 80);
+            CreateObjectsFromModel(plantModel, 70, new Vector3(-30, 0, -70), new Vector3(0.8f, 0.8f, 0.8f), 80);
 
             arbolModel = loader.loadSceneFromFile(arbolMeshPath).Meshes[0];
-            CreateObjectsFromModel(arbolModel, 30, new Vector3(-30, 0, -10), new Vector3(0.8f, 0.8f, 0.8f), 80);
+            CreateObjectsFromModel(arbolModel, 70, new Vector3(-30, 0, -10), new Vector3(0.8f, 0.8f, 0.8f), 80);
 
             arbolFrutalModel = loader.loadSceneFromFile(arbolFrutalMeshPath).Meshes[0];
-            CreateObjectsFromModel(arbolFrutalModel, 30, new Vector3(-50, 0, -20), new Vector3(0.8f, 0.8f, 0.8f), 80);
+            CreateObjectsFromModel(arbolFrutalModel, 70, new Vector3(-50, 0, -20), new Vector3(0.8f, 0.8f, 0.8f), 80);
 
             frutaModel = loader.loadSceneFromFile(frutaMeshPath).Meshes[0];
-            CreateObjectsFromModel(frutaModel, 30, new Vector3(-40, 0, -30), new Vector3(0.8f, 0.8f, 0.8f), 80);
+            CreateObjectsFromModel(frutaModel, 70, new Vector3(-40, 0, -30), new Vector3(0.8f, 0.8f, 0.8f), 80);
 
             pinoModel = loader.loadSceneFromFile(pinoMeshPath).Meshes[0];
-            CreateObjectsFromModel(pinoModel, 30, new Vector3(-30, 0, -40), new Vector3(0.8f, 0.8f, 0.8f), 80);
+            CreateObjectsFromModel(pinoModel, 70, new Vector3(-30, 0, -40), new Vector3(0.8f, 0.8f, 0.8f), 80);
 
             palm2Model = loader.loadSceneFromFile(palm2MeshPath).Meshes[0];
-            CreateObjectsFromModel(palm2Model, 30, new Vector3(-20, 0, -50), new Vector3(0.8f, 0.8f, 0.8f), 80);
+            CreateObjectsFromModel(palm2Model, 70, new Vector3(-20, 0, -50), new Vector3(0.8f, 0.8f, 0.8f), 80);
 
             palm3Model = loader.loadSceneFromFile(palm3MeshPath).Meshes[0];
-            CreateObjectsFromModel(palm3Model, 30, new Vector3(-10, 0, -60), new Vector3(0.8f, 0.8f, 0.8f), 80);
-
-
-            // **************************************************************************************
+            CreateObjectsFromModel(palm3Model, 70, new Vector3(-10, 0, -60), new Vector3(0.8f, 0.8f, 0.8f), 80);
         }
-
 
         public void Update()
         {
-            
+
         }
 
         public void Render()
         {
-            RenderTerrain();
+            skyBox.render();
             RenderSceneMeshes();
-            RenderHelpText();
-            RenderSkyBox();
+            terrain.render();
         }
 
         public void Dispose()
@@ -202,7 +164,7 @@ namespace TGC.Group.Model.EscenarioGame
             palm3Model.dispose();
 
             // Se libera Lista de Mesh
-            sceneMeshes.Clear();
+            SceneMeshes.Clear();
 
             //Liberar recursos del SkyBox
             skyBox.dispose();
@@ -215,7 +177,6 @@ namespace TGC.Group.Model.EscenarioGame
             // TODO: buscar una mejor forma de tener una distribucion pareja
             var rows = (int)Math.Sqrt(count);
             var cols = (int)Math.Sqrt(count);
-
 
             float[] scalaVariableObjetos = { 1f, 1.5f, 2f, 2.5f };
             float[] scalaRotacionObjetos = { FastMath.QUARTER_PI, FastMath.PI, FastMath.PI_HALF, FastMath.TWO_PI };
@@ -234,29 +195,14 @@ namespace TGC.Group.Model.EscenarioGame
                     var z = center.Z + rnd.Next(-sparse, sparse);
 
                     // Posiciono el objeto en el Escenario
-                    instance.Position = new Vector3( x * sceneScaleXZ ,CalcularAlturaTerreno(x, z) * sceneScaleY, z * sceneScaleXZ);
+                    instance.Position = new Vector3( x * SceneScaleXZ ,CalcularAlturaTerreno(x, z) * SceneScaleY, z * SceneScaleXZ);
                     instance.rotateY(scalaRotacionObjetos[rnd.Next(0, scalaRotacionObjetos.Length)]);
                     instance.AlphaBlendEnable = true;
 
                     // Lo guardo en una Lista de Objetos que están en el Escenario
-                    sceneMeshes.Add(instance);
-
+                    SceneMeshes.Add(instance);
                 }
             }
-        }
-
-        private void LoadScene()
-        {
-            //Cargar Heightmap y textura de la Escena
-            terrain = new TgcSimpleTerrain();
-            terrain.loadHeightmap(sceneHeightmapPath, sceneScaleXZ, sceneScaleY, terrainCenter);
-            terrain.loadTexture(terrainTexturePath);
-            terrain.AlphaBlendEnable = true;
-            // Cargo el SkyBox
-            CreateSkyBox();
-
-            // Cargo HUD
-            //spriteDrawer = new Drawer2D();
         }
 
         private void CreateSkyBox()
@@ -321,36 +267,12 @@ namespace TGC.Group.Model.EscenarioGame
             return H;
         }
 
-        private void RenderSkyBox()
-        {
-            //Renderizar SkyBox
-            skyBox.render();
-        }
-
         private void RenderSceneMeshes()
         {
-            foreach (var mesh in sceneMeshes)
+            foreach (var mesh in SceneMeshes)
             {
                 mesh.render();
             }
         }
-
-        private void RenderTerrain()
-        {
-            terrain.render();
-        }
-
-        private void RenderHelpText()
-        {
-            
-            this.draw.drawText("Camera position: \n" + Camara.Position, 0, 20, Color.OrangeRed);
-            this.draw.drawText("Camera LookAt: \n" + Camara.LookAt, 0, 100, Color.OrangeRed);
-            this.draw.drawText("Mesh count: \n" + sceneMeshes.Count, 0, 180, Color.OrangeRed);
-            this.draw.drawText("Camera (Coordenada X Original): \n" + ((Camara.Position.X / sceneScaleXZ) - (HeightmapSize.Width / 2)), 200, 20, Color.OrangeRed);
-            this.draw.drawText("Camera (Coordenada Z Original): \n" + ((Camara.Position.Z / sceneScaleXZ) + (HeightmapSize.Width / 2)), 200, 100, Color.OrangeRed);
-        }
-
-
-
     }
 }
