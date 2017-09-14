@@ -90,7 +90,7 @@ namespace TGC.Group.Model
             var cameraJumpSpeed = 1000f;
 
             // Creo la cámara y defino la Posición y LookAt
-            Camara = new TgcFpsCamera(cameraPosition, cameraMoveSpeed, cameraJumpSpeed, Input);
+            Camara = new TgcFpsCamera(this,cameraPosition, cameraMoveSpeed, cameraJumpSpeed, Input);
             Camara.SetCamera(cameraPosition, cameraLookAt);
         }
 
@@ -101,7 +101,8 @@ namespace TGC.Group.Model
             DrawText.drawText("Mesh count: \n" + terreno.SceneMeshes.Count, 0, 180, Color.OrangeRed);
             DrawText.drawText("Camera (Coordenada X Original): \n" + ((Camara.Position.X / terreno.SceneScaleXZ) - (terreno.HeightmapSize.Width / 2)), 200, 20, Color.OrangeRed);
             DrawText.drawText("Camera (Coordenada Z Original): \n" + ((Camara.Position.Z / terreno.SceneScaleXZ) + (terreno.HeightmapSize.Width / 2)), 200, 100, Color.OrangeRed);
-            DrawText.drawText("Posicion chaboncito: \n" + personaje.personaje.Position, 0, 220, Color.OrangeRed);
+            DrawText.drawText("Posicion Personaje: \n" + personaje.personaje.Position, 0, 220, Color.OrangeRed);
+            DrawText.drawText("Posicion Sphere: \n" + terreno.esferaColision.Position, 0, 300, Color.OrangeRed);
         }
     }
 }

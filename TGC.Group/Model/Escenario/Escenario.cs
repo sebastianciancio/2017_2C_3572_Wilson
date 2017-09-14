@@ -5,6 +5,8 @@ using TGC.Core.Utils;
 using System.Collections.Generic;
 using TGC.Core.Terrain;
 using System;
+using TGC.Core.BoundingVolumes;
+using TGC.Core.Collision;
 
 
 namespace TGC.Group.Model.EscenarioGame
@@ -65,6 +67,8 @@ namespace TGC.Group.Model.EscenarioGame
         public List<TgcMesh> SceneMeshes { get; set; }
         private GameModel env;        
 
+
+        public TgcBoundingSphere esferaColision;
         // ***********************************************************
 
         public Escenario(GameModel env)
@@ -87,8 +91,8 @@ namespace TGC.Group.Model.EscenarioGame
 
         public void Init()
         {
-            SceneScaleY = 400f;
-            SceneScaleXZ = 2000f;
+            SceneScaleY = 40f;
+            SceneScaleXZ = 200f;
 
             // Inicializo el SkyBox
             skyBoxCenter = new Vector3(0, 0, 0);
@@ -133,11 +137,16 @@ namespace TGC.Group.Model.EscenarioGame
 
             palm3Model = loader.loadSceneFromFile(palm3MeshPath).Meshes[0];
             CreateObjectsFromModel(palm3Model, 70, new Vector3(-10, 0, -60), new Vector3(0.8f, 0.8f, 0.8f), 80);
+
+            // Creo la Espera para detectar colisiones
+            esferaColision = new TgcBoundingSphere(new Vector3(0 * SceneScaleXZ, CalcularAlturaTerreno(0, -90) * SceneScaleY + 20 * SceneScaleXZ, -90 * SceneScaleXZ), 0.2f * SceneScaleXZ);
         }
 
         public void Update()
         {
 
+            // Actualizo la Posicion de la Esfera de Colisión
+            esferaColision.setCenter(env.Camara.Position);
         }
 
         public void Render()
@@ -145,6 +154,9 @@ namespace TGC.Group.Model.EscenarioGame
             skyBox.render();
             RenderSceneMeshes();
             terrain.render();
+
+            // Esfera para detectar las colisiones
+            esferaColision.render();
         }
 
         public void Dispose()
@@ -162,6 +174,7 @@ namespace TGC.Group.Model.EscenarioGame
             pinoModel.dispose();
             palm2Model.dispose();
             palm3Model.dispose();
+            esferaColision.dispose();
 
             // Se libera Lista de Mesh
             SceneMeshes.Clear();

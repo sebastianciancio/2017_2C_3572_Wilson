@@ -6,6 +6,7 @@ using TGC.Core.Camara;
 using TGC.Core.Direct3D;
 using TGC.Core.Input;
 using TGC.Core.Utils;
+using TGC.Core.Collision;
 
 namespace TGC.Group.Model.Camara
 {
@@ -29,7 +30,8 @@ namespace TGC.Group.Model.Camara
         private float updownRot;
 
         private bool lockCam;
-        private Vector3 positionEye;        
+        private Vector3 positionEye;
+        private GameModel env;
 
         public TgcFpsCamera(TgcD3dInput input)
         {
@@ -52,19 +54,19 @@ namespace TGC.Group.Model.Camara
             this.positionEye = positionEye;
         }
 
-        public TgcFpsCamera(Vector3 positionEye, float moveSpeed, float jumpSpeed, TgcD3dInput input)
+        public TgcFpsCamera(GameModel env, Vector3 positionEye, float moveSpeed, float jumpSpeed, TgcD3dInput input)
             : this(positionEye, input)
         {
             MovementSpeed = moveSpeed;
             JumpSpeed = jumpSpeed;
+            this.env = env;
         }
 
-        public TgcFpsCamera(Vector3 positionEye, float moveSpeed, float jumpSpeed, float rotationSpeed,
-            TgcD3dInput input)
-            : this(positionEye, moveSpeed, jumpSpeed, input)
+        /*public TgcFpsCamera(Vector3 positionEye, float moveSpeed, float jumpSpeed, float rotationSpeed,
+            TgcD3dInput input) : this(positionEye, moveSpeed, jumpSpeed, input)
         {
             RotationSpeed = rotationSpeed;
-        }
+        }*/
 
         private TgcD3dInput Input { get; }
 
@@ -102,6 +104,10 @@ namespace TGC.Group.Model.Camara
         public override void UpdateCamera(float elapsedTime)
         {
             var moveVector = new Vector3(0, 0, 0);
+
+            //Aplicar movimiento hacia adelante o atras segun la orientacion actual del Mesh
+            var lastPos = this.Position;
+
             //Forward
             if (Input.keyDown(Key.W))
             {
@@ -143,6 +149,30 @@ namespace TGC.Group.Model.Camara
                 LockCam = !lockCam;
             }
 
+
+            //Detectar colisiones
+            var collide = false;
+            foreach (var obstaculo in env.terreno.SceneMeshes)
+            {
+
+                if (TgcCollisionUtils.testSphereAABB(env.terreno.esferaColision, obstaculo.BoundingBox))
+                {
+                    env.terreno.esferaColision.setRenderColor(Color.Red);
+                    collide = true;
+                    break;
+                }
+                else
+                {
+                    env.terreno.esferaColision.setRenderColor(Color.Yellow);
+                }
+            }
+
+            //Si hubo colision, restaurar la posicion anterior de la camara
+            if (collide)
+            {
+                moveVector -= new Vector3(0, 0, -1) * MovementSpeed;
+            }
+
             //Solo rotar si se esta aprentando el boton izq del mouse
             if (lockCam || Input.buttonDown(TgcD3dInput.MouseButtons.BUTTON_LEFT))
             {
@@ -166,7 +196,9 @@ namespace TGC.Group.Model.Camara
             var cameraOriginalUpVector = DEFAULT_UP_VECTOR;
             var cameraRotatedUpVector = Vector3.TransformNormal(cameraOriginalUpVector, cameraRotation);
 
-            base.SetCamera(positionEye, cameraFinalTarget, cameraRotatedUpVector);
+            base.SetCamera(positionEye, cameraFinalTarget, cameraRotatedUpVector);            
+
+
         }
 
         /// <summary>
