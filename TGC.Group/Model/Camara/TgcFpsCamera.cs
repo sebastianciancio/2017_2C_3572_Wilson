@@ -167,6 +167,7 @@ namespace TGC.Group.Model.Camara
                 }
             }
 
+
             //Si hubo colision, restaurar la posicion anterior de la camara
             if (collide)
             {

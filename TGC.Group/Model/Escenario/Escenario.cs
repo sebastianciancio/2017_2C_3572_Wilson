@@ -64,6 +64,9 @@ namespace TGC.Group.Model.EscenarioGame
         private TgcMesh palm2Model;
         private TgcMesh palm3Model;
 
+        public int totalMeshesRenderizados;
+
+        // ***********************************************************
         public List<TgcMesh> SceneMeshes { get; set; }
         private GameModel env;        
 
@@ -282,10 +285,32 @@ namespace TGC.Group.Model.EscenarioGame
 
         private void RenderSceneMeshes()
         {
+
+
+
+            //Analizar cada objeto contra el Frustum - con fuerza bruta
+            totalMeshesRenderizados = 0;
+            foreach (var mesh in SceneMeshes)
+            {
+                //Nos ocupamos solo de las mallas habilitadas
+                if (mesh.Enabled)
+                {
+                    //Solo mostrar la malla si colisiona contra el Frustum
+                    var r = TgcCollisionUtils.classifyFrustumAABB(env.Frustum, mesh.BoundingBox);
+                    if (r != TgcCollisionUtils.FrustumResult.OUTSIDE)
+                    {
+                        mesh.render();
+                        totalMeshesRenderizados++;
+                    }
+                }
+            }
+
+/*
             foreach (var mesh in SceneMeshes)
             {
                 mesh.render();
             }
+*/
         }
     }
 }
