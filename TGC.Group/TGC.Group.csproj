@@ -93,8 +93,8 @@
     <Compile Include="Model\2D\Sprite.cs" />
     <Compile Include="Model\Camara\TgcFpsCamera.cs" />
     <Compile Include="Model\Escenario\Escenario.cs" />
-    <!--    <Compile Include="Model\Sounds\Musica.cs" />
-    <Compile Include="Model\Sounds\Sonido.cs" />
+    <Compile Include="Model\Sounds\Musica.cs" />
+    <!--  <Compile Include="Model\Sounds\Sonido.cs" />
     <Compile Include="Model\Drawer2D.cs" />
     <Compile Include="Model\CustomSprite.cs" />
     <Compile Include="Model\CustomBitmap.cs" /> -->

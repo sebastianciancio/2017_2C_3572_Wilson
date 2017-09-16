@@ -30,7 +30,7 @@ namespace TGC.Group.Model.Camara
         private float updownRot;
 
         private bool lockCam;
-        private Vector3 positionEye;
+        private Vector3 positionEye { get; set; } = new Vector3();
         private GameModel env;
 
         public TgcFpsCamera(TgcD3dInput input)
@@ -155,15 +155,15 @@ namespace TGC.Group.Model.Camara
             foreach (var obstaculo in env.terreno.SceneMeshes)
             {
 
-                if (TgcCollisionUtils.testSphereAABB(env.terreno.esferaColision, obstaculo.BoundingBox))
+                if (TgcCollisionUtils.testSphereAABB(env.personaje.BoundingSphere, obstaculo.BoundingBox))
                 {
-                    env.terreno.esferaColision.setRenderColor(Color.Red);
+                    env.personaje.BoundingSphere.setRenderColor(Color.Red);
                     collide = true;
                     break;
                 }
                 else
                 {
-                    env.terreno.esferaColision.setRenderColor(Color.Yellow);
+                    env.personaje.BoundingSphere.setRenderColor(Color.Yellow);
                 }
             }
 
@@ -200,6 +200,16 @@ namespace TGC.Group.Model.Camara
             base.SetCamera(positionEye, cameraFinalTarget, cameraRotatedUpVector);            
 
 
+            // Posiciono la Camara a la Altura del Terreno según las coordenadas actuales
+            var posicionCamaraTerrenoOriginal = env.terreno.CalcularAlturaTerreno( 
+                    FastMath.Abs(positionEye.X / env.terreno.SceneScaleXZ) ,
+                    FastMath.Abs(positionEye.Z / env.terreno.SceneScaleXZ)
+                ) + env.terreno.SceneScaleY;
+
+            var newpositionEye = new Vector3(positionEye.X, posicionCamaraTerrenoOriginal * env.terreno.SceneScaleY, positionEye.Z);
+            var newcameraFinalTarget = newpositionEye + cameraRotatedTarget;
+
+            base.SetCamera(newpositionEye, newcameraFinalTarget, cameraRotatedUpVector);
         }
 
         /// <summary>

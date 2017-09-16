@@ -1,15 +1,9 @@
-﻿using Microsoft.DirectX;
-using Microsoft.DirectX.DirectInput;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
-using System.IO;
 using TGC.Core.Sound;
-using TGC.Core.Text;
-using TGC.Core.UserControls;
-using TGC.Core.UserControls.Modifier;
 
-namespace TGC.Group.Model.Sounds
+
+namespace TGC.Group.Model.SoundsGame
 {
     /// <summary>
     ///     Ejemplo PlayMp3:
@@ -31,10 +25,8 @@ namespace TGC.Group.Model.Sounds
         {
             MediaDir = mediaDir;
             sonidos = new System.Collections.Generic.List<String>();
-            sonidos.Add(MediaDir + "MySounds\\sound3.mp3");
-            sonidos.Add(MediaDir + "MySounds\\sound4.mp3");
-            sonidos.Add(MediaDir + "MySounds\\sound2.mp3");
-            sonidos.Add(MediaDir + "MySounds\\sound1.mp3");
+            sonidos.Add(MediaDir + "Sonido\\ambiente1.mp3");
+            sonidos.Add(MediaDir + "Sonido\\ambiente2.mp3");
             nroFile = 0;
             currentFile = null;
 
@@ -61,18 +53,18 @@ namespace TGC.Group.Model.Sounds
         public void nextSound()
         {
             nroFile++;
-            if (nroFile > 3) nroFile = 0;
+            if (nroFile > 2) nroFile = 0;
             loadMp3(sonidos.ToArray()[nroFile]);
         }
 
         public void menuSound()
         {
-            loadMp3(MediaDir + "MySounds\\intro.mp3");
+            loadMp3(MediaDir + "Sonido\\ambiente1.mp3");
         }
 
         public void selectionSound()
         {
-            loadMp3(MediaDir + "MySounds\\intro.mp3");
+            loadMp3(MediaDir + "Sonido\\ambiente1.mp3");
         }
 
         public void startSound()
@@ -141,19 +133,6 @@ namespace TGC.Group.Model.Sounds
                 //Pausar el MP3
                 mp3Player.pause();
             }
-        }
-
-        public void startGame()
-        {
-            //Sonido.getInstance().playSound(MediaDir + "MySounds\\Special4.wav", new Vector3(2000, 100, 2000));
-            loadMp3(MediaDir + "MySounds\\selection.mp3");
-            startSound();
-            loadMp3(sonidos.ToArray()[nroFile]);
-
-            //Render texto
-            //currentMusicText.render();
-            //instruccionesText.render();
-
         }
 
         public void Dispose()

@@ -6,6 +6,8 @@ using TGC.Group.Model.Camara;
 using TGC.Group.Model.EscenarioGame;
 using TGC.Group.Model.Sprite;
 using TGC.Group.Model.Character;
+using TGC.Group.Model.SoundsGame;
+using TGC.Core.Utils;
 
 namespace TGC.Group.Model
 {
@@ -17,7 +19,9 @@ namespace TGC.Group.Model
 
         public Escenario terreno;
         private HUD hud;
-        private Personaje personaje;
+        public Personaje personaje;
+
+        public Musica musica;
 
         // ***********************************************************
 
@@ -38,6 +42,10 @@ namespace TGC.Group.Model
 
             hud = new HUD(this);
             hud.Init();
+
+            musica = new Musica(this.MediaDir);
+            musica.selectionSound();
+            musica.startSound();
 
             InitCamera();
 
@@ -78,8 +86,8 @@ namespace TGC.Group.Model
         private void InitCamera()
         {
             // Usar Coordenadas Originales del HeightMap [-256,256]
-            var posicionCamaraX = 0;
-            var posicionCamaraZ = -90;
+            var posicionCamaraX = 50;
+            var posicionCamaraZ = 180;
             var posicionCamaraY = terreno.CalcularAlturaTerreno(posicionCamaraX, posicionCamaraZ) + 1;
 
             var alturaOjos = 15f;
@@ -99,10 +107,15 @@ namespace TGC.Group.Model
             DrawText.drawText("Camera position: \n" + Camara.Position, 0, 20, Color.OrangeRed);
             DrawText.drawText("Camera LookAt: \n" + Camara.LookAt, 0, 100, Color.OrangeRed);
             DrawText.drawText("Mesh count: \n" + terreno.SceneMeshes.Count, 0, 180, Color.OrangeRed);
-            DrawText.drawText("Camera (Coordenada X Original): \n" + ((Camara.Position.X / terreno.SceneScaleXZ) - (terreno.HeightmapSize.Width / 2)), 200, 20, Color.OrangeRed);
-            DrawText.drawText("Camera (Coordenada Z Original): \n" + ((Camara.Position.Z / terreno.SceneScaleXZ) + (terreno.HeightmapSize.Width / 2)), 200, 100, Color.OrangeRed);
-            DrawText.drawText("Posicion Personaje: \n" + personaje.personaje.Position, 0, 220, Color.OrangeRed);
-            DrawText.drawText("Mesh renderizados: \n" + terreno.totalMeshesRenderizados, 0, 300, Color.OrangeRed);
+            DrawText.drawText("Mesh renderizados: \n" + terreno.totalMeshesRenderizados, 0, 220, Color.OrangeRed);
+
+            DrawText.drawText("Camera (Coordenada X Original): \n" + FastMath.Abs(Camara.Position.X / terreno.SceneScaleXZ), 200, 20, Color.OrangeRed);
+            DrawText.drawText("Camera (Coordenada Z Original): \n" + FastMath.Abs(Camara.Position.Z / terreno.SceneScaleXZ), 200, 100, Color.OrangeRed);
+            DrawText.drawText("Camera (Coordenada Y Terreno): \n" + FastMath.Abs(terreno.CalcularAlturaTerreno((Camara.Position.X / terreno.SceneScaleXZ), (Camara.Position.Z / terreno.SceneScaleXZ))), 200, 180, Color.OrangeRed);
+
+            DrawText.drawText("Posicion Personaje: \n" + personaje.Posicion, 0, 300, Color.OrangeRed);
+            
+            //DrawText.drawText("Camera (Coordenada positionEye.X Camara): \n" + FastMath.Abs(Camara.position positionEye.X / terreno.SceneScaleXZ), 200, 300, Color.OrangeRed);            
         }
     }
 }
