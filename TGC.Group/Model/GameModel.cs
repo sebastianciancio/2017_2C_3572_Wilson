@@ -86,11 +86,11 @@ namespace TGC.Group.Model
         private void InitCamera()
         {
             // Usar Coordenadas Originales del HeightMap [-256,256]
-            var posicionCamaraX = 50;
-            var posicionCamaraZ = 180;
-            var posicionCamaraY = terreno.CalcularAlturaTerreno(posicionCamaraX, posicionCamaraZ) + 1;
+            var posicionCamaraX = 170;
+            var posicionCamaraZ = 8;
+            var posicionCamaraY = terreno.CalcularAlturaTerreno(posicionCamaraX, posicionCamaraZ);
 
-            var alturaOjos = 15f;
+            var alturaOjos = 0f;
 
             var cameraPosition = new Vector3(posicionCamaraX * terreno.SceneScaleXZ, posicionCamaraY * terreno.SceneScaleY + alturaOjos, posicionCamaraZ * terreno.SceneScaleXZ);
             var cameraLookAt = new Vector3(0, 0.5f, -1);

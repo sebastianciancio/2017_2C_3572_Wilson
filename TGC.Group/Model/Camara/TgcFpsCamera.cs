@@ -202,8 +202,8 @@ namespace TGC.Group.Model.Camara
 
             // Posiciono la Camara a la Altura del Terreno según las coordenadas actuales
             var posicionCamaraTerrenoOriginal = env.terreno.CalcularAlturaTerreno( 
-                    FastMath.Abs(positionEye.X / env.terreno.SceneScaleXZ) ,
-                    FastMath.Abs(positionEye.Z / env.terreno.SceneScaleXZ)
+                    FastMath.Ceiling(positionEye.X / env.terreno.SceneScaleXZ) ,
+                    FastMath.Ceiling(positionEye.Z / env.terreno.SceneScaleXZ)
                 ) + env.terreno.SceneScaleY;
 
             var newpositionEye = new Vector3(positionEye.X, posicionCamaraTerrenoOriginal * env.terreno.SceneScaleY, positionEye.Z);

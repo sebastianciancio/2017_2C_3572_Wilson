@@ -110,32 +110,32 @@ namespace TGC.Group.Model.EscenarioGame
             SceneMeshes = new List<TgcMesh>();
             loader = new TgcSceneLoader();
 
-            palmModel = loader.loadSceneFromFile(palmMeshPath).Meshes[0];
-            CreateObjectsFromModel(palmModel, 400, new Vector3(100, 0, -90), new Vector3(0.5f, 0.5f, 0.5f), 80);
-
             rockModel = loader.loadSceneFromFile(rockMeshPath).Meshes[0];
-            CreateObjectsFromModel(rockModel, 350, new Vector3(-56, 0, 32), new Vector3(0.9f, 0.9f, 0.9f), 50);
+            CreateObjectsFromModel(rockModel, 200, new Vector3(-160, 0, 20), new Vector3(0.9f, 0.9f, 0.9f), 50, new float[] { 30f, 35f, 40f, 45f });
+
+            palmModel = loader.loadSceneFromFile(palmMeshPath).Meshes[0];
+            CreateObjectsFromModel(palmModel, 150, new Vector3(-70, 0, -70), new Vector3(0.5f, 0.5f, 0.5f), 70, new float[] { 30f, 35f, 40f, 45f });
 
             plantModel = loader.loadSceneFromFile(plantMeshPath).Meshes[0];
-            CreateObjectsFromModel(plantModel, 70, new Vector3(-30, 0, -70), new Vector3(0.8f, 0.8f, 0.8f), 80);
+            //CreateObjectsFromModel(plantModel, 70, new Vector3(75, 0, -75), new Vector3(0.8f, 0.8f, 0.8f), 75, new float[] { 50f, 55f, 60f, 65f });
 
             arbolModel = loader.loadSceneFromFile(arbolMeshPath).Meshes[0];
-            CreateObjectsFromModel(arbolModel, 70, new Vector3(-30, 0, -10), new Vector3(0.8f, 0.8f, 0.8f), 80);
+            CreateObjectsFromModel(arbolModel, 40, new Vector3(75, 0, -75), new Vector3(0.8f, 0.8f, 0.8f), 75, new float[] { 10f, 15f, 20f, 25f });
 
             arbolFrutalModel = loader.loadSceneFromFile(arbolFrutalMeshPath).Meshes[0];
-            CreateObjectsFromModel(arbolFrutalModel, 70, new Vector3(-50, 0, -20), new Vector3(0.8f, 0.8f, 0.8f), 80);
+            //CreateObjectsFromModel(arbolFrutalModel, 30, new Vector3(-75, 0, 75), new Vector3(0.8f, 0.8f, 0.8f), 50, new float[] { 50, 55f, 60f, 65f });
 
             frutaModel = loader.loadSceneFromFile(frutaMeshPath).Meshes[0];
-            CreateObjectsFromModel(frutaModel, 70, new Vector3(-40, 0, -30), new Vector3(0.8f, 0.8f, 0.8f), 80);
+            CreateObjectsFromModel(frutaModel, 70, new Vector3(-90, 0, 75), new Vector3(0.8f, 0.8f, 0.8f), 80, new float[] { 10f, 15f, 20f, 25f });
 
             pinoModel = loader.loadSceneFromFile(pinoMeshPath).Meshes[0];
-            CreateObjectsFromModel(pinoModel, 70, new Vector3(-30, 0, -40), new Vector3(0.8f, 0.8f, 0.8f), 80);
+            CreateObjectsFromModel(pinoModel, 70, new Vector3(-75, 0, 75), new Vector3(0.8f, 0.8f, 0.8f), 50, new float[] { 50, 55f, 60f, 65f });
 
             palm2Model = loader.loadSceneFromFile(palm2MeshPath).Meshes[0];
-            CreateObjectsFromModel(palm2Model, 70, new Vector3(-20, 0, -50), new Vector3(0.8f, 0.8f, 0.8f), 80);
+            //CreateObjectsFromModel(palm2Model, 70, new Vector3(-20, 0, -50), new Vector3(0.8f, 0.8f, 0.8f), 80, new float[] { 10f, 15f, 20f, 25f });
 
             palm3Model = loader.loadSceneFromFile(palm3MeshPath).Meshes[0];
-            CreateObjectsFromModel(palm3Model, 70, new Vector3(-10, 0, -60), new Vector3(0.8f, 0.8f, 0.8f), 80);
+            //CreateObjectsFromModel(palm3Model, 70, new Vector3(-10, 0, -60), new Vector3(0.8f, 0.8f, 0.8f), 80, new float[] { 10f, 15f, 20f, 25f });
         }
 
         public void Update()
@@ -178,7 +178,7 @@ namespace TGC.Group.Model.EscenarioGame
             skyBox.dispose();
         }
 
-        private void CreateObjectsFromModel(TgcMesh model, int count, Vector3 center, Vector3 scale, int sparse)
+        private void CreateObjectsFromModel(TgcMesh model, int count, Vector3 center, Vector3 scale, int sparse, float[] scalaVariableObjetos)
         {
             var rnd = new Random();
 
@@ -186,7 +186,6 @@ namespace TGC.Group.Model.EscenarioGame
             var rows = (int)Math.Sqrt(count);
             var cols = (int)Math.Sqrt(count);
 
-            float[] scalaVariableObjetos = { 1f, 1.5f, 2f, 2.5f };
             float[] scalaRotacionObjetos = { FastMath.QUARTER_PI, FastMath.PI, FastMath.PI_HALF, FastMath.TWO_PI };
 
             for (var i = 0; i < rows; i++)
