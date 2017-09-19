@@ -168,6 +168,7 @@ namespace TGC.Group.Model.Camara
             }
 
 
+
             //Si hubo colision, restaurar la posicion anterior de la camara
             if (collide)
             {
@@ -197,7 +198,10 @@ namespace TGC.Group.Model.Camara
             var cameraOriginalUpVector = DEFAULT_UP_VECTOR;
             var cameraRotatedUpVector = Vector3.TransformNormal(cameraOriginalUpVector, cameraRotation);
 
-            base.SetCamera(positionEye, cameraFinalTarget, cameraRotatedUpVector);            
+            base.SetCamera(positionEye, cameraFinalTarget, cameraRotatedUpVector);
+
+            // Cambio la posicion y roto el BoxHub para que siga al personaje
+            env.boxHud.Position = new Vector3(env.personaje.Posicion.X - 10, env.personaje.Posicion.Y - 5, env.personaje.Posicion.Z);
 
 
             // Posiciono la Camara a la Altura del Terreno según las coordenadas actuales
@@ -210,6 +214,7 @@ namespace TGC.Group.Model.Camara
             var newcameraFinalTarget = newpositionEye + cameraRotatedTarget;
 
             base.SetCamera(newpositionEye, newcameraFinalTarget, cameraRotatedUpVector);
+
         }
 
         /// <summary>
