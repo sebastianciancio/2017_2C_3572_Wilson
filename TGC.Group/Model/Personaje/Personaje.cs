@@ -26,7 +26,6 @@ namespace TGC.Group.Model.Character
         private float tTranscurridoSed = 0;
         private float tTranscurridoCansancio = 0;
 
-
         public Vector3 Posicion;
         public TgcBoundingSphere BoundingSphere;
 
@@ -41,7 +40,7 @@ namespace TGC.Group.Model.Character
             Inventario = new List<Objeto>();
 
             // Creo la Espera que envuelve al personaje para detectar colisiones
-            BoundingSphere = new TgcBoundingSphere(new Vector3(0 * env.terreno.SceneScaleXZ, env.terreno.CalcularAlturaTerreno(0, -90) * env.terreno.SceneScaleY + 20 * env.terreno.SceneScaleXZ, -90 * env.terreno.SceneScaleXZ), 0.2f * env.terreno.SceneScaleXZ);
+            BoundingSphere = new TgcBoundingSphere(new Vector3(0 * env.terreno.SceneScaleXZ, env.terreno.CalcularAlturaTerreno(0, -90) * env.terreno.SceneScaleY + 20 * env.terreno.SceneScaleXZ, -90 * env.terreno.SceneScaleXZ), 0.01f * env.terreno.SceneScaleXZ);
             BoundingSphere.AlphaBlendEnable = true;
             BoundingSphere.setRenderColor(Color.Empty);
         }
@@ -76,31 +75,32 @@ namespace TGC.Group.Model.Character
             this.Cansancio = Cansancio - valor;
         }
 
-
         public void actualizarEstado(float elapsedTime)
         {
-            tTranscurridoHambre += elapsedTime;
-            tTranscurridoSed += elapsedTime;
-            tTranscurridoCansancio += elapsedTime;
-
-
-            if (tTranscurridoHambre > 6)
+            if (!this.Muerto)
             {
-                this.Hambre = Hambre - 2;
-                tTranscurridoHambre = 0;
-            }
-            if (tTranscurridoSed > 12)
-            {
-                this.Sed = this.Sed - 2;
-                tTranscurridoSed = 0;
-            }
-            if (tTranscurridoCansancio > 30)
-            {
-                this.Cansancio = this.Cansancio - 3;
-                tTranscurridoCansancio = 0;
-            }
+                tTranscurridoHambre += elapsedTime;
+                tTranscurridoSed += elapsedTime;
+                tTranscurridoCansancio += elapsedTime;
 
-            if (this.Sed < 1 || this.Cansancio < 1 || this.Hambre < 1) this.Muerto = true;
+                if (tTranscurridoHambre > 6)
+                {
+                    this.Hambre = Hambre - 2;
+                    tTranscurridoHambre = 0;
+                }
+                if (tTranscurridoSed > 12)
+                {
+                    this.Sed = this.Sed - 2;
+                    tTranscurridoSed = 0;
+                }
+                if (tTranscurridoCansancio > 30)
+                {
+                    this.Cansancio = this.Cansancio - 3;
+                    tTranscurridoCansancio = 0;
+                }
+
+                if (this.Sed < 1 || this.Cansancio < 1 || this.Hambre < 1) this.Muerto = true;
+            }
         }
 
         public void soltarObjeto()
@@ -125,6 +125,7 @@ namespace TGC.Group.Model.Character
             });
             */
         }
+
         public void Update(float ElapsedTime, TgcD3dInput Input)
         {
             Posicion = env.Camara.Position;
@@ -132,18 +133,30 @@ namespace TGC.Group.Model.Character
             // Actualizo la Posicion de la Esfera de Colisión
             BoundingSphere.setCenter(Posicion);
 
+            // Actualizo las Variables de Estado del Personaje
             actualizarEstado(ElapsedTime);
         }
 
         public void Render(float ElapsedTime)
         {
-            // Esfera para detectar las colisiones
-            BoundingSphere.render();
-    }
+            if (this.Muerto)
+            {
+                env.musica.playMp3(env.MediaDir + "Sonido\\game_over.mp3");
+                env.hud.morirPersonaje();
 
-    public void Dispose()
+                this.Dispose();
+
+            }else
+            {
+                // Esfera para detectar las colisiones
+                BoundingSphere.render();
+            }
+        }
+
+        public void Dispose()
         {
             BoundingSphere.dispose();
         }
+
     }
 }

@@ -3,11 +3,9 @@ using System.Drawing;
 using TGC.Core.Direct3D;
 using TGC.Core.Example;
 using TGC.Group.Model.Camara;
-using TGC.Group.Model.EscenarioGame;
 using TGC.Group.Model.SpriteGame;
 using TGC.Group.Model.Character;
 using TGC.Group.Model.SoundsGame;
-using TGC.Core.Utils;
 
 namespace TGC.Group.Model
 {
@@ -18,11 +16,12 @@ namespace TGC.Group.Model
         // ***********************************************************
 
         public EscenarioGame.Escenario terreno;
-        private HUD hud;
+        public HUD hud;
         public Personaje personaje;
-
         public Musica musica;
 
+        public float usoHorario;
+        public int horaDelDia;
 
         // ***********************************************************
 
@@ -35,6 +34,10 @@ namespace TGC.Group.Model
 
         public override void Init()
         {
+            // Para determinar que momento del día es
+            usoHorario = 0;
+            horaDelDia = 1; //0: dia, 1:noche;
+
             terreno = new EscenarioGame.Escenario(this);
             terreno.Init();
 
@@ -57,12 +60,13 @@ namespace TGC.Group.Model
                     D3DDevice.Instance.AspectRatio,
                     D3DDevice.Instance.ZNearPlaneDistance,
                     D3DDevice.Instance.ZFarPlaneDistance * 100f);
+
         }
 
         public override void Update()
         {
             PreUpdate();
-            terreno.Update();
+            terreno.Update(ElapsedTime);
             personaje.Update(ElapsedTime, Input);
             Camara.UpdateCamera(ElapsedTime);
             hud.Update(ElapsedTime);
@@ -71,10 +75,11 @@ namespace TGC.Group.Model
         public override void Render()
         {
             PreRender();
-            personaje.Render(ElapsedTime);
-            terreno.Render();
+            terreno.Render(ElapsedTime);
             hud.Render();
             RenderHelpText();
+            personaje.Render(ElapsedTime);
+
             PostRender();
         }
 
@@ -110,14 +115,13 @@ namespace TGC.Group.Model
             DrawText.drawText("Camera LookAt: \n" + Camara.LookAt, 0, 100, Color.OrangeRed);
             DrawText.drawText("Mesh count: \n" + terreno.SceneMeshes.Count, 0, 180, Color.OrangeRed);
             DrawText.drawText("Mesh renderizados: \n" + terreno.totalMeshesRenderizados, 0, 220, Color.OrangeRed);
-
+/*
             DrawText.drawText("Camera (Coordenada X Original): \n" + FastMath.Abs(Camara.Position.X / terreno.SceneScaleXZ), 200, 20, Color.OrangeRed);
             DrawText.drawText("Camera (Coordenada Z Original): \n" + FastMath.Abs(Camara.Position.Z / terreno.SceneScaleXZ), 200, 100, Color.OrangeRed);
             DrawText.drawText("Camera (Coordenada Y Terreno): \n" + FastMath.Abs(terreno.CalcularAlturaTerreno((Camara.Position.X / terreno.SceneScaleXZ), (Camara.Position.Z / terreno.SceneScaleXZ))), 200, 180, Color.OrangeRed);
-
             DrawText.drawText("Posicion Personaje: \n" + personaje.Posicion, 0, 300, Color.OrangeRed);
+*/
 
-            //DrawText.drawText("Camera (Coordenada positionEye.X Camara): \n" + FastMath.Abs(Camara.position positionEye.X / terreno.SceneScaleXZ), 200, 300, Color.OrangeRed);            
         }
     }
 }

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace TGC.Group.Model.Objetos
 {
-    class Piedra : Objeto
+    class Madera : Objeto
     {
 
     }

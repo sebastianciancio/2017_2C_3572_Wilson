@@ -18,7 +18,7 @@ namespace TGC.Group.Model.Escenario.Objetos
 
         protected override string getMeshPath()
         {
-            return env.MediaDir + "Fruta\\Fruta-TgcScene.xml";
+            return env.MediaDir + "Fruta\\Manzana-TgcScene.xml";
         }
 
         public override List<Objeto> Destroy()

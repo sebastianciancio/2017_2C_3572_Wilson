@@ -32,7 +32,7 @@ namespace TGC.Group.Model.EscenarioGame
         // Parametros del SkyBox
         // ***********************************************************
 
-        private TgcSkyBox skyBox;
+        public TgcSkyBox[] skyBoxGame;
         private string skyTexturePath;
         private Vector3 skyBoxCenter;
         private Vector3 skyBoxSize;
@@ -70,13 +70,14 @@ namespace TGC.Group.Model.EscenarioGame
         // ***********************************************************
         public List<TgcMesh> SceneMeshes { get; set; }
         public List<ObjetoEscena> Destroyables { get; set; }
-        private GameModel env;        
+        private GameModel env;
 
         // ***********************************************************
 
         public Escenario(GameModel env)
         {
             this.env = env;
+            skyBoxGame = new TgcSkyBox[4];
 
             sceneHeightmapPath = env.MediaDir + "Isla\\isla_heightmap.png";
             terrainTexturePath = env.MediaDir + "Isla\\isla_textura2.png";
@@ -96,13 +97,11 @@ namespace TGC.Group.Model.EscenarioGame
 
         public void Init()
         {
+            // Inicializo las Escalas
             SceneScaleY = 40f;
             SceneScaleXZ = 200f;
 
-            // Inicializo el SkyBox
-            skyBoxCenter = new Vector3(0, 0, 0);
-            skyBoxSize = new Vector3(500 * SceneScaleXZ, 500 * SceneScaleXZ, 500 * SceneScaleXZ);
-            skyBoxSkyEpsilon = 30f;
+            // Creo el SkyBox
             CreateSkyBox();
 
             //Cargar Heightmap y textura de la Escena
@@ -117,19 +116,19 @@ namespace TGC.Group.Model.EscenarioGame
             Destroyables = new List<ObjetoEscena>();
             loader = new TgcSceneLoader();
 
-            var rockModel = new Roca(env);
+            rockModel = new Roca(env);
             CreateObjectsFromModel(rockModel.mesh, 200, new Vector3(-160, 0, 20), new Vector3(0.9f, 0.9f, 0.9f), 50, new float[] { 30f, 35f, 40f, 45f });
 
-            var palmModel = new Palmera(env);
+            palmModel = new Palmera(env);
             CreateObjectsFromModel(palmModel.mesh, 150, new Vector3(-70, 0, -70), new Vector3(0.5f, 0.5f, 0.5f), 70, new float[] { 30f, 35f, 40f, 45f });
 
-            var arbolModel = new Arbol(env);
+            arbolModel = new Arbol(env);
             CreateObjectsFromModel(arbolModel.mesh, 40, new Vector3(75, 0, -75), new Vector3(0.8f, 0.8f, 0.8f), 75, new float[] { 10f, 15f, 20f, 25f });
 
-            var frutaModel = new Fruta(env);
-            CreateObjectsFromModel(frutaModel.mesh, 70, new Vector3(-90, 0, 75), new Vector3(0.8f, 0.8f, 0.8f), 80, new float[] { 10f, 15f, 20f, 25f });
+            frutaModel = new Fruta(env);
+            CreateObjectsFromModel(frutaModel.mesh, 70, new Vector3(-90, 0, 75), new Vector3(0.8f, 0.8f, 0.8f), 80, new float[] { 2f, 2f, 2f, 2f });
 
-            var pinoModel = new Pino(env);
+            pinoModel = new Pino(env);
             CreateObjectsFromModel(pinoModel.mesh, 70, new Vector3(-75, 0, 75), new Vector3(0.8f, 0.8f, 0.8f), 50, new float[] { 50, 55f, 60f, 65f });
 
             //plantModel = loader.loadSceneFromFile(plantMeshPath).Meshes[0];
@@ -145,13 +144,34 @@ namespace TGC.Group.Model.EscenarioGame
             //CreateObjectsFromModel(palm3Model, 70, new Vector3(-10, 0, -60), new Vector3(0.8f, 0.8f, 0.8f), 80, new float[] { 10f, 15f, 20f, 25f });
         }
 
-        public void Update()
+        private void cambioHorario()
         {
+            env.usoHorario = 0;
+            if (env.horaDelDia < 1)
+            {
+                env.horaDelDia++;
+            }
+            else
+            {
+                env.horaDelDia = 0;
+            }
         }
 
-        public void Render()
+        public void Update(float elapsedTime)
         {
-            skyBox.render();
+            // Para determinar el momento del día
+            env.usoHorario += elapsedTime;
+
+            //Actualizar Skybox (se genera efecto de paso del día)
+            ActualizarSkyBox();
+
+            // Actualizo el momento del día (dia o noche)
+            if (env.usoHorario > 60) cambioHorario();
+        }
+
+        public void Render(float elapsedTime)
+        {
+            skyBoxGame[env.horaDelDia].render();
             terrain.render();
             RenderSceneMeshes();
         }
@@ -162,17 +182,6 @@ namespace TGC.Group.Model.EscenarioGame
             terrain.dispose();
 
             // Se liberan los elementos de la escena
-            palmModel.Dispose();
-            rockModel.Dispose();
-            //plantModel.dispose();
-            arbolModel.Dispose();
-            //arbolFrutalModel.dispose();
-            frutaModel.Dispose();
-            pinoModel.Dispose();
-            //palm2Model.dispose();
-            //palm3Model.dispose();
-
-            // Se liberan los Mesh
             foreach (var mesh in SceneMeshes)
             {
                 mesh.dispose();
@@ -187,7 +196,7 @@ namespace TGC.Group.Model.EscenarioGame
             SceneMeshes.Clear();
 
             //Liberar recursos del SkyBox
-            skyBox.dispose();
+            skyBoxGame[env.horaDelDia].dispose();
         }
 
         private void CreateObjectsFromModel(TgcMesh model, int count, Vector3 center, Vector3 scale, int sparse, float[] scalaVariableObjetos)
@@ -260,24 +269,58 @@ namespace TGC.Group.Model.EscenarioGame
 
         private void CreateSkyBox()
         {
-            //Crear SkyBox
-            skyBox = new TgcSkyBox();
-            skyBox.Center = skyBoxCenter;
-            skyBox.Size = skyBoxSize;
+            // Inicializo el SkyBox
+            skyBoxCenter = new Vector3(0, 0, 0);
+            skyBoxSize = new Vector3(3600 * SceneScaleXZ, 3600 * SceneScaleXZ, 3600 * SceneScaleXZ);
+            skyBoxSkyEpsilon = 3f;
+
+            // Creo los SkyBox según el momento del día
+
+            // DIA
+            var i = 0;
+            skyBoxGame[i] = new TgcSkyBox();
+            skyBoxGame[i].Center = skyBoxCenter;
+            skyBoxGame[i].Size = skyBoxSize;
 
             //Configurar las texturas para cada una de las 6 caras
-            skyBox.setFaceTexture(TgcSkyBox.SkyFaces.Up, skyTexturePath + "lostatseaday_up.jpg");
-            skyBox.setFaceTexture(TgcSkyBox.SkyFaces.Down, skyTexturePath + "lostatseaday_dn.jpg");
-            skyBox.setFaceTexture(TgcSkyBox.SkyFaces.Left, skyTexturePath + "lostatseaday_lf.jpg");
-            skyBox.setFaceTexture(TgcSkyBox.SkyFaces.Right, skyTexturePath + "lostatseaday_rt.jpg");
-
-            //Hay veces es necesario invertir las texturas Front y Back si se pasa de un sistema RightHanded a uno LeftHanded
-            skyBox.setFaceTexture(TgcSkyBox.SkyFaces.Front, skyTexturePath + "lostatseaday_bk.jpg");
-            skyBox.setFaceTexture(TgcSkyBox.SkyFaces.Back, skyTexturePath + "lostatseaday_ft.jpg");
-            skyBox.SkyEpsilon = skyBoxSkyEpsilon;
+            skyBoxGame[i].setFaceTexture(TgcSkyBox.SkyFaces.Up, skyTexturePath + "lostatseaday_up.jpg");
+            skyBoxGame[i].setFaceTexture(TgcSkyBox.SkyFaces.Down, skyTexturePath + "lostatseaday_dn.jpg");
+            skyBoxGame[i].setFaceTexture(TgcSkyBox.SkyFaces.Left, skyTexturePath + "lostatseaday_lf.jpg");
+            skyBoxGame[i].setFaceTexture(TgcSkyBox.SkyFaces.Right, skyTexturePath + "lostatseaday_rt.jpg");
+            skyBoxGame[i].setFaceTexture(TgcSkyBox.SkyFaces.Front, skyTexturePath + "lostatseaday_bk.jpg");
+            skyBoxGame[i].setFaceTexture(TgcSkyBox.SkyFaces.Back, skyTexturePath + "lostatseaday_ft.jpg");
+            skyBoxGame[i].SkyEpsilon = skyBoxSkyEpsilon;
 
             //Inicializa todos los valores para crear el SkyBox
-            skyBox.Init();
+            skyBoxGame[i].Init();
+
+            // NOCHE
+            i = 1;
+            skyBoxGame[i] = new TgcSkyBox();
+            skyBoxGame[i].Center = skyBoxCenter;
+            skyBoxGame[i].Size = skyBoxSize;
+
+            //Configurar las texturas para cada una de las 6 caras
+            skyBoxGame[i].setFaceTexture(TgcSkyBox.SkyFaces.Up, skyTexturePath + "isla_up.png");
+            skyBoxGame[i].setFaceTexture(TgcSkyBox.SkyFaces.Down, skyTexturePath + "isla_dn.png");
+            skyBoxGame[i].setFaceTexture(TgcSkyBox.SkyFaces.Left, skyTexturePath + "isla_lf.png");
+            skyBoxGame[i].setFaceTexture(TgcSkyBox.SkyFaces.Right, skyTexturePath + "isla_rt.png");
+            skyBoxGame[i].setFaceTexture(TgcSkyBox.SkyFaces.Front, skyTexturePath + "isla_ft.png");
+            skyBoxGame[i].setFaceTexture(TgcSkyBox.SkyFaces.Back, skyTexturePath + "isla_bk.png");
+            skyBoxGame[i].SkyEpsilon = skyBoxSkyEpsilon;
+
+            //Inicializa todos los valores para crear el SkyBox
+            skyBoxGame[i].Init();
+        }
+
+        // Se actualiza el SkyBox (se genera efecto de paso del día)
+        public void ActualizarSkyBox()
+        {
+            foreach (TgcMesh face in skyBoxGame[env.horaDelDia].Faces)
+            {
+                face.AutoTransformEnable = true;
+                face.rotateY(env.ElapsedTime / 30);
+            }
         }
 
         // Las coordenas x,z son Originales (sin Escalado) y el z devuelto es Original también (sin Escalado)

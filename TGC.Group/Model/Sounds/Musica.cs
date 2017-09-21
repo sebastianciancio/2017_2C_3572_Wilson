@@ -29,7 +29,6 @@ namespace TGC.Group.Model.SoundsGame
             sonidos.Add(MediaDir + "Sonido\\ambiente2.mp3");
             nroFile = 0;
             currentFile = null;
-
             mp3Player = new TgcMp3Player();
         }
 
@@ -50,6 +49,18 @@ namespace TGC.Group.Model.SoundsGame
             }
         }
 
+        /// <summary>
+        ///     Play un nuevo MP3 solo
+        /// </summary>
+        public void playMp3(string filePath)
+        {
+
+            mp3Player.stop();
+            mp3Player.closeFile();
+
+            loadMp3(filePath);
+            mp3Player.play(false);
+        }
         public void nextSound()
         {
             nroFile++;
