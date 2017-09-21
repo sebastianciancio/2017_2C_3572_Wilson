@@ -81,7 +81,7 @@ namespace TGC.Group.Model.EscenarioGame
             plantMeshPath = env.MediaDir + "Planta3\\Planta3-TgcScene.xml";
             arbolMeshPath = env.MediaDir + "ArbolSelvatico\\ArbolSelvatico-TgcScene.xml";
             arbolFrutalMeshPath = env.MediaDir + "ArbustoFruta\\Peach-TgcScene.xml";
-            frutaMeshPath = env.MediaDir + "Fruta\\Fruta-TgcScene.xml";
+            frutaMeshPath = env.MediaDir + "Fruta\\Manzana-TgcScene.xml";
             pinoMeshPath = env.MediaDir + "Pino\\Pino-TgcScene.xml";
             palm2MeshPath = env.MediaDir + "Palmera2\\Palmera2-TgcScene.xml";
             palm3MeshPath = env.MediaDir + "Palmera3\\Palmera3-TgcScene.xml";
@@ -126,7 +126,7 @@ namespace TGC.Group.Model.EscenarioGame
             //CreateObjectsFromModel(arbolFrutalModel, 30, new Vector3(-75, 0, 75), new Vector3(0.8f, 0.8f, 0.8f), 50, new float[] { 50, 55f, 60f, 65f });
 
             frutaModel = loader.loadSceneFromFile(frutaMeshPath).Meshes[0];
-            CreateObjectsFromModel(frutaModel, 70, new Vector3(-90, 0, 75), new Vector3(0.8f, 0.8f, 0.8f), 80, new float[] { 10f, 15f, 20f, 25f });
+            CreateObjectsFromModel(frutaModel, 70, new Vector3(-90, 0, 75), new Vector3(0.8f, 0.8f, 0.8f), 80, new float[] { 1f, 2f, 3f, 2f });
 
             pinoModel = loader.loadSceneFromFile(pinoMeshPath).Meshes[0];
             CreateObjectsFromModel(pinoModel, 70, new Vector3(-75, 0, 75), new Vector3(0.8f, 0.8f, 0.8f), 50, new float[] { 50, 55f, 60f, 65f });

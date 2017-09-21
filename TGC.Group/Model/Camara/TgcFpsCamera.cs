@@ -163,7 +163,7 @@ namespace TGC.Group.Model.Camara
                 }
                 else
                 {
-                    env.personaje.BoundingSphere.setRenderColor(Color.Yellow);
+                    env.personaje.BoundingSphere.setRenderColor(Color.Empty);
                 }
             }
 

@@ -8,8 +8,6 @@ using TGC.Group.Model.SpriteGame;
 using TGC.Group.Model.Character;
 using TGC.Group.Model.SoundsGame;
 using TGC.Core.Utils;
-using TGC.Core.Geometry;
-using TGC.Core.Textures;
 
 namespace TGC.Group.Model
 {
@@ -67,17 +65,14 @@ namespace TGC.Group.Model
             terreno.Update();
             personaje.Update(ElapsedTime, Input);
             Camara.UpdateCamera(ElapsedTime);
-
-
-
             hud.Update(ElapsedTime);
         }
 
         public override void Render()
         {
             PreRender();
-            terreno.Render();
             personaje.Render(ElapsedTime);
+            terreno.Render();
             hud.Render();
             RenderHelpText();
             PostRender();
@@ -121,7 +116,7 @@ namespace TGC.Group.Model
             DrawText.drawText("Camera (Coordenada Y Terreno): \n" + FastMath.Abs(terreno.CalcularAlturaTerreno((Camara.Position.X / terreno.SceneScaleXZ), (Camara.Position.Z / terreno.SceneScaleXZ))), 200, 180, Color.OrangeRed);
 
             DrawText.drawText("Posicion Personaje: \n" + personaje.Posicion, 0, 300, Color.OrangeRed);
-            
+
             //DrawText.drawText("Camera (Coordenada positionEye.X Camara): \n" + FastMath.Abs(Camara.position positionEye.X / terreno.SceneScaleXZ), 200, 300, Color.OrangeRed);            
         }
     }
