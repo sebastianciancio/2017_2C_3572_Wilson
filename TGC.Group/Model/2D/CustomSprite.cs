@@ -2,7 +2,7 @@
 using System;
 using System.Drawing;
 
-namespace TGC.Group.Model.Sprite
+namespace TGC.Group.Model.SpriteGame
 {
     public class CustomSprite : IDisposable
     {
@@ -32,11 +32,11 @@ namespace TGC.Group.Model.Sprite
             SrcRect = Rectangle.Empty;
 
             //Initialize transformation properties.
-            position = Vector2.Empty;
+            position = new Vector2(0, 0);
             scaling = new Vector2(1, 1);
-            scalingCenter = Vector2.Empty;
+            scalingCenter = new Vector2(0, 0);
             rotation = 0;
-            rotationCenter = Vector2.Empty;
+            rotationCenter = new Vector2(0, 0);
 
             Color = Color.White;
         }
@@ -51,7 +51,7 @@ namespace TGC.Group.Model.Sprite
         /// <summary>
         ///     The transformation matrix.
         /// </summary>
-        public Matrix TransformationMatrix { get; set; }
+        public Matrix TransformationMatrix { get; private set; }
 
         /// <summary>
         ///     The source rectangle to be drawn from the bitmap.
@@ -61,7 +61,7 @@ namespace TGC.Group.Model.Sprite
         /// <summary>
         ///     The linked bitmap for the sprite.
         /// </summary>
-        public Bitmap Bitmap { get; set; }
+        public CustomBitmap Bitmap { get; set; }
 
         /// <summary>
         ///     The color of the sprite.

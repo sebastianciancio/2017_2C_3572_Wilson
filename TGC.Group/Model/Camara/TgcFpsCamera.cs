@@ -200,10 +200,6 @@ namespace TGC.Group.Model.Camara
 
             base.SetCamera(positionEye, cameraFinalTarget, cameraRotatedUpVector);
 
-            // Cambio la posicion y roto el BoxHub para que siga al personaje
-            env.boxHud.Position = new Vector3(env.personaje.Posicion.X - 10, env.personaje.Posicion.Y - 5, env.personaje.Posicion.Z);
-
-
             // Posiciono la Camara a la Altura del Terreno según las coordenadas actuales
             var posicionCamaraTerrenoOriginal = env.terreno.CalcularAlturaTerreno( 
                     FastMath.Ceiling(positionEye.X / env.terreno.SceneScaleXZ) ,

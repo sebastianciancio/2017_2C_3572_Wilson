@@ -64,9 +64,17 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\..\..\..\Windows\Microsoft.NET\DirectX for Managed Code\1.0.2902.0\Microsoft.DirectX.Direct3D.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.DirectX.Direct3DX, Version=1.0.2909.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\TGC.Core.2.2.3\lib\net452\Microsoft.DirectX.Direct3DX.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.DirectX.DirectInput, Version=1.0.2902.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\..\..\..\Windows\Microsoft.NET\DirectX for Managed Code\1.0.2902.0\Microsoft.DirectX.DirectInput.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.DirectX.DirectSound, Version=1.0.2902.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\TGC.Core.2.2.3\lib\net452\Microsoft.DirectX.DirectSound.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.VisualC" />
     <Reference Include="System" />
@@ -76,6 +84,8 @@
       <HintPath>..\packages\TGC.Core.2.2.3\lib\net452\TGC.Core.dll</HintPath>
     </Reference>
   </ItemGroup>
+
+
   <ItemGroup>
     <Compile Include="Form\GameForm.cs">
       <SubType>Form</SubType>
@@ -89,13 +99,10 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Game.settings</DependentUpon>
     </Compile>
-    <Compile Include="Model\2D\HUD.cs" />
-    <Compile Include="Model\2D\Sprite.cs" />
     <Compile Include="Model\Camara\TgcFpsCamera.cs" />
     <Compile Include="Model\Escenario\Escenario.cs" />
     <Compile Include="Model\Sounds\Musica.cs" />
     <!--  <Compile Include="Model\Sounds\Sonido.cs" />
-    <Compile Include="Model\Drawer2D.cs" />
     <Compile Include="Model\CustomSprite.cs" />
     <Compile Include="Model\CustomBitmap.cs" /> -->
     <Compile Include="Model\GameModel.cs" />
@@ -103,6 +110,10 @@
     <Compile Include="Model\Personaje\Personaje.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Model\2D\CustomBitmap.cs" />
+    <Compile Include="Model\2D\CustomSprite.cs" />
+    <Compile Include="Model\2D\Drawer2D.cs" />
+    <Compile Include="Model\2D\HUD.cs" />    
     <EmbeddedResource Include="Form\GameForm.resx">
       <DependentUpon>GameForm.cs</DependentUpon>
     </EmbeddedResource>

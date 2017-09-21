@@ -4,7 +4,7 @@ using TGC.Core.Direct3D;
 using TGC.Core.Example;
 using TGC.Group.Model.Camara;
 using TGC.Group.Model.EscenarioGame;
-using TGC.Group.Model.Sprite;
+using TGC.Group.Model.SpriteGame;
 using TGC.Group.Model.Character;
 using TGC.Group.Model.SoundsGame;
 using TGC.Core.Utils;
@@ -25,8 +25,6 @@ namespace TGC.Group.Model
 
         public Musica musica;
 
-        public TgcTexture currentTexture;
-        public TgcBox boxHud;
 
         // ***********************************************************
 
@@ -54,18 +52,6 @@ namespace TGC.Group.Model
 
             InitCamera();
 
-            boxHud = new TgcBox();
-            boxHud.AutoTransformEnable = true;
-
-            currentTexture = TgcTexture.createTexture(D3DDevice.Instance.Device, MediaDir + "HUD\\COMENZAR.png");
-
-
-
-            boxHud.Position = new Vector3(0,0, 0);
-            boxHud.Size = new Vector3(1, 8, D3DDevice.Instance.Device.Viewport.Width);
-            boxHud.Color = Color.Red;
-
-
 
             // SkyBox: Se cambia el valor por defecto del farplane para evitar cliping de farplane.
             D3DDevice.Instance.Device.Transform.Projection =
@@ -84,9 +70,6 @@ namespace TGC.Group.Model
 
 
 
-
-            boxHud.updateValues();
-
             hud.Update(ElapsedTime);
         }
 
@@ -97,9 +80,6 @@ namespace TGC.Group.Model
             personaje.Render(ElapsedTime);
             hud.Render();
             RenderHelpText();
-
-            boxHud.render();
-
             PostRender();
         }
 
