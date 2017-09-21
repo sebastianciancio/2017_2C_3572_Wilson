@@ -17,7 +17,7 @@ namespace TGC.Group.Model
         // Parametros del Juego
         // ***********************************************************
 
-        public Escenario terreno;
+        public EscenarioGame.Escenario terreno;
         private HUD hud;
         public Personaje personaje;
 
@@ -35,7 +35,7 @@ namespace TGC.Group.Model
 
         public override void Init()
         {
-            terreno = new Escenario(this);
+            terreno = new EscenarioGame.Escenario(this);
             terreno.Init();
 
             personaje = new Personaje(this);

@@ -108,9 +108,9 @@ namespace TGC.Group.Model.Character
             //env.terreno.SceneMeshes.Add( algo );
         }
 
-        public void guardarObjetoInventario()
+        public void guardarObjetoInventario(Objeto item)
         {
-            //this.Inventario.Add(item);
+            this.Inventario.Add(item);
         }
 
 

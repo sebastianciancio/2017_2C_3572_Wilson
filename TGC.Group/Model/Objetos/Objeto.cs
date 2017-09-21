@@ -1,6 +1,6 @@
 ﻿namespace TGC.Group.Model.Objetos
 {
-    class Objeto
+    public abstract class Objeto
     {
         public string Nombre { get; set; }
 

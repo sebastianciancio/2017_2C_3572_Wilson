@@ -167,7 +167,29 @@ namespace TGC.Group.Model.Camara
                 }
             }
 
+            foreach (var obstaculo in env.terreno.Destroyables)
+            {
 
+                if (TgcCollisionUtils.testSphereAABB(env.personaje.BoundingSphere, obstaculo.mesh.BoundingBox))
+                {
+                    env.personaje.BoundingSphere.setRenderColor(Color.Red);
+                    collide = true;
+
+                    var objs = obstaculo.Destroy();
+                    foreach (var obj in objs)
+                    {
+                        env.personaje.guardarObjetoInventario(obj);
+                    }
+                    
+                    break;
+                }
+                else
+                {
+                    env.personaje.BoundingSphere.setRenderColor(Color.Empty);
+                }
+            }
+
+            
 
             //Si hubo colision, restaurar la posicion anterior de la camara
             if (collide)

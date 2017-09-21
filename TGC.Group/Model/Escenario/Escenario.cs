@@ -6,6 +6,8 @@ using System.Collections.Generic;
 using TGC.Core.Terrain;
 using System;
 using TGC.Core.Collision;
+using TGC.Group.Model.Escenario.Objetos;
+using TGC.Group.Model.Escenario;
 
 namespace TGC.Group.Model.EscenarioGame
 {
@@ -42,30 +44,32 @@ namespace TGC.Group.Model.EscenarioGame
 
         private TgcSceneLoader loader;
         private bool ShowBoundingBox { get; set; }
-        private string palmMeshPath;
-        private string rockMeshPath;
-        private string plantMeshPath;
-        private string arbolMeshPath;
-        private string arbolFrutalMeshPath;
-        private string frutaMeshPath;
-        private string pinoMeshPath;
-        private string palm2MeshPath;
-        private string palm3MeshPath;
 
-        private TgcMesh palmModel;
-        private TgcMesh rockModel;
-        private TgcMesh plantModel;
-        private TgcMesh arbolModel;
-        private TgcMesh arbolFrutalModel;
-        private TgcMesh frutaModel;
-        private TgcMesh pinoModel;
-        private TgcMesh palm2Model;
-        private TgcMesh palm3Model;
+        //private string palmMeshPath;
+        //private string rockMeshPath;
+        //private string plantMeshPath;
+        //private string arbolMeshPath;
+        //private string arbolFrutalMeshPath;
+        //private string frutaMeshPath;
+        //private string pinoMeshPath;
+        //private string palm2MeshPath;
+        //private string palm3MeshPath;
+
+        private Palmera palmModel;
+        private Roca rockModel;
+        //private Planta plantModel;
+        private Arbol arbolModel;
+        //private TgcMesh arbolFrutalModel;
+        private Fruta frutaModel;
+        private Pino pinoModel;
+        //private TgcMesh palm2Model;
+        //private TgcMesh palm3Model;
 
         public int totalMeshesRenderizados;
 
         // ***********************************************************
         public List<TgcMesh> SceneMeshes { get; set; }
+        public List<ObjetoEscena> Destroyables { get; set; }
         private GameModel env;        
 
         // ***********************************************************
@@ -76,16 +80,18 @@ namespace TGC.Group.Model.EscenarioGame
 
             sceneHeightmapPath = env.MediaDir + "Isla\\isla_heightmap.png";
             terrainTexturePath = env.MediaDir + "Isla\\isla_textura2.png";
-            palmMeshPath = env.MediaDir + "Palmera\\Palmera-TgcScene.xml";
-            rockMeshPath = env.MediaDir + "Roca\\Roca-TgcScene.xml";
-            plantMeshPath = env.MediaDir + "Planta3\\Planta3-TgcScene.xml";
-            arbolMeshPath = env.MediaDir + "ArbolSelvatico\\ArbolSelvatico-TgcScene.xml";
-            arbolFrutalMeshPath = env.MediaDir + "ArbustoFruta\\Peach-TgcScene.xml";
-            frutaMeshPath = env.MediaDir + "Fruta\\Manzana-TgcScene.xml";
-            pinoMeshPath = env.MediaDir + "Pino\\Pino-TgcScene.xml";
-            palm2MeshPath = env.MediaDir + "Palmera2\\Palmera2-TgcScene.xml";
-            palm3MeshPath = env.MediaDir + "Palmera3\\Palmera3-TgcScene.xml";
             skyTexturePath = env.MediaDir + "SkyBox\\";
+
+            //palmMeshPath = env.MediaDir + "Palmera\\Palmera-TgcScene.xml";
+            //rockMeshPath = env.MediaDir + "Roca\\Roca-TgcScene.xml";
+            //arbolMeshPath = env.MediaDir + "ArbolSelvatico\\ArbolSelvatico-TgcScene.xml";
+            //frutaMeshPath = env.MediaDir + "Fruta\\Fruta-TgcScene.xml";
+            //pinoMeshPath = env.MediaDir + "Pino\\Pino-TgcScene.xml";
+            
+            //plantMeshPath = env.MediaDir + "Planta3\\Planta3-TgcScene.xml";
+            //arbolFrutalMeshPath = env.MediaDir + "ArbustoFruta\\Peach-TgcScene.xml";
+            //palm2MeshPath = env.MediaDir + "Palmera2\\Palmera2-TgcScene.xml";
+            //palm3MeshPath = env.MediaDir + "Palmera3\\Palmera3-TgcScene.xml";
         }
 
         public void Init()
@@ -108,33 +114,34 @@ namespace TGC.Group.Model.EscenarioGame
 
             // La ubicacion de los Mesh es en coordenadas Originales del HeightMap (sin escalado) [-256,256]
             SceneMeshes = new List<TgcMesh>();
+            Destroyables = new List<ObjetoEscena>();
             loader = new TgcSceneLoader();
 
-            rockModel = loader.loadSceneFromFile(rockMeshPath).Meshes[0];
-            CreateObjectsFromModel(rockModel, 200, new Vector3(-160, 0, 20), new Vector3(0.9f, 0.9f, 0.9f), 50, new float[] { 30f, 35f, 40f, 45f });
+            var rockModel = new Roca(env);
+            CreateObjectsFromModel(rockModel.mesh, 200, new Vector3(-160, 0, 20), new Vector3(0.9f, 0.9f, 0.9f), 50, new float[] { 30f, 35f, 40f, 45f });
 
-            palmModel = loader.loadSceneFromFile(palmMeshPath).Meshes[0];
-            CreateObjectsFromModel(palmModel, 150, new Vector3(-70, 0, -70), new Vector3(0.5f, 0.5f, 0.5f), 70, new float[] { 30f, 35f, 40f, 45f });
+            var palmModel = new Palmera(env);
+            CreateObjectsFromModel(palmModel.mesh, 150, new Vector3(-70, 0, -70), new Vector3(0.5f, 0.5f, 0.5f), 70, new float[] { 30f, 35f, 40f, 45f });
 
-            plantModel = loader.loadSceneFromFile(plantMeshPath).Meshes[0];
+            var arbolModel = new Arbol(env);
+            CreateObjectsFromModel(arbolModel.mesh, 40, new Vector3(75, 0, -75), new Vector3(0.8f, 0.8f, 0.8f), 75, new float[] { 10f, 15f, 20f, 25f });
+
+            var frutaModel = new Fruta(env);
+            CreateObjectsFromModel(frutaModel.mesh, 70, new Vector3(-90, 0, 75), new Vector3(0.8f, 0.8f, 0.8f), 80, new float[] { 10f, 15f, 20f, 25f });
+
+            var pinoModel = new Pino(env);
+            CreateObjectsFromModel(pinoModel.mesh, 70, new Vector3(-75, 0, 75), new Vector3(0.8f, 0.8f, 0.8f), 50, new float[] { 50, 55f, 60f, 65f });
+
+            //plantModel = loader.loadSceneFromFile(plantMeshPath).Meshes[0];
             //CreateObjectsFromModel(plantModel, 70, new Vector3(75, 0, -75), new Vector3(0.8f, 0.8f, 0.8f), 75, new float[] { 50f, 55f, 60f, 65f });
 
-            arbolModel = loader.loadSceneFromFile(arbolMeshPath).Meshes[0];
-            CreateObjectsFromModel(arbolModel, 40, new Vector3(75, 0, -75), new Vector3(0.8f, 0.8f, 0.8f), 75, new float[] { 10f, 15f, 20f, 25f });
-
-            arbolFrutalModel = loader.loadSceneFromFile(arbolFrutalMeshPath).Meshes[0];
-            //CreateObjectsFromModel(arbolFrutalModel, 30, new Vector3(-75, 0, 75), new Vector3(0.8f, 0.8f, 0.8f), 50, new float[] { 50, 55f, 60f, 65f });
-
-            frutaModel = loader.loadSceneFromFile(frutaMeshPath).Meshes[0];
-            CreateObjectsFromModel(frutaModel, 70, new Vector3(-90, 0, 75), new Vector3(0.8f, 0.8f, 0.8f), 80, new float[] { 1f, 2f, 3f, 2f });
-
-            pinoModel = loader.loadSceneFromFile(pinoMeshPath).Meshes[0];
-            CreateObjectsFromModel(pinoModel, 70, new Vector3(-75, 0, 75), new Vector3(0.8f, 0.8f, 0.8f), 50, new float[] { 50, 55f, 60f, 65f });
-
-            palm2Model = loader.loadSceneFromFile(palm2MeshPath).Meshes[0];
+            //palm2Model = loader.loadSceneFromFile(palm2MeshPath).Meshes[0];
             //CreateObjectsFromModel(palm2Model, 70, new Vector3(-20, 0, -50), new Vector3(0.8f, 0.8f, 0.8f), 80, new float[] { 10f, 15f, 20f, 25f });
 
-            palm3Model = loader.loadSceneFromFile(palm3MeshPath).Meshes[0];
+            //arbolFrutalModel = loader.loadSceneFromFile(arbolFrutalMeshPath).Meshes[0];
+            //CreateObjectsFromModel(arbolFrutalModel, 30, new Vector3(-75, 0, 75), new Vector3(0.8f, 0.8f, 0.8f), 50, new float[] { 50, 55f, 60f, 65f });
+
+            //palm3Model = loader.loadSceneFromFile(palm3MeshPath).Meshes[0];
             //CreateObjectsFromModel(palm3Model, 70, new Vector3(-10, 0, -60), new Vector3(0.8f, 0.8f, 0.8f), 80, new float[] { 10f, 15f, 20f, 25f });
         }
 
@@ -155,20 +162,25 @@ namespace TGC.Group.Model.EscenarioGame
             terrain.dispose();
 
             // Se liberan los elementos de la escena
-            palmModel.dispose();
-            rockModel.dispose();
-            plantModel.dispose();
-            arbolModel.dispose();
-            arbolFrutalModel.dispose();
-            frutaModel.dispose();
-            pinoModel.dispose();
-            palm2Model.dispose();
-            palm3Model.dispose();
+            palmModel.Dispose();
+            rockModel.Dispose();
+            //plantModel.dispose();
+            arbolModel.Dispose();
+            //arbolFrutalModel.dispose();
+            frutaModel.Dispose();
+            pinoModel.Dispose();
+            //palm2Model.dispose();
+            //palm3Model.dispose();
 
             // Se liberan los Mesh
             foreach (var mesh in SceneMeshes)
             {
                 mesh.dispose();
+            }
+
+            foreach (var dest in Destroyables)
+            {
+                dest.Dispose();
             }
 
             // Se libera Lista de Mesh
@@ -210,6 +222,40 @@ namespace TGC.Group.Model.EscenarioGame
                     SceneMeshes.Add(instance);
                 }
             }
+        }
+
+        private void CreateDestroyables(ObjetoEscena obj, int count, Vector3 center, Vector3 scale, int sparse, float[] scalaVariableObjetos)
+        {
+            var rnd = new Random();
+
+            // TODO: buscar una mejor forma de tener una distribucion pareja
+            var rows = (int)Math.Sqrt(count);
+            var cols = (int)Math.Sqrt(count);
+
+            float[] scalaRotacionObjetos = { FastMath.QUARTER_PI, FastMath.PI, FastMath.PI_HALF, FastMath.TWO_PI };
+
+            for (var i = 0; i < rows; i++)
+            {
+                for (var j = 0; j < cols; j++)
+                {
+                    var instance = obj.mesh.createMeshInstance(obj.mesh.Name + i + "_" + j);
+
+                    // Escalo el objeto en forma Random
+                    instance.Scale = scale * scalaVariableObjetos[rnd.Next(0, scalaVariableObjetos.Length)];
+
+                    var x = center.X + rnd.Next(-sparse, sparse);
+                    var z = center.Z + rnd.Next(-sparse, sparse);
+
+                    // Posiciono el objeto en el Escenario
+                    instance.Position = new Vector3(x * SceneScaleXZ, CalcularAlturaTerreno(x, z) * SceneScaleY, z * SceneScaleXZ);
+                    instance.rotateY(scalaRotacionObjetos[rnd.Next(0, scalaRotacionObjetos.Length)]);
+
+                    // Lo guardo en una Lista de Objetos que están en el Escenario
+                    SceneMeshes.Add(instance);
+                }
+            }
+
+            Destroyables.Add(obj);
         }
 
         private void CreateSkyBox()
@@ -290,6 +336,17 @@ namespace TGC.Group.Model.EscenarioGame
                         mesh.render();
                         totalMeshesRenderizados++;
                     }
+                }
+            }
+
+            foreach (var dest in Destroyables)
+            {
+                //Solo mostrar la malla si colisiona contra el Frustum
+                var r = TgcCollisionUtils.classifyFrustumAABB(env.Frustum, dest.mesh.BoundingBox);
+                if (r != TgcCollisionUtils.FrustumResult.OUTSIDE)
+                {
+                    dest.Render();
+                    totalMeshesRenderizados++;
                 }
             }
         }

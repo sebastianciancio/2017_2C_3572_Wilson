@@ -84,8 +84,6 @@
       <HintPath>..\packages\TGC.Core.2.2.3\lib\net452\TGC.Core.dll</HintPath>
     </Reference>
   </ItemGroup>
-
-
   <ItemGroup>
     <Compile Include="Form\GameForm.cs">
       <SubType>Form</SubType>
@@ -101,6 +99,16 @@
     </Compile>
     <Compile Include="Model\Camara\TgcFpsCamera.cs" />
     <Compile Include="Model\Escenario\Escenario.cs" />
+    <Compile Include="Model\Escenario\Objetos\IDestroyable.cs" />
+    <Compile Include="Model\Escenario\Objetos\ObjetoEscena.cs" />
+    <Compile Include="Model\Escenario\Objetos\Arbol.cs" />
+    <Compile Include="Model\Escenario\Objetos\Fruta.cs" />
+    <Compile Include="Model\Escenario\Objetos\Pino.cs" />
+    <Compile Include="Model\Escenario\Objetos\Roca.cs" />
+    <Compile Include="Model\Escenario\Objetos\Palmera.cs" />
+    <Compile Include="Model\Objetos\Fruta.cs" />
+    <Compile Include="Model\Objetos\Piedra.cs" />
+    <Compile Include="Model\Objetos\Madera.cs" />
     <Compile Include="Model\Sounds\Musica.cs" />
     <!--  <Compile Include="Model\Sounds\Sonido.cs" />
     <Compile Include="Model\CustomSprite.cs" />
@@ -113,7 +121,7 @@
     <Compile Include="Model\2D\CustomBitmap.cs" />
     <Compile Include="Model\2D\CustomSprite.cs" />
     <Compile Include="Model\2D\Drawer2D.cs" />
-    <Compile Include="Model\2D\HUD.cs" />    
+    <Compile Include="Model\2D\HUD.cs" />
     <EmbeddedResource Include="Form\GameForm.resx">
       <DependentUpon>GameForm.cs</DependentUpon>
     </EmbeddedResource>
