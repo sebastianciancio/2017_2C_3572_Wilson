@@ -147,7 +147,7 @@ namespace TGC.Group.Model.EscenarioGame
         private void cambioHorario()
         {
             env.usoHorario = 0;
-            if (env.horaDelDia < 1)
+            if (env.horaDelDia < 2)
             {
                 env.horaDelDia++;
             }
@@ -166,7 +166,7 @@ namespace TGC.Group.Model.EscenarioGame
             ActualizarSkyBox();
 
             // Actualizo el momento del día (dia o noche)
-            if (env.usoHorario > 60) cambioHorario();
+            if (env.usoHorario > 190) cambioHorario();
         }
 
         public void Render(float elapsedTime)
@@ -272,7 +272,7 @@ namespace TGC.Group.Model.EscenarioGame
             // Inicializo el SkyBox
             skyBoxCenter = new Vector3(0, 0, 0);
             skyBoxSize = new Vector3(3600 * SceneScaleXZ, 3600 * SceneScaleXZ, 3600 * SceneScaleXZ);
-            skyBoxSkyEpsilon = 3f;
+            skyBoxSkyEpsilon = 7800f;
 
             // Creo los SkyBox según el momento del día
 
@@ -289,24 +289,44 @@ namespace TGC.Group.Model.EscenarioGame
             skyBoxGame[i].setFaceTexture(TgcSkyBox.SkyFaces.Right, skyTexturePath + "lostatseaday_rt.jpg");
             skyBoxGame[i].setFaceTexture(TgcSkyBox.SkyFaces.Front, skyTexturePath + "lostatseaday_bk.jpg");
             skyBoxGame[i].setFaceTexture(TgcSkyBox.SkyFaces.Back, skyTexturePath + "lostatseaday_ft.jpg");
+
+
             skyBoxGame[i].SkyEpsilon = skyBoxSkyEpsilon;
 
             //Inicializa todos los valores para crear el SkyBox
             skyBoxGame[i].Init();
 
-            // NOCHE
+            // TARDE
             i = 1;
             skyBoxGame[i] = new TgcSkyBox();
             skyBoxGame[i].Center = skyBoxCenter;
             skyBoxGame[i].Size = skyBoxSize;
 
             //Configurar las texturas para cada una de las 6 caras
-            skyBoxGame[i].setFaceTexture(TgcSkyBox.SkyFaces.Up, skyTexturePath + "isla_up.png");
-            skyBoxGame[i].setFaceTexture(TgcSkyBox.SkyFaces.Down, skyTexturePath + "isla_dn.png");
-            skyBoxGame[i].setFaceTexture(TgcSkyBox.SkyFaces.Left, skyTexturePath + "isla_lf.png");
-            skyBoxGame[i].setFaceTexture(TgcSkyBox.SkyFaces.Right, skyTexturePath + "isla_rt.png");
-            skyBoxGame[i].setFaceTexture(TgcSkyBox.SkyFaces.Front, skyTexturePath + "isla_ft.png");
-            skyBoxGame[i].setFaceTexture(TgcSkyBox.SkyFaces.Back, skyTexturePath + "isla_bk.png");
+            skyBoxGame[i].setFaceTexture(TgcSkyBox.SkyFaces.Up, skyTexturePath + "lostatseaday_tarde_up.jpg");
+            skyBoxGame[i].setFaceTexture(TgcSkyBox.SkyFaces.Down, skyTexturePath + "lostatseaday_dn.jpg");
+            skyBoxGame[i].setFaceTexture(TgcSkyBox.SkyFaces.Left, skyTexturePath + "lostatseaday_tarde_lf.jpg");
+            skyBoxGame[i].setFaceTexture(TgcSkyBox.SkyFaces.Right, skyTexturePath + "lostatseaday_tarde_rt.jpg");
+            skyBoxGame[i].setFaceTexture(TgcSkyBox.SkyFaces.Front, skyTexturePath + "lostatseaday_tarde_bk.jpg");
+            skyBoxGame[i].setFaceTexture(TgcSkyBox.SkyFaces.Back, skyTexturePath + "lostatseaday_tarde_ft.jpg");
+            skyBoxGame[i].SkyEpsilon = skyBoxSkyEpsilon;
+
+            //Inicializa todos los valores para crear el SkyBox
+            skyBoxGame[i].Init();
+
+            // NOCHE
+            i = 2;
+            skyBoxGame[i] = new TgcSkyBox();
+            skyBoxGame[i].Center = skyBoxCenter;
+            skyBoxGame[i].Size = skyBoxSize;
+
+            //Configurar las texturas para cada una de las 6 caras
+            skyBoxGame[i].setFaceTexture(TgcSkyBox.SkyFaces.Up, skyTexturePath + "lostatseaday_noche_up.jpg");
+            skyBoxGame[i].setFaceTexture(TgcSkyBox.SkyFaces.Down, skyTexturePath + "lostatseaday_noche_dn.jpg");
+            skyBoxGame[i].setFaceTexture(TgcSkyBox.SkyFaces.Left, skyTexturePath + "lostatseaday_noche_lf.jpg");
+            skyBoxGame[i].setFaceTexture(TgcSkyBox.SkyFaces.Right, skyTexturePath + "lostatseaday_noche_rt.jpg");
+            skyBoxGame[i].setFaceTexture(TgcSkyBox.SkyFaces.Front, skyTexturePath + "lostatseaday_noche_bk.jpg");
+            skyBoxGame[i].setFaceTexture(TgcSkyBox.SkyFaces.Back, skyTexturePath + "lostatseaday_noche_ft.jpg");
             skyBoxGame[i].SkyEpsilon = skyBoxSkyEpsilon;
 
             //Inicializa todos los valores para crear el SkyBox

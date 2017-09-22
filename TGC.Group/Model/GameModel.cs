@@ -36,7 +36,7 @@ namespace TGC.Group.Model
         {
             // Para determinar que momento del día es
             usoHorario = 0;
-            horaDelDia = 1; //0: dia, 1:noche;
+            horaDelDia = 2; //0: dia, 1:tarde, 2:noche;
 
             terreno = new EscenarioGame.Escenario(this);
             terreno.Init();
@@ -115,6 +115,9 @@ namespace TGC.Group.Model
             DrawText.drawText("Camera LookAt: \n" + Camara.LookAt, 0, 100, Color.OrangeRed);
             DrawText.drawText("Mesh count: \n" + terreno.SceneMeshes.Count, 0, 180, Color.OrangeRed);
             DrawText.drawText("Mesh renderizados: \n" + terreno.totalMeshesRenderizados, 0, 220, Color.OrangeRed);
+
+            DrawText.drawText("usoHorario: \n" + usoHorario, 200, 20, Color.OrangeRed);
+            
 /*
             DrawText.drawText("Camera (Coordenada X Original): \n" + FastMath.Abs(Camara.Position.X / terreno.SceneScaleXZ), 200, 20, Color.OrangeRed);
             DrawText.drawText("Camera (Coordenada Z Original): \n" + FastMath.Abs(Camara.Position.Z / terreno.SceneScaleXZ), 200, 100, Color.OrangeRed);

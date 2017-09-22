@@ -105,6 +105,9 @@ namespace TGC.Group.Model.Camara
         {
             var moveVector = new Vector3(0, 0, 0);
 
+            // Al mover el mouse se mueve la cabeza (genera mayor realismo)
+            LockCam = true;
+
             //Aplicar movimiento hacia adelante o atras segun la orientacion actual del Mesh
             var lastPos = this.Position;
 
@@ -144,10 +147,12 @@ namespace TGC.Group.Model.Camara
                 moveVector += new Vector3(0, -1, 0) * JumpSpeed;
             }
 
+            /*
             if (Input.keyPressed(Key.L) || Input.keyPressed(Key.Escape))
             {
                 LockCam = !lockCam;
             }
+            */
 
 
             //Detectar colisiones
