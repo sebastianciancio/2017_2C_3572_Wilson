@@ -99,6 +99,9 @@
     </Compile>
     <Compile Include="Model\Camara\TgcFpsCamera.cs" />
     <Compile Include="Model\Escenario\Escenario.cs" />
+    <Compile Include="Model\Escenario\Quadtree.cs" />
+    <Compile Include="Model\Escenario\QuadtreeBuilder.cs" />
+    <Compile Include="Model\Escenario\QuadtreeNode.cs" />
     <Compile Include="Model\Escenario\Objetos\IDestroyable.cs" />
     <Compile Include="Model\Escenario\Objetos\ObjetoEscena.cs" />
     <Compile Include="Model\Escenario\Objetos\Arbol.cs" />

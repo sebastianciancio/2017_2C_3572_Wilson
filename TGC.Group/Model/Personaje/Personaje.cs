@@ -40,9 +40,8 @@ namespace TGC.Group.Model.Character
             Inventario = new List<Objeto>();
 
             // Creo la Espera que envuelve al personaje para detectar colisiones
-            BoundingSphere = new TgcBoundingSphere(new Vector3(0 * env.terreno.SceneScaleXZ, env.terreno.CalcularAlturaTerreno(0, -90) * env.terreno.SceneScaleY + 20 * env.terreno.SceneScaleXZ, -90 * env.terreno.SceneScaleXZ), 0.01f * env.terreno.SceneScaleXZ);
-            BoundingSphere.AlphaBlendEnable = true;
-            BoundingSphere.setRenderColor(Color.Empty);
+            BoundingSphere = new TgcBoundingSphere(new Vector3(0 * env.terreno.SceneScaleXZ, env.terreno.CalcularAlturaTerreno(0, -90) * env.terreno.SceneScaleY + 10 * env.terreno.SceneScaleXZ, -90 * env.terreno.SceneScaleXZ), 0.5f);
+            BoundingSphere.setRenderColor(Color.Yellow);
         }
 
         public void comer(int valor)
@@ -148,6 +147,7 @@ namespace TGC.Group.Model.Character
 
             }else
             {
+
                 // Esfera para detectar las colisiones
                 BoundingSphere.render();
             }

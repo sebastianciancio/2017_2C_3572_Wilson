@@ -1,6 +1,6 @@
 using Microsoft.DirectX;
 using System.Drawing;
-using TGC.Core.SceneLoader; 
+using TGC.Core.SceneLoader;
 using TGC.Core.Utils;
 using System.Collections.Generic;
 using TGC.Core.Terrain;
@@ -8,6 +8,9 @@ using System;
 using TGC.Core.Collision;
 using TGC.Group.Model.Escenario.Objetos;
 using TGC.Group.Model.Escenario;
+using TGC.Examples.Optimization.Quadtree;
+using TGC.Core.BoundingVolumes;
+using Microsoft.DirectX.Direct3D;
 
 namespace TGC.Group.Model.EscenarioGame
 {
@@ -37,6 +40,14 @@ namespace TGC.Group.Model.EscenarioGame
         private Vector3 skyBoxCenter;
         private Vector3 skyBoxSize;
         private float skyBoxSkyEpsilon;
+
+        // ***********************************************************
+        // Parametros de Quadtree
+        // ***********************************************************
+
+        public TgcBoundingAxisAlignBox terrainBoundingBox;
+        private CustomVertex.PositionColored[] triangle;
+        private Quadtree quadtree;
 
         // ***********************************************************
         // Parametros de los elementos Mesh del Escenario
@@ -88,7 +99,7 @@ namespace TGC.Group.Model.EscenarioGame
             //arbolMeshPath = env.MediaDir + "ArbolSelvatico\\ArbolSelvatico-TgcScene.xml";
             //frutaMeshPath = env.MediaDir + "Fruta\\Fruta-TgcScene.xml";
             //pinoMeshPath = env.MediaDir + "Pino\\Pino-TgcScene.xml";
-            
+
             //plantMeshPath = env.MediaDir + "Planta3\\Planta3-TgcScene.xml";
             //arbolFrutalMeshPath = env.MediaDir + "ArbustoFruta\\Peach-TgcScene.xml";
             //palm2MeshPath = env.MediaDir + "Palmera2\\Palmera2-TgcScene.xml";
@@ -142,6 +153,24 @@ namespace TGC.Group.Model.EscenarioGame
 
             //palm3Model = loader.loadSceneFromFile(palm3MeshPath).Meshes[0];
             //CreateObjectsFromModel(palm3Model, 70, new Vector3(-10, 0, -60), new Vector3(0.8f, 0.8f, 0.8f), 80, new float[] { 10f, 15f, 20f, 25f });
+
+
+            //Crear Quadtree: Defino el BoundinBox del Escenario
+            triangle = new CustomVertex.PositionColored[5];
+            triangle[0] = new CustomVertex.PositionColored(-256* SceneScaleXZ, 0, 0, Color.Green.ToArgb());
+            triangle[1] = new CustomVertex.PositionColored(0, 0, 256 * SceneScaleXZ, Color.Green.ToArgb());
+            triangle[2] = new CustomVertex.PositionColored(0, 300 * SceneScaleY, 0, Color.Green.ToArgb());
+
+            triangle[3] = new CustomVertex.PositionColored(256 * SceneScaleXZ, 0, 0, Color.Green.ToArgb());
+            triangle[4] = new CustomVertex.PositionColored(0, 0, -256 * SceneScaleXZ, Color.Green.ToArgb());
+
+            terrainBoundingBox =
+                TgcBoundingAxisAlignBox.computeFromPoints(new[]
+                {triangle[0].Position, triangle[1].Position, triangle[2].Position,triangle[3].Position,triangle[4].Position});
+
+            quadtree = new Quadtree();
+            quadtree.create(SceneMeshes, terrainBoundingBox);
+            quadtree.createDebugQuadtreeMeshes();
         }
 
         private void cambioHorario()
@@ -174,6 +203,7 @@ namespace TGC.Group.Model.EscenarioGame
             skyBoxGame[env.horaDelDia].render();
             terrain.render();
             RenderSceneMeshes();
+            quadtree.render(env.Frustum, true);
         }
 
         public void Dispose()

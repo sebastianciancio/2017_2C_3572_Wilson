@@ -166,10 +166,6 @@ namespace TGC.Group.Model.Camara
                     collide = true;
                     break;
                 }
-                else
-                {
-                    env.personaje.BoundingSphere.setRenderColor(Color.Empty);
-                }
             }
 
             foreach (var obstaculo in env.terreno.Destroyables)
@@ -187,10 +183,6 @@ namespace TGC.Group.Model.Camara
                     }
                     
                     break;
-                }
-                else
-                {
-                    env.personaje.BoundingSphere.setRenderColor(Color.Empty);
                 }
             }
 
