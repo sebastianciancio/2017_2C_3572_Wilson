@@ -91,7 +91,7 @@ namespace TGC.Group.Model.EscenarioGame
             skyBoxGame = new TgcSkyBox[4];
 
             sceneHeightmapPath = env.MediaDir + "Isla\\isla_heightmap.png";
-            terrainTexturePath = env.MediaDir + "Isla\\isla_textura2.png";
+            terrainTexturePath = env.MediaDir + "Isla\\pasto_textura.png";
             skyTexturePath = env.MediaDir + "SkyBox\\";
 
             //palmMeshPath = env.MediaDir + "Palmera\\Palmera-TgcScene.xml";
@@ -128,19 +128,19 @@ namespace TGC.Group.Model.EscenarioGame
             loader = new TgcSceneLoader();
 
             rockModel = new Roca(env);
-            CreateObjectsFromModel(rockModel.mesh, 200, new Vector3(-160, 0, 20), new Vector3(0.9f, 0.9f, 0.9f), 50, new float[] { 30f, 35f, 40f, 45f });
+            CreateObjectsFromModel(rockModel.mesh, 200, new Vector3(-160, 0, 20), new Vector3(0.9f, 0.9f, 0.9f), 90, new float[] { 30f, 35f, 40f, 45f });
 
             palmModel = new Palmera(env);
-            CreateObjectsFromModel(palmModel.mesh, 150, new Vector3(-70, 0, -70), new Vector3(0.5f, 0.5f, 0.5f), 70, new float[] { 30f, 35f, 40f, 45f });
+            CreateObjectsFromModel(palmModel.mesh, 150, new Vector3(-70, 0, -70), new Vector3(0.5f, 0.5f, 0.5f), 180, new float[] { 60f, 65f, 70f, 75f });
 
             arbolModel = new Arbol(env);
-            CreateObjectsFromModel(arbolModel.mesh, 40, new Vector3(75, 0, -75), new Vector3(0.8f, 0.8f, 0.8f), 75, new float[] { 10f, 15f, 20f, 25f });
+            //CreateObjectsFromModel(arbolModel.mesh, 40, new Vector3(75, 0, -75), new Vector3(0.8f, 0.8f, 0.8f), 75, new float[] { 50f, 55f, 60f, 65f });
 
             frutaModel = new Fruta(env);
-            CreateObjectsFromModel(frutaModel.mesh, 70, new Vector3(-90, 0, 75), new Vector3(0.8f, 0.8f, 0.8f), 80, new float[] { 2f, 2f, 2f, 2f });
+            CreateObjectsFromModel(frutaModel.mesh, 70, new Vector3(-90, 0, 75), new Vector3(0.8f, 0.8f, 0.8f), 120, new float[] { 2f, 2f, 2f, 2f });
 
             pinoModel = new Pino(env);
-            CreateObjectsFromModel(pinoModel.mesh, 70, new Vector3(-75, 0, 75), new Vector3(0.8f, 0.8f, 0.8f), 50, new float[] { 50, 55f, 60f, 65f });
+            CreateObjectsFromModel(pinoModel.mesh, 70, new Vector3(-75, 0, 75), new Vector3(0.8f, 0.8f, 0.8f), 120, new float[] { 50, 55f, 60f, 65f });
 
             //plantModel = loader.loadSceneFromFile(plantMeshPath).Meshes[0];
             //CreateObjectsFromModel(plantModel, 70, new Vector3(75, 0, -75), new Vector3(0.8f, 0.8f, 0.8f), 75, new float[] { 50f, 55f, 60f, 65f });

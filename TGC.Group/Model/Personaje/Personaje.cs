@@ -40,7 +40,7 @@ namespace TGC.Group.Model.Character
             Inventario = new List<Objeto>();
 
             // Creo la Espera que envuelve al personaje para detectar colisiones
-            BoundingSphere = new TgcBoundingSphere(new Vector3(0 * env.terreno.SceneScaleXZ, env.terreno.CalcularAlturaTerreno(0, -90) * env.terreno.SceneScaleY + 10 * env.terreno.SceneScaleXZ, -90 * env.terreno.SceneScaleXZ), 0.5f);
+            BoundingSphere = new TgcBoundingSphere(new Vector3(0 * env.terreno.SceneScaleXZ, env.terreno.CalcularAlturaTerreno(0, -90) * env.terreno.SceneScaleY + 10, -90 * env.terreno.SceneScaleXZ), 5.75f);
             BoundingSphere.setRenderColor(Color.Yellow);
         }
 

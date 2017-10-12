@@ -223,7 +223,7 @@ namespace TGC.Group.Model.Camara
             var posicionCamaraTerrenoOriginal = env.terreno.CalcularAlturaTerreno( 
                     FastMath.Ceiling(positionEye.X / env.terreno.SceneScaleXZ) ,
                     FastMath.Ceiling(positionEye.Z / env.terreno.SceneScaleXZ)
-                ) + env.terreno.SceneScaleY;
+                ) + env.terreno.SceneScaleY/2;
 
             var newpositionEye = new Vector3(positionEye.X, posicionCamaraTerrenoOriginal * env.terreno.SceneScaleY, positionEye.Z);
             var newcameraFinalTarget = newpositionEye + cameraRotatedTarget;
