@@ -23,8 +23,8 @@ texture texDiffuseMap;
 sampler2D diffuseMap = sampler_state
 {
 	Texture = (texDiffuseMap);
-	ADDRESSU = WRAP;
-	ADDRESSV = WRAP;
+	ADDRESSU = MIRROR;
+	ADDRESSV = MIRROR;
 	MINFILTER = LINEAR;
 	MAGFILTER = LINEAR;
 	MIPFILTER = LINEAR;
@@ -111,6 +111,7 @@ struct VS_OUTPUT_PositionTextured
 {
 	float4 Position : POSITION0;
 	float2 Texcoord : TEXCOORD0;
+	float3 WPos : TEXCOORD1;
 };
 
 //Vertex Shader
@@ -124,6 +125,8 @@ VS_OUTPUT_PositionTextured vs_PositionTextured(VS_INPUT_PositionTextured input)
 	//Enviar Texcoord directamente
 	output.Texcoord = input.Texcoord;
 
+	output.WPos = mul(input.Position, matWorld).xyz;
+
 	return output;
 }
 
@@ -131,12 +134,24 @@ VS_OUTPUT_PositionTextured vs_PositionTextured(VS_INPUT_PositionTextured input)
 struct PS_INPUT_PositionTextured
 {
 	float2 Texcoord : TEXCOORD0;
+	float3 WPos : TEXCOORD1;
 };
 
 //Pixel Shader
 float4 ps_PositionTextured(PS_INPUT_PositionTextured input) : COLOR0
 {
-	return tex2D(diffuseMap, input.Texcoord);
+	//float k = 0.5 * input.WPos.y/40/255 + 0.5;
+
+	float3 dx = ddx(input.WPos);
+	float3 dy = ddy(input.WPos);
+	float3 n = normalize(cross(dx, dy));
+	float3 l = normalize(input.WPos - float3(1000,1000,0));
+	float k = 0.5 * abs(dot(n,l)) + 0.5;
+
+	//return float4(n,1);
+
+	return k * (tex2D(diffuseMap, input.Texcoord*200)*0.7 + tex2D(diffuseMap, (input.Texcoord+float2(0.12345,0.9854))*50)  * 0.3);
+	//return tex2DLOD(diffuseMap, input.Texcoord*200);
 }
 
 /*

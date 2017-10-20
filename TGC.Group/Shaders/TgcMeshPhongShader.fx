@@ -224,7 +224,8 @@ float4 ps_DiffuseMap(PS_DIFFUSE_MAP input) : COLOR0
 	//Color final: modular (Ambient + Diffuse) por el color de la textura, y luego sumar Specular.
 	float4 finalColor = float4(saturate(ambientColor + diffuseLight) * texelColor + specularLight, texelColor.a);
 
-	return finalColor;
+	//return finalColor;
+	return float4(1,1,1,1);
 }
 
 /*

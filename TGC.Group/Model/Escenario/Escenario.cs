@@ -25,7 +25,7 @@ namespace TGC.Group.Model.EscenarioGame
         // Parametros del HeightMap
         // ***********************************************************
 
-        private TgcSimpleTerrain terrain;
+        private Class1 terrain;
         private Vector3 terrainCenter = new Vector3(0, 0, 0);
         private string sceneHeightmapPath;
         private string terrainTexturePath;
@@ -110,17 +110,19 @@ namespace TGC.Group.Model.EscenarioGame
         {
             // Inicializo las Escalas
             SceneScaleY = 40f;
-            SceneScaleXZ = 200f;
+            SceneScaleXZ = 400f;
 
             // Creo el SkyBox
             CreateSkyBox();
 
             //Cargar Heightmap y textura de la Escena
             HeightmapSize = new Bitmap(sceneHeightmapPath);
-            terrain = new TgcSimpleTerrain();
+            terrain = new Class1();
             terrain.AlphaBlendEnable = true;
             terrain.loadHeightmap(sceneHeightmapPath, SceneScaleXZ, SceneScaleY, terrainCenter);
             terrain.loadTexture(terrainTexturePath);
+
+            //terrain.Effect = 
 
             // La ubicacion de los Mesh es en coordenadas Originales del HeightMap (sin escalado) [-256,256]
             SceneMeshes = new List<TgcMesh>();
@@ -134,7 +136,7 @@ namespace TGC.Group.Model.EscenarioGame
             CreateObjectsFromModel(palmModel.mesh, 150, new Vector3(-70, 0, -70), new Vector3(0.5f, 0.5f, 0.5f), 180, new float[] { 60f, 65f, 70f, 75f });
 
             arbolModel = new Arbol(env);
-            //CreateObjectsFromModel(arbolModel.mesh, 40, new Vector3(75, 0, -75), new Vector3(0.8f, 0.8f, 0.8f), 75, new float[] { 50f, 55f, 60f, 65f });
+            CreateObjectsFromModel(arbolModel.mesh, 40, new Vector3(75, 0, -75), new Vector3(0.8f, 0.8f, 0.8f), 75, new float[] { 50f, 55f, 60f, 65f });
 
             frutaModel = new Fruta(env);
             CreateObjectsFromModel(frutaModel.mesh, 70, new Vector3(-90, 0, 75), new Vector3(0.8f, 0.8f, 0.8f), 120, new float[] { 2f, 2f, 2f, 2f });
@@ -301,7 +303,7 @@ namespace TGC.Group.Model.EscenarioGame
         {
             // Inicializo el SkyBox
             skyBoxCenter = new Vector3(0, 0, 0);
-            skyBoxSize = new Vector3(3600 * SceneScaleXZ, 3600 * SceneScaleXZ, 3600 * SceneScaleXZ);
+            skyBoxSize = new Vector3(1800 * SceneScaleXZ, 1800 * SceneScaleXZ, 1800 * SceneScaleXZ);
             skyBoxSkyEpsilon = 7800f;
 
             // Creo los SkyBox según el momento del día

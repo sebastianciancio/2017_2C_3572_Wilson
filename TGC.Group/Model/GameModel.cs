@@ -93,8 +93,8 @@ namespace TGC.Group.Model
         private void InitCamera()
         {
             // Usar Coordenadas Originales del HeightMap [-256,256]
-            var posicionCamaraX = 170;
-            var posicionCamaraZ = 8;
+            var posicionCamaraX = 110;
+            var posicionCamaraZ = 110;
             var posicionCamaraY = terreno.CalcularAlturaTerreno(posicionCamaraX, posicionCamaraZ);
 
             var alturaOjos = 0f;

@@ -181,12 +181,10 @@ namespace TGC.Group.Model.Camara
                     {
                         env.personaje.guardarObjetoInventario(obj);
                     }
-                    
+
                     break;
                 }
             }
-
-            
 
             //Si hubo colision, restaurar la posicion anterior de la camara
             if (collide)
@@ -229,7 +227,6 @@ namespace TGC.Group.Model.Camara
             var newcameraFinalTarget = newpositionEye + cameraRotatedTarget;
 
             base.SetCamera(newpositionEye, newcameraFinalTarget, cameraRotatedUpVector);
-
         }
 
         /// <summary>
