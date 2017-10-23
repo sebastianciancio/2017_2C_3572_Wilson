@@ -27,6 +27,7 @@ namespace TGC.Group.Model.Escenario
 
             meshPath = getMeshPath();
             mesh = loader.loadSceneFromFile(meshPath).Meshes[0];
+            mesh.BoundingBox.scaleTranslate(mesh.Position, new Vector3(0.3f, 0.3f, 0.3f));
         }
         
         public void Update(float ElapsedTime)

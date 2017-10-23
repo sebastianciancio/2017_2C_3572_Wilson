@@ -15,6 +15,16 @@ namespace TGC.Group.Model.SpriteGame
         private CustomSprite gameover;
         private CustomSprite vaso;
         private CustomSprite comida;
+        private CustomSprite inventario0;
+        private CustomSprite inventario1;
+        private CustomSprite inventario2;
+        private CustomSprite inventario3;
+        private CustomSprite inventario4;
+        private TgcText2D inventario0text;
+        private TgcText2D inventario1text;
+        private TgcText2D inventario2text;
+        private TgcText2D inventario3text;
+        private TgcText2D inventario4text;
         private TgcText2D txtHambre;
         private TgcText2D txtSed;
         private TgcText2D txtCansancio;
@@ -61,10 +71,61 @@ namespace TGC.Group.Model.SpriteGame
                        D3DDevice.Instance.Height - (textureSize.Height * 0.15f) - 150);
             comida.Scaling = new Vector2(0.15f, 0.15f);
 
+            //Crear Inventario0 512 x 512
+            inventario0 = new CustomSprite();
+            inventario0.Bitmap = new CustomBitmap(env.MediaDir + "\\HUD\\food.png", D3DDevice.Instance.Device);
+            textureSize = inventario0.Bitmap.Size;
+            inventario0.Position = new Vector2(
+                       D3DDevice.Instance.Width - (textureSize.Width * 0.15f) - 10,
+                       D3DDevice.Instance.Height - (textureSize.Height * 0.15f) - 900);
+            inventario0.Scaling = new Vector2(0.15f, 0.15f);
+
+            //Crear Inventario1 512 x 512
+            inventario1 = new CustomSprite();
+            inventario1.Bitmap = new CustomBitmap(env.MediaDir + "\\HUD\\food.png", D3DDevice.Instance.Device);
+            textureSize = inventario1.Bitmap.Size;
+            inventario1.Position = new Vector2(
+                       D3DDevice.Instance.Width - (textureSize.Width * 0.15f) - 10,
+                       D3DDevice.Instance.Height - (textureSize.Height * 0.15f) - 800);
+            inventario1.Scaling = new Vector2(0.15f, 0.15f);
+
+            //Crear Inventario2 512 x 512
+            inventario2 = new CustomSprite();
+            inventario2.Bitmap = new CustomBitmap(env.MediaDir + "\\HUD\\food.png", D3DDevice.Instance.Device);
+            textureSize = inventario2.Bitmap.Size;
+            inventario2.Position = new Vector2(
+                       D3DDevice.Instance.Width - (textureSize.Width * 0.15f) - 10,
+                       D3DDevice.Instance.Height - (textureSize.Height * 0.15f) - 700);
+            inventario2.Scaling = new Vector2(0.15f, 0.15f);
+
+            //Crear Inventario3 512 x 512
+            inventario3 = new CustomSprite();
+            inventario3.Bitmap = new CustomBitmap(env.MediaDir + "\\HUD\\food.png", D3DDevice.Instance.Device);
+            textureSize = inventario3.Bitmap.Size;
+            inventario3.Position = new Vector2(
+                       D3DDevice.Instance.Width - (textureSize.Width * 0.15f) - 10,
+                       D3DDevice.Instance.Height - (textureSize.Height * 0.15f) - 600);
+            inventario3.Scaling = new Vector2(0.15f, 0.15f);
+
+            //Crear Inventario4 512 x 512
+            inventario4 = new CustomSprite();
+            inventario4.Bitmap = new CustomBitmap(env.MediaDir + "\\HUD\\food.png", D3DDevice.Instance.Device);
+            textureSize = inventario4.Bitmap.Size;
+            inventario4.Position = new Vector2(
+                       D3DDevice.Instance.Width - (textureSize.Width * 0.15f) - 10,
+                       D3DDevice.Instance.Height - (textureSize.Height * 0.15f) - 500);
+            inventario4.Scaling = new Vector2(0.15f, 0.15f);
+
             // Inicializo los puntos de vida
             txtHambre = new TgcText2D();
             txtSed = new TgcText2D();
             txtCansancio = new TgcText2D();
+
+            inventario0text = new TgcText2D();
+            inventario1text = new TgcText2D();
+            inventario2text = new TgcText2D();
+            inventario3text = new TgcText2D();
+            inventario4text = new TgcText2D();
 
             //Crear GameOver 549 x 245
             gameover = new CustomSprite();
@@ -97,6 +158,12 @@ namespace TGC.Group.Model.SpriteGame
             InicializarTextos(txtSed, Color.Blue, TgcText2D.TextAlign.RIGHT, new Point(D3DDevice.Instance.Width - 130, D3DDevice.Instance.Height - 300), new Size(100, 100), new Font("TimesNewRoman", 25, FontStyle.Bold));
             InicializarTextos(txtHambre, Color.Red, TgcText2D.TextAlign.RIGHT, new Point(D3DDevice.Instance.Width - 125, D3DDevice.Instance.Height - 200), new Size(100, 100), new Font("TimesNewRoman", 25, FontStyle.Bold));
             InicializarTextos(txtCansancio, Color.Yellow, TgcText2D.TextAlign.RIGHT, new Point(D3DDevice.Instance.Width - 130, D3DDevice.Instance.Height - 120), new Size(100, 100), new Font("TimesNewRoman", 25, FontStyle.Bold));
+
+            InicializarTextos(inventario0text, Color.Black, TgcText2D.TextAlign.RIGHT, new Point(D3DDevice.Instance.Width - 60, D3DDevice.Instance.Height - 950), new Size(40, 40), new Font("TimesNewRoman", 25, FontStyle.Bold));
+            InicializarTextos(inventario1text, Color.Black, TgcText2D.TextAlign.RIGHT, new Point(D3DDevice.Instance.Width - 60, D3DDevice.Instance.Height - 850), new Size(40, 40), new Font("TimesNewRoman", 25, FontStyle.Bold));
+            InicializarTextos(inventario2text, Color.Black, TgcText2D.TextAlign.RIGHT, new Point(D3DDevice.Instance.Width - 60, D3DDevice.Instance.Height - 750), new Size(40, 40), new Font("TimesNewRoman", 25, FontStyle.Bold));
+            InicializarTextos(inventario3text, Color.Black, TgcText2D.TextAlign.RIGHT, new Point(D3DDevice.Instance.Width - 60, D3DDevice.Instance.Height - 650), new Size(40, 40), new Font("TimesNewRoman", 25, FontStyle.Bold));
+            InicializarTextos(inventario4text, Color.Black, TgcText2D.TextAlign.RIGHT, new Point(D3DDevice.Instance.Width - 60, D3DDevice.Instance.Height - 550), new Size(40, 40), new Font("TimesNewRoman", 25, FontStyle.Bold));
         }
 
         public void Update(float ElapsedTime)
@@ -104,6 +171,12 @@ namespace TGC.Group.Model.SpriteGame
             txtCansancio.Text = env.personaje.Cansancio.ToString();
             txtHambre.Text = env.personaje.Hambre.ToString();
             txtSed.Text = env.personaje.Sed.ToString();
+
+            inventario0text.Text = env.personaje.Inventario[0].cantidad.ToString();
+            inventario1text.Text = env.personaje.Inventario[1].cantidad.ToString();
+            inventario2text.Text = env.personaje.Inventario[2].cantidad.ToString();
+            inventario3text.Text = env.personaje.Inventario[3].cantidad.ToString();
+            inventario4text.Text = env.personaje.Inventario[4].cantidad.ToString();
         }
 
         public void Render()
@@ -116,6 +189,11 @@ namespace TGC.Group.Model.SpriteGame
             drawer2D.DrawSprite(personaje);
             drawer2D.DrawSprite(comida);
             drawer2D.DrawSprite(vaso);
+            drawer2D.DrawSprite(inventario0);
+            drawer2D.DrawSprite(inventario1);
+            drawer2D.DrawSprite(inventario2);
+            drawer2D.DrawSprite(inventario3);
+            drawer2D.DrawSprite(inventario4);
 
             //Finalizar el dibujado de Sprites
             drawer2D.EndDrawSprite();
@@ -125,6 +203,11 @@ namespace TGC.Group.Model.SpriteGame
             txtSed.render();
             txtHambre.render();
 
+            inventario0text.render();
+            inventario1text.render();
+            inventario2text.render();
+            inventario3text.render();
+            inventario4text.render();
         }
 
         public void Dispose()

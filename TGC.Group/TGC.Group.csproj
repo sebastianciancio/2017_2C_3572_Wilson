@@ -113,6 +113,7 @@
     <Compile Include="Model\Objetos\Fruta.cs" />
     <Compile Include="Model\Objetos\Piedra.cs" />
     <Compile Include="Model\Objetos\Madera.cs" />
+    <Compile Include="Model\Personaje\ObjetoInventario.cs" />
     <Compile Include="Model\Sounds\Musica.cs" />
     <!--  <Compile Include="Model\Sounds\Sonido.cs" />
     <Compile Include="Model\CustomSprite.cs" />

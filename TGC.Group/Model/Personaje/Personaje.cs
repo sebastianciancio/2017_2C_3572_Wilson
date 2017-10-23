@@ -11,7 +11,7 @@ namespace TGC.Group.Model.Character
     {
         private GameModel env;
 
-        private List<Objeto> Inventario { get; set; }
+        public List<ObjetoInventario> Inventario { get; set; }
 
         public float MaxHambre { get; set; } = 100;
         public float MaxSed { get; set; } = 100;
@@ -37,10 +37,13 @@ namespace TGC.Group.Model.Character
         public void Init()
         {
             this.Posicion = new Vector3(0f, 0f, 0f);
-            Inventario = new List<Objeto>();
+            Inventario = new List<ObjetoInventario>();
+            for(var i = 0; i < 5; i++) {
+                Inventario.Add(new ObjetoInventario());
+            }
 
             // Creo la Espera que envuelve al personaje para detectar colisiones
-            BoundingSphere = new TgcBoundingSphere(new Vector3(0 * env.terreno.SceneScaleXZ, env.terreno.CalcularAlturaTerreno(0, -90) * env.terreno.SceneScaleY + 10, -90 * env.terreno.SceneScaleXZ), 5.75f);
+            BoundingSphere = new TgcBoundingSphere(new Vector3(0 * env.terreno.SceneScaleXZ, env.terreno.CalcularAlturaTerreno(0, -90) * env.terreno.SceneScaleY + 10, -90 * env.terreno.SceneScaleXZ), 0.1f);
             BoundingSphere.setRenderColor(Color.Yellow);
         }
 
@@ -109,7 +112,18 @@ namespace TGC.Group.Model.Character
 
         public void guardarObjetoInventario(Objeto item)
         {
-            this.Inventario.Add(item);
+            var exists = Inventario.Exists(x => x.objeto.GetType() == item.GetType());
+            if (exists) {
+                var index = Inventario.FindIndex(x => x.objeto.GetType() == item.GetType());
+                Inventario[index].cantidad++;
+            } else {
+                if(Inventario.Count <= 5) {
+                    var n = new ObjetoInventario();
+                    n.objeto = item;
+                    n.cantidad = 1;
+                    Inventario.Add(n);
+                }
+            }
         }
 
 
