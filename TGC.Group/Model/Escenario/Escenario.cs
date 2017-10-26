@@ -11,6 +11,8 @@ using TGC.Group.Model.Escenario;
 using TGC.Examples.Optimization.Quadtree;
 using TGC.Core.BoundingVolumes;
 using Microsoft.DirectX.Direct3D;
+using TGC.Core.Shaders;
+using TGC.Core.Fog;
 
 namespace TGC.Group.Model.EscenarioGame
 {
@@ -34,7 +36,8 @@ namespace TGC.Group.Model.EscenarioGame
         // ***********************************************************
         // Parametros del SkyBox
         // ***********************************************************
-
+        private Effect effectSkyBox;
+        private TgcFog fog;
         public TgcSkyBox[] skyBoxGame;
         private string skyTexturePath;
         private Vector3 skyBoxCenter;
@@ -66,15 +69,17 @@ namespace TGC.Group.Model.EscenarioGame
         //private string palm2MeshPath;
         //private string palm3MeshPath;
 
+        private string fogataPath;
+
         private Palmera palmModel;
         private Roca rockModel;
         //private Planta plantModel;
-        private Arbol arbolModel;
+        //private Arbol arbolModel;
         //private TgcMesh arbolFrutalModel;
         private Fruta frutaModel;
         private Pino pinoModel;
         //private TgcMesh palm2Model;
-        //private TgcMesh palm3Model;
+        private TgcMesh fogataModel;
 
         public int totalMeshesRenderizados;
 
@@ -94,6 +99,9 @@ namespace TGC.Group.Model.EscenarioGame
             terrainTexturePath = env.MediaDir + "Isla\\pasto_textura.png";
             skyTexturePath = env.MediaDir + "SkyBox\\";
 
+            //Cargar Shader personalizado
+            //effectSkyBox = TgcShaders.loadEffect(env.ShadersDir + "TgcFogShader.fx");
+
             //palmMeshPath = env.MediaDir + "Palmera\\Palmera-TgcScene.xml";
             //rockMeshPath = env.MediaDir + "Roca\\Roca-TgcScene.xml";
             //arbolMeshPath = env.MediaDir + "ArbolSelvatico\\ArbolSelvatico-TgcScene.xml";
@@ -104,6 +112,8 @@ namespace TGC.Group.Model.EscenarioGame
             //arbolFrutalMeshPath = env.MediaDir + "ArbustoFruta\\Peach-TgcScene.xml";
             //palm2MeshPath = env.MediaDir + "Palmera2\\Palmera2-TgcScene.xml";
             //palm3MeshPath = env.MediaDir + "Palmera3\\Palmera3-TgcScene.xml";
+
+            fogataPath = env.MediaDir + "Fogata\\Fogata-TgcScene.xml";
         }
 
         public void Init()
@@ -115,6 +125,9 @@ namespace TGC.Group.Model.EscenarioGame
             // Creo el SkyBox
             CreateSkyBox();
 
+            // Creo la Niebla
+            //fog = new TgcFog();
+
             //Cargar Heightmap y textura de la Escena
             HeightmapSize = new Bitmap(sceneHeightmapPath);
             terrain = new Class1();
@@ -124,25 +137,26 @@ namespace TGC.Group.Model.EscenarioGame
 
             //terrain.Effect = 
 
-            // La ubicacion de los Mesh es en coordenadas Originales del HeightMap (sin escalado) [-256,256]
+            // La ubicacion de los Mesh es en coordenadas Originales del HeightMap (sin escalado) [-128,128]
             SceneMeshes = new List<TgcMesh>();
             Destroyables = new List<ObjetoEscena>();
             loader = new TgcSceneLoader();
 
             rockModel = new Roca(env);
-            CreateObjectsFromModel(rockModel.mesh, 200, new Vector3(-160, 0, 20), new Vector3(0.9f, 0.9f, 0.9f), 90, new float[] { 30f, 35f, 40f, 45f });
+            CreateObjectsFromModel(rockModel.mesh, 50, new Vector3(0, 0, 0), new Vector3(0.9f, 0.9f, 0.9f), 90, new float[] { 30f, 35f, 40f, 45f });
 
             palmModel = new Palmera(env);
-            CreateObjectsFromModel(palmModel.mesh, 150, new Vector3(-70, 0, -70), new Vector3(0.5f, 0.5f, 0.5f), 180, new float[] { 60f, 65f, 70f, 75f });
+            CreateObjectsFromModel(palmModel.mesh, 100, new Vector3(-50, 0, 0), new Vector3(0.5f, 0.5f, 0.5f), 78, new float[] { 60f, 65f, 70f, 75f });
 
-            arbolModel = new Arbol(env);
-            CreateObjectsFromModel(arbolModel.mesh, 40, new Vector3(75, 0, -75), new Vector3(0.8f, 0.8f, 0.8f), 75, new float[] { 50f, 55f, 60f, 65f });
+            //arbolModel = new Arbol(env);
+            //CreateObjectsFromModel(arbolModel.mesh, 0, new Vector3(75, 0, -75), new Vector3(0.8f, 0.8f, 0.8f), 75, new float[] { 50f, 55f, 60f, 65f });
 
             frutaModel = new Fruta(env);
-            CreateObjectsFromModel(frutaModel.mesh, 70, new Vector3(-90, 0, 75), new Vector3(0.8f, 0.8f, 0.8f), 120, new float[] { 2f, 2f, 2f, 2f });
+            CreateObjectsFromModel(frutaModel.mesh, 300, new Vector3(0, 0, 0), new Vector3(0.8f, 0.8f, 0.8f), 125, new float[] { 2f, 2f, 2f, 2f });
 
             pinoModel = new Pino(env);
-            CreateObjectsFromModel(pinoModel.mesh, 70, new Vector3(-75, 0, 75), new Vector3(0.8f, 0.8f, 0.8f), 120, new float[] { 50, 55f, 60f, 65f });
+            CreateObjectsFromModel(pinoModel.mesh, 50, new Vector3(64, 0, 0), new Vector3(0.8f, 0.8f, 0.8f), 60, new float[] { 50, 55f, 60f, 65f });
+            CreateObjectsFromModel(pinoModel.mesh, 50, new Vector3(0, 0, 64), new Vector3(0.8f, 0.8f, 0.8f), 60, new float[] { 50, 55f, 60f, 65f });
 
             //plantModel = loader.loadSceneFromFile(plantMeshPath).Meshes[0];
             //CreateObjectsFromModel(plantModel, 70, new Vector3(75, 0, -75), new Vector3(0.8f, 0.8f, 0.8f), 75, new float[] { 50f, 55f, 60f, 65f });
@@ -156,15 +170,18 @@ namespace TGC.Group.Model.EscenarioGame
             //palm3Model = loader.loadSceneFromFile(palm3MeshPath).Meshes[0];
             //CreateObjectsFromModel(palm3Model, 70, new Vector3(-10, 0, -60), new Vector3(0.8f, 0.8f, 0.8f), 80, new float[] { 10f, 15f, 20f, 25f });
 
+            fogataModel = loader.loadSceneFromFile(fogataPath).Meshes[0];
+            CreateObjectsFromModel(fogataModel, 1, new Vector3(100, 0, 100), new Vector3(0.8f, 0.8f, 0.8f), 10, new float[] { 50, 55f, 60f, 65f });
+
 
             //Crear Quadtree: Defino el BoundinBox del Escenario
             triangle = new CustomVertex.PositionColored[5];
-            triangle[0] = new CustomVertex.PositionColored(-256* SceneScaleXZ, 0, 0, Color.Green.ToArgb());
-            triangle[1] = new CustomVertex.PositionColored(0, 0, 256 * SceneScaleXZ, Color.Green.ToArgb());
-            triangle[2] = new CustomVertex.PositionColored(0, 300 * SceneScaleY, 0, Color.Green.ToArgb());
+            triangle[0] = new CustomVertex.PositionColored(-128* SceneScaleXZ, 0, 0, Color.Green.ToArgb());
+            triangle[1] = new CustomVertex.PositionColored(0, 0, 128 * SceneScaleXZ, Color.Green.ToArgb());
+            triangle[2] = new CustomVertex.PositionColored(0, 130 * SceneScaleY, 0, Color.Green.ToArgb());
 
-            triangle[3] = new CustomVertex.PositionColored(256 * SceneScaleXZ, 0, 0, Color.Green.ToArgb());
-            triangle[4] = new CustomVertex.PositionColored(0, 0, -256 * SceneScaleXZ, Color.Green.ToArgb());
+            triangle[3] = new CustomVertex.PositionColored(128 * SceneScaleXZ, 0, 0, Color.Green.ToArgb());
+            triangle[4] = new CustomVertex.PositionColored(0, 0, -128 * SceneScaleXZ, Color.Green.ToArgb());
 
             terrainBoundingBox =
                 TgcBoundingAxisAlignBox.computeFromPoints(new[]
@@ -202,10 +219,38 @@ namespace TGC.Group.Model.EscenarioGame
 
         public void Render(float elapsedTime)
         {
+/*
+            //Cargo los valores de niebla
+            fog.Enabled = true;
+            fog.StartDistance = 1600f * SceneScaleXZ;
+            fog.EndDistance = 5000f * SceneScaleXZ;
+            fog.Density = 0.0025f;
+            fog.Color = Color.LightGray;
+
+            if (fog.Enabled)
+            {
+                fog.updateValues();
+            }
+
+            // Cargamos las variables de shader, color del fog.
+            effectSkyBox.SetValue("ColorFog", fog.Color.ToArgb());
+            effectSkyBox.SetValue("CameraPos", TgcParserUtils.vector3ToFloat4Array(env.Camara.Position));
+            effectSkyBox.SetValue("StartFogDistance", fog.StartDistance);
+            effectSkyBox.SetValue("EndFogDistance", fog.EndDistance);
+            effectSkyBox.SetValue("Density", fog.Density);
+
+            //Actualizar valores del SkyBox
+            foreach (var mesh in skyBoxGame[env.horaDelDia].Faces)
+            {
+                mesh.Effect = effectSkyBox;
+                mesh.Technique = "RenderScene";
+                mesh.render();
+            }
+*/
             skyBoxGame[env.horaDelDia].render();
             terrain.render();
             RenderSceneMeshes();
-            quadtree.render(env.Frustum, true);
+            quadtree.render(env.Frustum, false);
         }
 
         public void Dispose()
@@ -258,6 +303,7 @@ namespace TGC.Group.Model.EscenarioGame
                     instance.Position = new Vector3( x * SceneScaleXZ ,CalcularAlturaTerreno(x, z) * SceneScaleY, z * SceneScaleXZ);
                     instance.rotateY(scalaRotacionObjetos[rnd.Next(0, scalaRotacionObjetos.Length)]);
                     instance.AlphaBlendEnable = true;
+                    instance.Enabled = true;
 
                     // Lo guardo en una Lista de Objetos que están en el Escenario
                     SceneMeshes.Add(instance);
@@ -421,19 +467,18 @@ namespace TGC.Group.Model.EscenarioGame
             totalMeshesRenderizados = 0;
             foreach (var mesh in SceneMeshes)
             {
-                //Nos ocupamos solo de las mallas habilitadas
-                if (mesh.Enabled)
+                //Solo mostrar la malla si colisiona contra el Frustum
+                var r = TgcCollisionUtils.classifyFrustumAABB(env.Frustum, mesh.BoundingBox);
+                if (r != TgcCollisionUtils.FrustumResult.OUTSIDE)
                 {
-                    //Solo mostrar la malla si colisiona contra el Frustum
-                    var r = TgcCollisionUtils.classifyFrustumAABB(env.Frustum, mesh.BoundingBox);
-                    if (r != TgcCollisionUtils.FrustumResult.OUTSIDE)
-                    {
-                        mesh.render();
-                        totalMeshesRenderizados++;
-                    }
+                    mesh.render();
+                    totalMeshesRenderizados++;
                 }
             }
 
+/*
+  
+            
             foreach (var dest in Destroyables)
             {
                 //Solo mostrar la malla si colisiona contra el Frustum
@@ -444,6 +489,7 @@ namespace TGC.Group.Model.EscenarioGame
                     totalMeshesRenderizados++;
                 }
             }
+*/
         }
     }
 }
