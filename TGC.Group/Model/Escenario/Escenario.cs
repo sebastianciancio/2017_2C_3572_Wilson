@@ -31,10 +31,14 @@ namespace TGC.Group.Model.EscenarioGame
         // ***********************************************************
 
         public Class1 terrain;
+        public Class1 mar;
         private Vector3 terrainCenter;
         private string sceneHeightmapPath;
         private string terrainTexturePath;
         public Bitmap HeightmapSize { get; set; }
+
+        private string marHeightmapPath;
+        private string marTexturePath;
 
         // ***********************************************************
         // Parametros del SkyBox
@@ -74,7 +78,6 @@ namespace TGC.Group.Model.EscenarioGame
         //private TgcMesh palm2Model;
         private TgcMesh fogataModel;
 
-        private TgcPlane planoAgua;
         private TgcTexture textureAgua;
         private Effect effectAgua;
         private float time;
@@ -96,6 +99,9 @@ namespace TGC.Group.Model.EscenarioGame
             sceneHeightmapPath = env.MediaDir + "Isla\\isla_heightmap.png";
             terrainTexturePath = env.MediaDir + "Isla\\pasto_textura.png";
             skyTexturePath = env.MediaDir + "SkyBox\\";
+
+            marHeightmapPath = env.MediaDir + "Isla\\height_mar.jpg";
+            marTexturePath = env.MediaDir + "Isla\\agua.jpg";
 
             //Cargar Shader personalizado
             //effectSkyBox = TgcShaders.loadEffect(env.ShadersDir + "TgcFogShader.fx");
@@ -121,24 +127,18 @@ namespace TGC.Group.Model.EscenarioGame
             terrain.loadHeightmap(sceneHeightmapPath, SceneScaleXZ, SceneScaleY, terrainCenter);
             terrain.loadTexture(terrainTexturePath);
 
-            // Creo el SkyBox
-            CreateSkyBox();
-
             // Creo el agua
-
-            planoAgua = new TgcPlane();
-            textureAgua = TgcTexture.createTexture(D3DDevice.Instance.Device, skyTexturePath + "lostatseaday_dn.jpg");
-            planoAgua.setTexture(textureAgua);
-
-            planoAgua.Origin = new Vector3(0 * SceneScaleXZ, 29 * SceneScaleY, 0 * SceneScaleXZ); ;
-            planoAgua.Size = new Vector3(1000f * SceneScaleXZ, 1000f * SceneScaleXZ, 1000f * SceneScaleXZ);
-            planoAgua.Orientation = TgcPlane.Orientations.XZplane;
-
             effectAgua = TgcShaders.loadEffect(env.ShadersDir + "BasicShader.fx");
 
-            planoAgua.Effect = effectAgua;
-            planoAgua.Technique = "RenderScene";
-            
+            mar = new Class1();
+            mar.AlphaBlendEnable = true;
+            mar.loadHeightmap(marHeightmapPath,  9 * SceneScaleXZ, 2 * SceneScaleY, new Vector3(0, -200, 0));
+            mar.loadTexture(marTexturePath);
+            mar.Effect = effectAgua;
+            mar.Technique = "RenderScene";
+
+            // Creo el SkyBox
+            CreateSkyBox();
 
             // La ubicacion de los Mesh es en coordenadas Originales del HeightMap (sin escalado) [-128,128]
             SceneMeshes = new List<TgcMesh>();
@@ -256,8 +256,7 @@ namespace TGC.Group.Model.EscenarioGame
 */
             skyBoxGame[env.horaDelDia].render();
             terrain.render();
-            planoAgua.render();
-            planoAgua.updateValues();
+            mar.render();
             RenderSceneMeshes();
             quadtree.render(env.Frustum, false);
 
@@ -268,6 +267,7 @@ namespace TGC.Group.Model.EscenarioGame
         {
             // Se libera el Terreno
             terrain.dispose();
+            mar.dispose();
 
             // Se liberan los elementos de la escena
             foreach (var mesh in SceneMeshes)
