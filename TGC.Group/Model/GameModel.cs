@@ -10,7 +10,7 @@ using TGC.Core.Shaders;
 using TGC.Core.Textures;
 using Microsoft.DirectX.Direct3D;
 using Microsoft.DirectX.DirectInput;
-
+using TGC.Core.Utils;
 
 namespace TGC.Group.Model
 {
@@ -86,9 +86,7 @@ namespace TGC.Group.Model
                 Matrix.PerspectiveFovLH(D3DDevice.Instance.FieldOfView,
                     D3DDevice.Instance.AspectRatio,
                     D3DDevice.Instance.ZNearPlaneDistance,
-                    D3DDevice.Instance.ZFarPlaneDistance * 100f);
-
-
+                    D3DDevice.Instance.ZFarPlaneDistance * 560f);
 
 
             //Cargar shader con efectos de Post-Procesado
@@ -188,9 +186,9 @@ namespace TGC.Group.Model
 
         private void InitCamera()
         {
-            // Usar Coordenadas Originales del HeightMap [-256,256]
-            var posicionCamaraX = 110;
-            var posicionCamaraZ = 110;
+            // Usar Coordenadas Originales del HeightMap [-32,32]
+            var posicionCamaraX = 30;
+            var posicionCamaraZ = 30;
             var posicionCamaraY = terreno.CalcularAlturaTerreno(posicionCamaraX, posicionCamaraZ);
 
             var alturaOjos = 0f;
@@ -210,8 +208,15 @@ namespace TGC.Group.Model
 
             DrawText.changeFont((new System.Drawing.Font("TimesNewRoman", 12)));
 
-            DrawText.drawText("Mesh total: \n" + terreno.SceneMeshes.Count, 0, 20, Color.OrangeRed);
-            DrawText.drawText("Mesh renderizados: \n" + terreno.totalMeshesRenderizados, 0, 100, Color.OrangeRed);
+            DrawText.drawText("Mesh total: \n" + terreno.SceneMeshes.Count, 500, 20, Color.OrangeRed);
+            DrawText.drawText("Mesh renderizados: \n" + terreno.totalMeshesRenderizados, 500, 100, Color.OrangeRed);
+
+            DrawText.drawText("Camera position: \n" + Camara.Position, 0, 20, Color.OrangeRed);
+            DrawText.drawText("Camera LookAt: \n" + Camara.LookAt, 0, 100, Color.OrangeRed);
+            DrawText.drawText("Camera (Coordenada X Original): \n" + (int)(Camara.Position.X / terreno.SceneScaleXZ), 200, 20, Color.OrangeRed);
+            DrawText.drawText("Camera (Coordenada Z Original): \n" + (int)(Camara.Position.Z / terreno.SceneScaleXZ), 200, 100, Color.OrangeRed);
+            DrawText.drawText("Camera (Coordenada Y Terreno): \n" + terreno.CalcularAlturaTerreno((int)(Camara.Position.X / terreno.SceneScaleXZ), (int)(Camara.Position.Z / terreno.SceneScaleXZ)), 200, 180, Color.OrangeRed);
+
 
             /*
             DrawText.drawText("usoHorario: \n" + usoHorario, 200, 20, Color.OrangeRed);

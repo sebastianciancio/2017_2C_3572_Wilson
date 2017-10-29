@@ -13,6 +13,9 @@ using TGC.Core.BoundingVolumes;
 using Microsoft.DirectX.Direct3D;
 using TGC.Core.Shaders;
 using TGC.Core.Fog;
+using TGC.Core.Geometry;
+using TGC.Core.Textures;
+using TGC.Core.Direct3D;
 
 namespace TGC.Group.Model.EscenarioGame
 {
@@ -27,8 +30,8 @@ namespace TGC.Group.Model.EscenarioGame
         // Parametros del HeightMap
         // ***********************************************************
 
-        private Class1 terrain;
-        private Vector3 terrainCenter = new Vector3(0, 0, 0);
+        public Class1 terrain;
+        private Vector3 terrainCenter;
         private string sceneHeightmapPath;
         private string terrainTexturePath;
         public Bitmap HeightmapSize { get; set; }
@@ -36,8 +39,7 @@ namespace TGC.Group.Model.EscenarioGame
         // ***********************************************************
         // Parametros del SkyBox
         // ***********************************************************
-        private Effect effectSkyBox;
-        private TgcFog fog;
+
         public TgcSkyBox[] skyBoxGame;
         private string skyTexturePath;
         private Vector3 skyBoxCenter;
@@ -59,15 +61,6 @@ namespace TGC.Group.Model.EscenarioGame
         private TgcSceneLoader loader;
         private bool ShowBoundingBox { get; set; }
 
-        //private string palmMeshPath;
-        //private string rockMeshPath;
-        //private string plantMeshPath;
-        //private string arbolMeshPath;
-        //private string arbolFrutalMeshPath;
-        //private string frutaMeshPath;
-        //private string pinoMeshPath;
-        //private string palm2MeshPath;
-        //private string palm3MeshPath;
 
         private string fogataPath;
 
@@ -80,6 +73,11 @@ namespace TGC.Group.Model.EscenarioGame
         private Pino pinoModel;
         //private TgcMesh palm2Model;
         private TgcMesh fogataModel;
+
+        private TgcPlane planoAgua;
+        private TgcTexture textureAgua;
+        private Effect effectAgua;
+        private float time;
 
         public int totalMeshesRenderizados;
 
@@ -102,40 +100,45 @@ namespace TGC.Group.Model.EscenarioGame
             //Cargar Shader personalizado
             //effectSkyBox = TgcShaders.loadEffect(env.ShadersDir + "TgcFogShader.fx");
 
-            //palmMeshPath = env.MediaDir + "Palmera\\Palmera-TgcScene.xml";
-            //rockMeshPath = env.MediaDir + "Roca\\Roca-TgcScene.xml";
-            //arbolMeshPath = env.MediaDir + "ArbolSelvatico\\ArbolSelvatico-TgcScene.xml";
-            //frutaMeshPath = env.MediaDir + "Fruta\\Fruta-TgcScene.xml";
-            //pinoMeshPath = env.MediaDir + "Pino\\Pino-TgcScene.xml";
-
-            //plantMeshPath = env.MediaDir + "Planta3\\Planta3-TgcScene.xml";
-            //arbolFrutalMeshPath = env.MediaDir + "ArbustoFruta\\Peach-TgcScene.xml";
-            //palm2MeshPath = env.MediaDir + "Palmera2\\Palmera2-TgcScene.xml";
-            //palm3MeshPath = env.MediaDir + "Palmera3\\Palmera3-TgcScene.xml";
-
             fogataPath = env.MediaDir + "Fogata\\Fogata-TgcScene.xml";
         }
 
         public void Init()
         {
             // Inicializo las Escalas
-            SceneScaleY = 40f;
-            SceneScaleXZ = 400f;
-
-            // Creo el SkyBox
-            CreateSkyBox();
+            SceneScaleY = 3 * 40f;
+            SceneScaleXZ = 20 * 400f;
 
             // Creo la Niebla
             //fog = new TgcFog();
 
             //Cargar Heightmap y textura de la Escena
             HeightmapSize = new Bitmap(sceneHeightmapPath);
+
+            terrainCenter = new Vector3(0, 0, 0);
             terrain = new Class1();
             terrain.AlphaBlendEnable = true;
             terrain.loadHeightmap(sceneHeightmapPath, SceneScaleXZ, SceneScaleY, terrainCenter);
             terrain.loadTexture(terrainTexturePath);
 
-            //terrain.Effect = 
+            // Creo el SkyBox
+            CreateSkyBox();
+
+            // Creo el agua
+
+            planoAgua = new TgcPlane();
+            textureAgua = TgcTexture.createTexture(D3DDevice.Instance.Device, skyTexturePath + "lostatseaday_dn.jpg");
+            planoAgua.setTexture(textureAgua);
+
+            planoAgua.Origin = new Vector3(0 * SceneScaleXZ, 29 * SceneScaleY, 0 * SceneScaleXZ); ;
+            planoAgua.Size = new Vector3(1000f * SceneScaleXZ, 1000f * SceneScaleXZ, 1000f * SceneScaleXZ);
+            planoAgua.Orientation = TgcPlane.Orientations.XZplane;
+
+            effectAgua = TgcShaders.loadEffect(env.ShadersDir + "BasicShader.fx");
+
+            planoAgua.Effect = effectAgua;
+            planoAgua.Technique = "RenderScene";
+            
 
             // La ubicacion de los Mesh es en coordenadas Originales del HeightMap (sin escalado) [-128,128]
             SceneMeshes = new List<TgcMesh>();
@@ -143,20 +146,21 @@ namespace TGC.Group.Model.EscenarioGame
             loader = new TgcSceneLoader();
 
             rockModel = new Roca(env);
-            CreateObjectsFromModel(rockModel.mesh, 50, new Vector3(0, 0, 0), new Vector3(0.9f, 0.9f, 0.9f), 90, new float[] { 30f, 35f, 40f, 45f });
+            CreateObjectsFromModel(rockModel.mesh, 100, new Vector3(0, 0, 0), new Vector3(0.9f, 0.9f, 0.9f), (HeightmapSize.Width / 3), new float[] { 30f, 35f, 40f, 45f });
 
             palmModel = new Palmera(env);
-            CreateObjectsFromModel(palmModel.mesh, 100, new Vector3(-50, 0, 0), new Vector3(0.5f, 0.5f, 0.5f), 78, new float[] { 60f, 65f, 70f, 75f });
+            CreateObjectsFromModel(palmModel.mesh, 50, new Vector3((HeightmapSize.Width / 5)*-1, 0, 0), new Vector3(0.5f, 0.5f, 0.5f), (HeightmapSize.Width / 3), new float[] { 60f, 65f, 70f, 75f });
+            CreateObjectsFromModel(palmModel.mesh, 50, new Vector3((HeightmapSize.Width / 6), 0, (HeightmapSize.Width / 6)), new Vector3(0.5f, 0.5f, 0.5f), (HeightmapSize.Width / 6) * 2, new float[] { 60f, 65f, 70f, 75f });
 
             //arbolModel = new Arbol(env);
-            //CreateObjectsFromModel(arbolModel.mesh, 0, new Vector3(75, 0, -75), new Vector3(0.8f, 0.8f, 0.8f), 75, new float[] { 50f, 55f, 60f, 65f });
+            //CreateObjectsFromModel(arbolModel.mesh, 30, new Vector3(10, 0, 10), new Vector3(0.8f, 0.8f, 0.8f), 20, new float[] { 50f, 55f, 60f, 65f });
 
             frutaModel = new Fruta(env);
-            CreateObjectsFromModel(frutaModel.mesh, 300, new Vector3(0, 0, 0), new Vector3(0.8f, 0.8f, 0.8f), 125, new float[] { 2f, 2f, 2f, 2f });
+            CreateObjectsFromModel(frutaModel.mesh, 150, new Vector3(0, 0, 0), new Vector3(0.8f, 0.8f, 0.8f), (HeightmapSize.Width / 2) - 10, new float[] { 2f, 2f, 2f, 2f });
 
             pinoModel = new Pino(env);
-            CreateObjectsFromModel(pinoModel.mesh, 50, new Vector3(64, 0, 0), new Vector3(0.8f, 0.8f, 0.8f), 60, new float[] { 50, 55f, 60f, 65f });
-            CreateObjectsFromModel(pinoModel.mesh, 50, new Vector3(0, 0, 64), new Vector3(0.8f, 0.8f, 0.8f), 60, new float[] { 50, 55f, 60f, 65f });
+            CreateObjectsFromModel(pinoModel.mesh, 100, new Vector3((HeightmapSize.Width / 4), 0, 0), new Vector3(0.8f, 0.8f, 0.8f), (HeightmapSize.Width / 4)-10, new float[] { 50, 55f, 60f, 65f });
+            CreateObjectsFromModel(pinoModel.mesh, 100, new Vector3(0, 0, (HeightmapSize.Width / 4)), new Vector3(0.8f, 0.8f, 0.8f), (HeightmapSize.Width / 4)-10, new float[] { 50, 55f, 60f, 65f });
 
             //plantModel = loader.loadSceneFromFile(plantMeshPath).Meshes[0];
             //CreateObjectsFromModel(plantModel, 70, new Vector3(75, 0, -75), new Vector3(0.8f, 0.8f, 0.8f), 75, new float[] { 50f, 55f, 60f, 65f });
@@ -171,17 +175,17 @@ namespace TGC.Group.Model.EscenarioGame
             //CreateObjectsFromModel(palm3Model, 70, new Vector3(-10, 0, -60), new Vector3(0.8f, 0.8f, 0.8f), 80, new float[] { 10f, 15f, 20f, 25f });
 
             fogataModel = loader.loadSceneFromFile(fogataPath).Meshes[0];
-            CreateObjectsFromModel(fogataModel, 1, new Vector3(100, 0, 100), new Vector3(0.8f, 0.8f, 0.8f), 10, new float[] { 50, 55f, 60f, 65f });
+            CreateObjectsFromModel(fogataModel, 1, new Vector3((HeightmapSize.Width / 3), 0, (HeightmapSize.Width / 3)), new Vector3(0.8f, 0.8f, 0.8f), 10, new float[] { 50, 55f, 60f, 65f });
 
 
             //Crear Quadtree: Defino el BoundinBox del Escenario
             triangle = new CustomVertex.PositionColored[5];
-            triangle[0] = new CustomVertex.PositionColored(-128* SceneScaleXZ, 0, 0, Color.Green.ToArgb());
-            triangle[1] = new CustomVertex.PositionColored(0, 0, 128 * SceneScaleXZ, Color.Green.ToArgb());
-            triangle[2] = new CustomVertex.PositionColored(0, 130 * SceneScaleY, 0, Color.Green.ToArgb());
+            triangle[0] = new CustomVertex.PositionColored((HeightmapSize.Width/2)* -1 * SceneScaleXZ, 0, 0, Color.Green.ToArgb());
+            triangle[1] = new CustomVertex.PositionColored(0, 0, (HeightmapSize.Width / 2) * SceneScaleXZ, Color.Green.ToArgb());
+            triangle[2] = new CustomVertex.PositionColored(0, (HeightmapSize.Width) * SceneScaleY, 0, Color.Green.ToArgb());
 
-            triangle[3] = new CustomVertex.PositionColored(128 * SceneScaleXZ, 0, 0, Color.Green.ToArgb());
-            triangle[4] = new CustomVertex.PositionColored(0, 0, -128 * SceneScaleXZ, Color.Green.ToArgb());
+            triangle[3] = new CustomVertex.PositionColored((HeightmapSize.Width / 2) * SceneScaleXZ, 0, 0, Color.Green.ToArgb());
+            triangle[4] = new CustomVertex.PositionColored(0, 0, (HeightmapSize.Width / 2) * -1 * SceneScaleXZ, Color.Green.ToArgb());
 
             terrainBoundingBox =
                 TgcBoundingAxisAlignBox.computeFromPoints(new[]
@@ -219,6 +223,9 @@ namespace TGC.Group.Model.EscenarioGame
 
         public void Render(float elapsedTime)
         {
+
+            time += elapsedTime;
+            effectAgua.SetValue("time", time);
 /*
             //Cargo los valores de niebla
             fog.Enabled = true;
@@ -249,8 +256,12 @@ namespace TGC.Group.Model.EscenarioGame
 */
             skyBoxGame[env.horaDelDia].render();
             terrain.render();
+            planoAgua.render();
+            planoAgua.updateValues();
             RenderSceneMeshes();
             quadtree.render(env.Frustum, false);
+
+
         }
 
         public void Dispose()
@@ -311,46 +322,13 @@ namespace TGC.Group.Model.EscenarioGame
             }
         }
 
-        private void CreateDestroyables(ObjetoEscena obj, int count, Vector3 center, Vector3 scale, int sparse, float[] scalaVariableObjetos)
-        {
-            var rnd = new Random();
-
-            // TODO: buscar una mejor forma de tener una distribucion pareja
-            var rows = (int)Math.Sqrt(count);
-            var cols = (int)Math.Sqrt(count);
-
-            float[] scalaRotacionObjetos = { FastMath.QUARTER_PI, FastMath.PI, FastMath.PI_HALF, FastMath.TWO_PI };
-
-            for (var i = 0; i < rows; i++)
-            {
-                for (var j = 0; j < cols; j++)
-                {
-                    var instance = obj.mesh.createMeshInstance(obj.mesh.Name + i + "_" + j);
-
-                    // Escalo el objeto en forma Random
-                    instance.Scale = scale * scalaVariableObjetos[rnd.Next(0, scalaVariableObjetos.Length)];
-
-                    var x = center.X + rnd.Next(-sparse, sparse);
-                    var z = center.Z + rnd.Next(-sparse, sparse);
-
-                    // Posiciono el objeto en el Escenario
-                    instance.Position = new Vector3(x * SceneScaleXZ, CalcularAlturaTerreno(x, z) * SceneScaleY, z * SceneScaleXZ);
-                    instance.rotateY(scalaRotacionObjetos[rnd.Next(0, scalaRotacionObjetos.Length)]);
-
-                    // Lo guardo en una Lista de Objetos que están en el Escenario
-                    SceneMeshes.Add(instance);
-                }
-            }
-
-            Destroyables.Add(obj);
-        }
-
         private void CreateSkyBox()
         {
             // Inicializo el SkyBox
             skyBoxCenter = new Vector3(0, 0, 0);
-            skyBoxSize = new Vector3(1800 * SceneScaleXZ, 1800 * SceneScaleXZ, 1800 * SceneScaleXZ);
-            skyBoxSkyEpsilon = 7800f;
+            var escalaSkyBox = 15;
+            skyBoxSize = new Vector3((HeightmapSize.Width * escalaSkyBox) * SceneScaleXZ, (HeightmapSize.Width * escalaSkyBox) * SceneScaleXZ, (HeightmapSize.Width * escalaSkyBox) * SceneScaleXZ);
+            skyBoxSkyEpsilon = HeightmapSize.Width * 15f;
 
             // Creo los SkyBox según el momento del día
 
@@ -425,7 +403,7 @@ namespace TGC.Group.Model.EscenarioGame
         public float CalcularAlturaTerreno(float x, float z)
         {
             // Calculo las coordenadas en la Matriz de Heightmap
-            var pos_i = x + (HeightmapSize.Width / 2);
+            var pos_i = x + (HeightmapSize.Width /2);
             var pos_j = z + (HeightmapSize.Width / 2);
 
             var pi = (int)pos_i;

@@ -140,13 +140,13 @@ struct PS_INPUT_PositionTextured
 //Pixel Shader
 float4 ps_PositionTextured(PS_INPUT_PositionTextured input) : COLOR0
 {
-	//float k = 0.5 * input.WPos.y/40/255 + 0.5;
 
 	float3 dx = ddx(input.WPos);
 	float3 dy = ddy(input.WPos);
 	float3 n = normalize(cross(dx, dy));
 	float3 l = normalize(input.WPos - float3(1000,1000,0));
-	float k = 0.5 * abs(dot(n,l)) + 0.5;
+	//float k = 0.5 * abs(dot(n,l)) + 0.5;
+	float k = 0.5 * input.WPos.y/40/255 + 0.5;
 
 	//return float4(n,1);
 
