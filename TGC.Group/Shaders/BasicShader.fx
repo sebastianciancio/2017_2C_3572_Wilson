@@ -103,19 +103,15 @@ VS_OUTPUT vs_main2(VS_INPUT Input)
 float4 ps_main(float2 Texcoord: TEXCOORD0, float3 WPos : TEXCOORD1, float4 Color : COLOR0) : COLOR0
 {
 
+	float ondas_vertical_length = 200;
+	float ondas_size = 0.01;
 
-
-	float3 dx = ddx(WPos);
-	float3 dy = ddy(WPos);
-	float3 n = normalize(cross(dx, dy));
-	float3 l = normalize(WPos - float3(1000,1000,0));
-	//float k = 0.5 * abs(dot(n,l)) + 0.5;
-	float k = 0.5 * WPos.y/2*120/450 + 0.5;
-
-	//return float4(n,1);
-
-
-	return tex2D(diffuseMap, Texcoord);
+	//Alterar coordenadas de textura
+	Texcoord.y = Texcoord.y + ( sin( Texcoord.x * ondas_vertical_length ) * ondas_size);
+	
+	//Obtener color de textura
+	float4 color = tex2D( diffuseMap, Texcoord );
+	return color;
 
 
 	// Obtener el texel de textura

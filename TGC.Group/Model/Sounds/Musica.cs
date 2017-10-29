@@ -73,9 +73,9 @@ namespace TGC.Group.Model.SoundsGame
             loadMp3(MediaDir + "Sonido\\ambiente1.mp3");
         }
 
-        public void selectionSound()
+        public void selectionSound(string sonido)
         {
-            loadMp3(MediaDir + "Sonido\\ambiente1.mp3");
+            loadMp3(MediaDir + sonido);
         }
 
         public void startSound()

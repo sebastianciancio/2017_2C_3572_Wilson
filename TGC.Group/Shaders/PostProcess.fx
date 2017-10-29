@@ -142,7 +142,7 @@ float4 ps_rainMejorado( PS_INPUT_DEFAULT Input ) : COLOR0
 {     
 	//Obtener color segun textura
 	//hacer desplazamiento de la lluvia
-	float2 offset = (0, time * 50);
+	float2 offset = (0, time * 500);
 	
 	float4 color = tex2D( RenderTarget, Input.Texcoord);
 	

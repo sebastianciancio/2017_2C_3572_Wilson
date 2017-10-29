@@ -214,11 +214,18 @@ namespace TGC.Group.Model.EscenarioGame
             // Para determinar el momento del día
             env.usoHorario += elapsedTime;
 
+            // Para determinar el momento de la lluvia
+            env.tiempoAcumLluvia += elapsedTime;
+
             //Actualizar Skybox (se genera efecto de paso del día)
             ActualizarSkyBox();
 
             // Actualizo el momento del día (dia o noche)
             if (env.usoHorario > 190) cambioHorario();
+
+            //Luego tomamos lo dibujado antes y lo combinamos con una textura con efecto de alarma
+            if (env.tiempoAcumLluvia > 20) activarLluvia();
+            if (env.tiempoAcumLluvia > 40) desactivarLluvia();
         }
 
         public void Render(float elapsedTime)
@@ -398,6 +405,23 @@ namespace TGC.Group.Model.EscenarioGame
                 face.rotateY(env.ElapsedTime / 30);
             }
         }
+
+        private void activarLluvia()
+        {
+            env.lloviendo = true;
+            env.musica.selectionSound("Sonido\\lluvia_trueno.mp3");
+            env.musica.startSound();
+
+        }
+        private void desactivarLluvia()
+        {
+            env.tiempoAcumLluvia = 0;
+            env.lloviendo = false;
+            env.musica.selectionSound("Sonido\\ambiente1.mp3");
+            env.musica.startSound();
+
+        }
+
 
         // Las coordenas x,z son Originales (sin Escalado) y el z devuelto es Original también (sin Escalado)
         public float CalcularAlturaTerreno(float x, float z)
