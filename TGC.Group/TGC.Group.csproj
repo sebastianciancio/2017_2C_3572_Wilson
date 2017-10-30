@@ -98,7 +98,7 @@
       <DependentUpon>Game.settings</DependentUpon>
     </Compile>
     <Compile Include="Model\Camara\TgcFpsCamera.cs" />
-    <Compile Include="Model\Escenario\Class1.cs" />
+    <Compile Include="Model\Escenario\TerrenoCustom.cs" />
     <Compile Include="Model\Escenario\Escenario.cs" />
     <Compile Include="Model\Escenario\Quadtree.cs" />
     <Compile Include="Model\Escenario\QuadtreeBuilder.cs" />

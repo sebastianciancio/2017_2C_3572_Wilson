@@ -13,7 +13,7 @@ using TGC.Core.Textures;
 
 namespace TGC.Group.Model.Escenario
 {
-    public class Class1 : IRenderObject
+    public class TerrenoCustom : IRenderObject
     {
         protected Effect effect;
 
@@ -22,7 +22,7 @@ namespace TGC.Group.Model.Escenario
         private int totalVertices;
         private VertexBuffer vbTerrain;
 
-        public Class1()
+        public TerrenoCustom()
         {
             Enabled = true;
             AlphaBlendEnable = false;

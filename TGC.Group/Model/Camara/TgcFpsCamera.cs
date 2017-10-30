@@ -103,11 +103,6 @@ namespace TGC.Group.Model.Camara
 
         public override void UpdateCamera(float elapsedTime)
         {
-
-
-
-
-
             var moveVector = new Vector3(0, 0, 0);
 
             // Al mover el mouse se mueve la cabeza (genera mayor realismo)
@@ -182,13 +177,7 @@ namespace TGC.Group.Model.Camara
                         moveVector -= new Vector3(0, 10, 0) * JumpSpeed;
                     }
                 }
-/*
-                //Crouch
-                if (Input.keyDown(Key.LeftControl))
-                {
-                    moveVector += new Vector3(0, -1, 0) * JumpSpeed;
-                }
-*/
+
             }
 
 
@@ -213,14 +202,11 @@ namespace TGC.Group.Model.Camara
                     moveVector -= new Vector3(0, 0, -1) * MovementSpeed;
                 }
 
-                //Solo rotar si se esta aprentando el boton izq del mouse
-                if (lockCam || Input.buttonDown(TgcD3dInput.MouseButtons.BUTTON_LEFT))
-                {
-                    leftrightRot -= -Input.XposRelative * RotationSpeed;
-                    updownRot -= Input.YposRelative * RotationSpeed;
-                    //Se actualiza matrix de rotacion, para no hacer este calculo cada vez y solo cuando en verdad es necesario.
-                    cameraRotation = Matrix.RotationX(updownRot) * Matrix.RotationY(leftrightRot);
-                }
+                // Aplico la rotacion de la camara
+                leftrightRot -= -Input.XposRelative * RotationSpeed;
+                updownRot -= Input.YposRelative * RotationSpeed;
+                //Se actualiza matrix de rotacion, para no hacer este calculo cada vez y solo cuando en verdad es necesario.
+                cameraRotation = Matrix.RotationX(updownRot) * Matrix.RotationY(leftrightRot);
 
                 if (lockCam)
                     Cursor.Position = mouseCenter;
@@ -248,6 +234,12 @@ namespace TGC.Group.Model.Camara
                 var newcameraFinalTarget = newpositionEye + cameraRotatedTarget;
 
                 base.SetCamera(newpositionEye, newcameraFinalTarget, cameraRotatedUpVector);
+
+
+                // env.personaje.hachaPersonaje.Position = new Vector3(env.personaje.hachaPersonaje.Position.X + cameraFinalTarget.X, env.personaje.hachaPersonaje.Position.Y, env.personaje.hachaPersonaje.Position.Z);
+                //env.personaje.hachaPersonaje.Rotation = cameraRotatedUpVector;
+                env.personaje.hachaPersonaje.Rotation = cameraRotatedPositionEye; 
+
             }
 
 
@@ -264,5 +256,6 @@ namespace TGC.Group.Model.Camara
             positionEye = position;
             this.directionView = directionView;
         }
+
     }
 }

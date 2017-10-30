@@ -30,8 +30,8 @@ namespace TGC.Group.Model.EscenarioGame
         // Parametros del HeightMap
         // ***********************************************************
 
-        public Class1 terrain;
-        public Class1 mar;
+        public TerrenoCustom terrain;
+        public TerrenoCustom mar;
         private Vector3 terrainCenter;
         private string sceneHeightmapPath;
         private string terrainTexturePath;
@@ -115,7 +115,7 @@ namespace TGC.Group.Model.EscenarioGame
             HeightmapSize = new Bitmap(sceneHeightmapPath);
 
             terrainCenter = new Vector3(0, 0, 0);
-            terrain = new Class1();
+            terrain = new TerrenoCustom();
             terrain.AlphaBlendEnable = true;
             terrain.loadHeightmap(sceneHeightmapPath, SceneScaleXZ, SceneScaleY, terrainCenter);
             terrain.loadTexture(terrainTexturePath);
@@ -123,12 +123,13 @@ namespace TGC.Group.Model.EscenarioGame
             // Creo el agua
             effectAgua = TgcShaders.loadEffect(env.ShadersDir + "BasicShader.fx");
 
-            mar = new Class1();
+            mar = new TerrenoCustom();
             mar.AlphaBlendEnable = true;
             mar.loadHeightmap(marHeightmapPath,  9 * SceneScaleXZ, 2 * SceneScaleY, new Vector3(0, -200, 0));
             mar.loadTexture(marTexturePath);
             mar.Effect = effectAgua;
             mar.Technique = "RenderScene";
+
 
             // Creo el SkyBox
             CreateSkyBox();
@@ -371,7 +372,7 @@ namespace TGC.Group.Model.EscenarioGame
                 face.rotateY(env.ElapsedTime / 30);
             }
         }
-
+        
 
         private void activarLluvia()
         {

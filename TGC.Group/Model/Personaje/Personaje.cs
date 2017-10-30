@@ -4,6 +4,8 @@ using TGC.Core.Input;
 using TGC.Group.Model.Objetos;
 using TGC.Core.BoundingVolumes;
 using System.Drawing;
+using TGC.Core.SceneLoader;
+using TGC.Core.Utils;
 
 namespace TGC.Group.Model.Character
 {
@@ -28,6 +30,9 @@ namespace TGC.Group.Model.Character
 
         public Vector3 Posicion;
         public TgcBoundingSphere BoundingSphere;
+
+        private TgcSceneLoader loader = new TgcSceneLoader();
+        public TgcMesh hachaPersonaje;
 
         public Personaje(GameModel env)
         {
@@ -77,6 +82,13 @@ namespace TGC.Group.Model.Character
             // Creo la Espera que envuelve al personaje para detectar colisiones
             BoundingSphere = new TgcBoundingSphere(new Vector3(this.Posicion.X * env.terreno.SceneScaleXZ, env.terreno.CalcularAlturaTerreno(this.Posicion.X, this.Posicion.Z) * env.terreno.SceneScaleY + 10, this.Posicion.Z * env.terreno.SceneScaleXZ), 0.1f);
             BoundingSphere.setRenderColor(Color.Yellow);
+
+            // Creo el Hacha del Personaje
+            hachaPersonaje = loader.loadSceneFromFile(env.MediaDir + "hacha\\Hacha-TgcScene.xml").Meshes[0];
+            hachaPersonaje.Position = new Vector3(12 * env.terreno.SceneScaleXZ, env.terreno.CalcularAlturaTerreno(12, 22) * env.terreno.SceneScaleY, 22 * env.terreno.SceneScaleXZ);
+            hachaPersonaje.AlphaBlendEnable = true;
+            hachaPersonaje.Scale = new Vector3(0.05f, 0.05f, 0.05f);
+            hachaPersonaje.rotateY(FastMath.PI_HALF);
         }
 
         public void comer(int valor)
@@ -183,7 +195,9 @@ namespace TGC.Group.Model.Character
 
         public void Update(float ElapsedTime, TgcD3dInput Input)
         {
+            // Actualizo la posicion del Hacha
             Posicion = env.Camara.Position;
+            hachaPersonaje.Position = new Vector3(Posicion.X-1, Posicion.Y-0.8f, Posicion.Z);
 
             // Actualizo la Posicion de la Esfera de Colisión
             BoundingSphere.setCenter(Posicion);
@@ -208,7 +222,8 @@ namespace TGC.Group.Model.Character
             else
             {
                 // Esfera para detectar las colisiones
-                BoundingSphere.render();
+               // BoundingSphere.render();
+                hachaPersonaje.render();
             }
         }
 
