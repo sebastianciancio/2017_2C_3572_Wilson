@@ -38,9 +38,41 @@ namespace TGC.Group.Model.Character
         {
             this.Posicion = new Vector3(0f, 0f, 0f);
             Inventario = new List<ObjetoInventario>();
-            for(var i = 0; i < 5; i++) {
-                Inventario.Add(new ObjetoInventario());
-            }
+
+            var fruta = new ObjetoInventario {
+                objeto = new Fruta(),
+                cantidad = 0
+            };
+
+            Inventario.Add(fruta);
+
+            var agua = new ObjetoInventario {
+                objeto = new Agua(),
+                cantidad = 0
+            };
+
+            Inventario.Add(agua);
+
+            var madera = new ObjetoInventario {
+                objeto = new Madera(),
+                cantidad = 0
+            };
+
+            Inventario.Add(madera);
+
+            var piedra = new ObjetoInventario {
+                objeto = new Piedra(),
+                cantidad = 0
+            };
+
+            Inventario.Add(piedra);
+
+            var encendedor = new ObjetoInventario {
+                objeto = new Encendedor(),
+                cantidad = 0
+            };
+
+            Inventario.Add(encendedor);
 
             // Creo la Espera que envuelve al personaje para detectar colisiones
             BoundingSphere = new TgcBoundingSphere(new Vector3(this.Posicion.X * env.terreno.SceneScaleXZ, env.terreno.CalcularAlturaTerreno(this.Posicion.X, this.Posicion.Z) * env.terreno.SceneScaleY + 10, this.Posicion.Z * env.terreno.SceneScaleXZ), 0.1f);
@@ -107,22 +139,32 @@ namespace TGC.Group.Model.Character
 
         public void soltarObjeto()
         {
+            //if(Inventario[algo].cantidad > 0)
             //env.terreno.SceneMeshes.Add( algo );
+            //Inventario[algo].cantidad--;
         }
 
         public void guardarObjetoInventario(Objeto item)
         {
-            var exists = Inventario.Exists(x => x.objeto.GetType() == item.GetType());
-            if (exists) {
-                var index = Inventario.FindIndex(x => x.objeto.GetType() == item.GetType());
-                Inventario[index].cantidad++;
-            } else {
-                if(Inventario.Count <= 5) {
-                    var n = new ObjetoInventario();
-                    n.objeto = item;
-                    n.cantidad = 1;
-                    Inventario.Add(n);
-                }
+            if (item is Fruta) 
+            {
+                Inventario[0].cantidad++;
+            }
+
+            if (item is Agua) {
+                Inventario[1].cantidad++;
+            }
+
+            if (item is Madera) {
+                Inventario[2].cantidad++;
+            }
+
+            if (item is Piedra) {
+                Inventario[3].cantidad++;
+            }
+
+            if (item is Encendedor) {
+                Inventario[4].cantidad++;
             }
         }
 
