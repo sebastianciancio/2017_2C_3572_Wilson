@@ -35,7 +35,7 @@ namespace TGC.Group.Model.EscenarioGame
         private Vector3 terrainCenter;
         private string sceneHeightmapPath;
         private string terrainTexturePath;
-        public Bitmap HeightmapSize { get; set; }
+        private Bitmap HeightmapSize { get; set; }
 
         private string marHeightmapPath;
         private string marTexturePath;
@@ -78,7 +78,6 @@ namespace TGC.Group.Model.EscenarioGame
         //private TgcMesh palm2Model;
         private TgcMesh fogataModel;
 
-        private TgcTexture textureAgua;
         private Effect effectAgua;
         private float time;
 
@@ -103,9 +102,6 @@ namespace TGC.Group.Model.EscenarioGame
             marHeightmapPath = env.MediaDir + "Isla\\height_mar.jpg";
             marTexturePath = env.MediaDir + "Isla\\agua.jpg";
 
-            //Cargar Shader personalizado
-            //effectSkyBox = TgcShaders.loadEffect(env.ShadersDir + "TgcFogShader.fx");
-
             fogataPath = env.MediaDir + "Fogata\\Fogata-TgcScene.xml";
         }
 
@@ -114,9 +110,6 @@ namespace TGC.Group.Model.EscenarioGame
             // Inicializo las Escalas
             SceneScaleY = 3 * 40f;
             SceneScaleXZ = 20 * 400f;
-
-            // Creo la Niebla
-            //fog = new TgcFog();
 
             //Cargar Heightmap y textura de la Escena
             HeightmapSize = new Bitmap(sceneHeightmapPath);
@@ -211,63 +204,36 @@ namespace TGC.Group.Model.EscenarioGame
 
         public void Update(float elapsedTime)
         {
-            // Para determinar el momento del día
-            env.usoHorario += elapsedTime;
+            if (!env.personaje.Muerto) { 
 
-            // Para determinar el momento de la lluvia
-            env.tiempoAcumLluvia += elapsedTime;
+                // Para determinar el momento del día
+                env.usoHorario += elapsedTime;
 
-            //Actualizar Skybox (se genera efecto de paso del día)
-            ActualizarSkyBox();
+                // Para determinar el momento de la lluvia
+                env.tiempoAcumLluvia += elapsedTime;
 
-            // Actualizo el momento del día (dia o noche)
-            if (env.usoHorario > 190) cambioHorario();
+                //Actualizar Skybox (se genera efecto de paso del día)
+                ActualizarSkyBox();
 
-            //Luego tomamos lo dibujado antes y lo combinamos con una textura con efecto de alarma
-            if (env.tiempoAcumLluvia > 20) activarLluvia();
-            if (env.tiempoAcumLluvia > 40) desactivarLluvia();
+                // Actualizo el momento del día (dia o noche)
+                if (env.usoHorario > 190) cambioHorario();
+
+                //Luego tomamos lo dibujado antes y lo combinamos con una textura con efecto de alarma
+                if (env.tiempoAcumLluvia > 20) activarLluvia();
+                if (env.tiempoAcumLluvia > 40) desactivarLluvia();
+            }
         }
 
         public void Render(float elapsedTime)
         {
-
             time += elapsedTime;
             effectAgua.SetValue("time", time);
-/*
-            //Cargo los valores de niebla
-            fog.Enabled = true;
-            fog.StartDistance = 1600f * SceneScaleXZ;
-            fog.EndDistance = 5000f * SceneScaleXZ;
-            fog.Density = 0.0025f;
-            fog.Color = Color.LightGray;
 
-            if (fog.Enabled)
-            {
-                fog.updateValues();
-            }
-
-            // Cargamos las variables de shader, color del fog.
-            effectSkyBox.SetValue("ColorFog", fog.Color.ToArgb());
-            effectSkyBox.SetValue("CameraPos", TgcParserUtils.vector3ToFloat4Array(env.Camara.Position));
-            effectSkyBox.SetValue("StartFogDistance", fog.StartDistance);
-            effectSkyBox.SetValue("EndFogDistance", fog.EndDistance);
-            effectSkyBox.SetValue("Density", fog.Density);
-
-            //Actualizar valores del SkyBox
-            foreach (var mesh in skyBoxGame[env.horaDelDia].Faces)
-            {
-                mesh.Effect = effectSkyBox;
-                mesh.Technique = "RenderScene";
-                mesh.render();
-            }
-*/
             skyBoxGame[env.horaDelDia].render();
             terrain.render();
             mar.render();
             RenderSceneMeshes();
             quadtree.render(env.Frustum, false);
-
-
         }
 
         public void Dispose()
@@ -406,6 +372,7 @@ namespace TGC.Group.Model.EscenarioGame
             }
         }
 
+
         private void activarLluvia()
         {
             env.lloviendo = true;
@@ -413,13 +380,12 @@ namespace TGC.Group.Model.EscenarioGame
             env.musica.startSound();
 
         }
-        private void desactivarLluvia()
+        public void desactivarLluvia()
         {
             env.tiempoAcumLluvia = 0;
             env.lloviendo = false;
             env.musica.selectionSound("Sonido\\ambiente1.mp3");
             env.musica.startSound();
-
         }
 
 
@@ -478,20 +444,21 @@ namespace TGC.Group.Model.EscenarioGame
                 }
             }
 
-/*
-  
-            
-            foreach (var dest in Destroyables)
+        }
+
+        public bool estaDentroTerreno()
+        {
+            // Fuerzo a que el Personaje este siempre sobre la Isla
+            if (
+                (FastMath.Abs(env.Camara.Position.X / SceneScaleXZ) < (HeightmapSize.Width / 2 - 1)) &&
+                (FastMath.Abs(env.Camara.Position.Z / SceneScaleXZ) < (HeightmapSize.Width / 2 - 1)))
             {
-                //Solo mostrar la malla si colisiona contra el Frustum
-                var r = TgcCollisionUtils.classifyFrustumAABB(env.Frustum, dest.mesh.BoundingBox);
-                if (r != TgcCollisionUtils.FrustumResult.OUTSIDE)
-                {
-                    dest.Render();
-                    totalMeshesRenderizados++;
-                }
+                return true;
             }
-*/
+            else
+            {
+                return false;
+            }
         }
     }
 }

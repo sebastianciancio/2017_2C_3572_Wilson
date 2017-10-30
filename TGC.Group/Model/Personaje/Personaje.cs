@@ -210,20 +210,23 @@ namespace TGC.Group.Model.Character
             actualizarEstado(ElapsedTime);
 
             actualizarControles(ElapsedTime);
+
+            if (this.Muerto)
+            {
+                env.musica.playMp3(env.MediaDir + "Sonido\\game_over.mp3");
+                env.musica.startSound();
+            }
         }
 
         public void Render(float ElapsedTime)
         {
             if (this.Muerto)
             {
-                env.musica.playMp3(env.MediaDir + "Sonido\\game_over.mp3");
+                env.terreno.desactivarLluvia();
                 env.hud.morirPersonaje();
-
-                this.Dispose();
-
-            }else
+            }
+            else
             {
-
                 // Esfera para detectar las colisiones
                 BoundingSphere.render();
             }
