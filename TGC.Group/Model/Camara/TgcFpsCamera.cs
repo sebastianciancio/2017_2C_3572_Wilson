@@ -103,6 +103,11 @@ namespace TGC.Group.Model.Camara
 
         public override void UpdateCamera(float elapsedTime)
         {
+
+
+
+
+
             var moveVector = new Vector3(0, 0, 0);
 
             // Al mover el mouse se mueve la cabeza (genera mayor realismo)
@@ -111,48 +116,80 @@ namespace TGC.Group.Model.Camara
             //Aplicar movimiento hacia adelante o atras segun la orientacion actual del Mesh
             var lastPos = this.Position;
 
-            //Forward
-            if (Input.keyDown(Key.W))
+            if (!env.personaje.Muerto)
             {
-                moveVector += new Vector3(0, 0, -1) * MovementSpeed;
-            }
 
-            //Backward
-            if (Input.keyDown(Key.S))
-            {
-                moveVector += new Vector3(0, 0, 1) * MovementSpeed;
-            }
+                //Forward
+                if (Input.keyDown(Key.W))
+                {
+                    // Fuerzo a que el Personaje este siempre sobre la Isla
+                    if (env.terreno.estaDentroTerreno())
+                    {
+                        moveVector += new Vector3(0, 0, -1) * MovementSpeed;
+                    }else{
+                        moveVector -= new Vector3(0, 0, -10) * MovementSpeed;
+                    }
+                }
 
-            //Strafe right
-            if (Input.keyDown(Key.D))
-            {
-                moveVector += new Vector3(-1, 0, 0) * MovementSpeed;
-            }
+                //Backward
+                if (Input.keyDown(Key.S))
+                {
+                    // Fuerzo a que el Personaje este siempre sobre la Isla
+                    if (env.terreno.estaDentroTerreno())
+                    {
+                        moveVector += new Vector3(0, 0, 1) * MovementSpeed;
+                    }
+                    else{
+                        moveVector -= new Vector3(0, 0, 10) * MovementSpeed;
+                    }
+                }
 
-            //Strafe left
-            if (Input.keyDown(Key.A))
-            {
-                moveVector += new Vector3(1, 0, 0) * MovementSpeed;
-            }
+                //Strafe right
+                if (Input.keyDown(Key.D))
+                {
+                    // Fuerzo a que el Personaje este siempre sobre la Isla
+                    if (env.terreno.estaDentroTerreno())
+                    {
+                        moveVector += new Vector3(-1, 0, 0) * MovementSpeed;
+                    }
+                    else{
+                        moveVector -= new Vector3(-10, 0, 0) * MovementSpeed;
+                    }
+                }
 
-            //Jump
-            if (Input.keyDown(Key.Space))
-            {
-                moveVector += new Vector3(0, 1, 0) * JumpSpeed;
-            }
+                //Strafe left
+                if (Input.keyDown(Key.A))
+                {
+                    // Fuerzo a que el Personaje este siempre sobre la Isla
+                    if (env.terreno.estaDentroTerreno())
+                    {
+                        moveVector += new Vector3(1, 0, 0) * MovementSpeed;
+                    }
+                    else{
+                        moveVector -= new Vector3(10, 0, 0) * MovementSpeed;
+                    }
+                }
 
-            //Crouch
-            if (Input.keyDown(Key.LeftControl))
-            {
-                moveVector += new Vector3(0, -1, 0) * JumpSpeed;
+                //Run
+                if (Input.keyDown(Key.Space))
+                {
+                    // Fuerzo a que el Personaje este siempre sobre la Isla
+                    if (env.terreno.estaDentroTerreno())
+                    {
+                        moveVector += new Vector3(0, 1, 0) * JumpSpeed;
+                    }
+                    else{
+                        moveVector -= new Vector3(0, 10, 0) * JumpSpeed;
+                    }
+                }
+/*
+                //Crouch
+                if (Input.keyDown(Key.LeftControl))
+                {
+                    moveVector += new Vector3(0, -1, 0) * JumpSpeed;
+                }
+*/
             }
-
-            /*
-            if (Input.keyPressed(Key.L) || Input.keyPressed(Key.Escape))
-            {
-                LockCam = !lockCam;
-            }
-            */
 
 
             //Detectar colisiones
@@ -168,65 +205,53 @@ namespace TGC.Group.Model.Camara
                 }
             }
 
-            foreach (var obstaculo in env.terreno.Destroyables)
+            if (!env.personaje.Muerto)
             {
-
-                if (TgcCollisionUtils.testSphereAABB(env.personaje.BoundingSphere, obstaculo.mesh.BoundingBox))
+                //Si hubo colision, restaurar la posicion anterior de la camara
+                if (collide)
                 {
-                    env.personaje.BoundingSphere.setRenderColor(Color.Red);
-                    collide = true;
-
-                    var objs = obstaculo.Destroy();
-                    foreach (var obj in objs)
-                    {
-                        env.personaje.guardarObjetoInventario(obj);
-                    }
-
-                    break;
+                    moveVector -= new Vector3(0, 0, -1) * MovementSpeed;
                 }
+
+                //Solo rotar si se esta aprentando el boton izq del mouse
+                if (lockCam || Input.buttonDown(TgcD3dInput.MouseButtons.BUTTON_LEFT))
+                {
+                    leftrightRot -= -Input.XposRelative * RotationSpeed;
+                    updownRot -= Input.YposRelative * RotationSpeed;
+                    //Se actualiza matrix de rotacion, para no hacer este calculo cada vez y solo cuando en verdad es necesario.
+                    cameraRotation = Matrix.RotationX(updownRot) * Matrix.RotationY(leftrightRot);
+                }
+
+                if (lockCam)
+                    Cursor.Position = mouseCenter;
+
+                //Calculamos la nueva posicion del ojo segun la rotacion actual de la camara.
+                var cameraRotatedPositionEye = Vector3.TransformNormal(moveVector * elapsedTime, cameraRotation);
+                positionEye += cameraRotatedPositionEye;
+
+                //Calculamos el target de la camara, segun su direccion inicial y las rotaciones en screen space x,y.
+                var cameraRotatedTarget = Vector3.TransformNormal(directionView, cameraRotation);
+                var cameraFinalTarget = positionEye + cameraRotatedTarget;
+
+                var cameraOriginalUpVector = DEFAULT_UP_VECTOR;
+                var cameraRotatedUpVector = Vector3.TransformNormal(cameraOriginalUpVector, cameraRotation);
+
+                base.SetCamera(positionEye, cameraFinalTarget, cameraRotatedUpVector);
+
+                // Posiciono la Camara a la Altura del Terreno según las coordenadas actuales
+                var posicionCamaraTerrenoOriginal = env.terreno.CalcularAlturaTerreno(
+                        FastMath.Ceiling(positionEye.X / env.terreno.SceneScaleXZ),
+                        FastMath.Ceiling(positionEye.Z / env.terreno.SceneScaleXZ)
+                    ) + 10f;
+
+                var newpositionEye = new Vector3(positionEye.X, posicionCamaraTerrenoOriginal * env.terreno.SceneScaleY, positionEye.Z);
+                var newcameraFinalTarget = newpositionEye + cameraRotatedTarget;
+
+                base.SetCamera(newpositionEye, newcameraFinalTarget, cameraRotatedUpVector);
             }
 
-            //Si hubo colision, restaurar la posicion anterior de la camara
-            if (collide)
-            {
-                moveVector -= new Vector3(0, 0, -1) * MovementSpeed;
-            }
 
-            //Solo rotar si se esta aprentando el boton izq del mouse
-            if (lockCam || Input.buttonDown(TgcD3dInput.MouseButtons.BUTTON_LEFT))
-            {
-                leftrightRot -= -Input.XposRelative * RotationSpeed;
-                updownRot -= Input.YposRelative * RotationSpeed;
-                //Se actualiza matrix de rotacion, para no hacer este calculo cada vez y solo cuando en verdad es necesario.
-                cameraRotation = Matrix.RotationX(updownRot) * Matrix.RotationY(leftrightRot);
-            }
 
-            if (lockCam)
-                Cursor.Position = mouseCenter;
-
-            //Calculamos la nueva posicion del ojo segun la rotacion actual de la camara.
-            var cameraRotatedPositionEye = Vector3.TransformNormal(moveVector * elapsedTime, cameraRotation);
-            positionEye += cameraRotatedPositionEye;
-
-            //Calculamos el target de la camara, segun su direccion inicial y las rotaciones en screen space x,y.
-            var cameraRotatedTarget = Vector3.TransformNormal(directionView, cameraRotation);
-            var cameraFinalTarget = positionEye + cameraRotatedTarget;
-
-            var cameraOriginalUpVector = DEFAULT_UP_VECTOR;
-            var cameraRotatedUpVector = Vector3.TransformNormal(cameraOriginalUpVector, cameraRotation);
-
-            base.SetCamera(positionEye, cameraFinalTarget, cameraRotatedUpVector);
-
-            // Posiciono la Camara a la Altura del Terreno según las coordenadas actuales
-            var posicionCamaraTerrenoOriginal = env.terreno.CalcularAlturaTerreno( 
-                    FastMath.Ceiling(positionEye.X / env.terreno.SceneScaleXZ) ,
-                    FastMath.Ceiling(positionEye.Z / env.terreno.SceneScaleXZ)
-                ) + 10f;
-
-            var newpositionEye = new Vector3(positionEye.X, posicionCamaraTerrenoOriginal * env.terreno.SceneScaleY, positionEye.Z);
-            var newcameraFinalTarget = newpositionEye + cameraRotatedTarget;
-
-            base.SetCamera(newpositionEye, newcameraFinalTarget, cameraRotatedUpVector);
         }
 
         /// <summary>

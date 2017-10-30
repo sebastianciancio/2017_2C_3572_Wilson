@@ -310,8 +310,11 @@ namespace TGC.Group.Model
             DrawText.changeFont((new System.Drawing.Font("TimesNewRoman", 12)));
             DrawText.drawText("Mesh total: \n" + terreno.SceneMeshes.Count, 0, 20, Color.OrangeRed);
             DrawText.drawText("Mesh renderizados: \n" + terreno.totalMeshesRenderizados, 0, 100, Color.OrangeRed);
+            DrawText.drawText("Camera position.X: \n" + Camara.Position.X / terreno.SceneScaleXZ, 500, 20, Color.OrangeRed);
+            DrawText.drawText("Camera position.Z: \n" + Camara.Position.Z / terreno.SceneScaleXZ, 500, 100, Color.OrangeRed);
+
             //DrawText.drawText("usoHorario: \n" + (usoHorario/570)*24, 200, 20, Color.OrangeRed);
-            
+
             /*
             DrawText.drawText("usoHorario: \n" + usoHorario, 200, 20, Color.OrangeRed);
             DrawText.drawText("Camera position: \n" + Camara.Position, 0, 20, Color.OrangeRed);
