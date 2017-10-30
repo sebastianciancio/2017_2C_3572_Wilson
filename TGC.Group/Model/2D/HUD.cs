@@ -1,4 +1,5 @@
 ﻿using Microsoft.DirectX;
+using System;
 using System.Drawing;
 using TGC.Core.Direct3D;
 using TGC.Core.Text;
@@ -77,7 +78,7 @@ namespace TGC.Group.Model.SpriteGame
             textureSize = inventario0.Bitmap.Size;
             inventario0.Position = new Vector2(
                        D3DDevice.Instance.Width - (textureSize.Width * 0.15f) - 10,
-                       D3DDevice.Instance.Height - (textureSize.Height * 0.15f) - 900);
+                       D3DDevice.Instance.Height - (textureSize.Height * 0.15f) - (D3DDevice.Instance.Height * 0.9f));
             inventario0.Scaling = new Vector2(0.15f, 0.15f);
 
             //Crear Inventario1 512 x 512
@@ -86,7 +87,7 @@ namespace TGC.Group.Model.SpriteGame
             textureSize = inventario1.Bitmap.Size;
             inventario1.Position = new Vector2(
                        D3DDevice.Instance.Width - (textureSize.Width * 0.15f) - 10,
-                       D3DDevice.Instance.Height - (textureSize.Height * 0.15f) - 800);
+                       D3DDevice.Instance.Height - (textureSize.Height * 0.15f) - (D3DDevice.Instance.Height * 0.8f));
             inventario1.Scaling = new Vector2(0.15f, 0.15f);
 
             //Crear Inventario2 512 x 512
@@ -95,7 +96,7 @@ namespace TGC.Group.Model.SpriteGame
             textureSize = inventario2.Bitmap.Size;
             inventario2.Position = new Vector2(
                        D3DDevice.Instance.Width - (textureSize.Width * 0.15f) - 10,
-                       D3DDevice.Instance.Height - (textureSize.Height * 0.15f) - 700);
+                       D3DDevice.Instance.Height - (textureSize.Height * 0.15f) - (D3DDevice.Instance.Height * 0.7f));
             inventario2.Scaling = new Vector2(0.15f, 0.15f);
 
             //Crear Inventario3 512 x 512
@@ -104,7 +105,7 @@ namespace TGC.Group.Model.SpriteGame
             textureSize = inventario3.Bitmap.Size;
             inventario3.Position = new Vector2(
                        D3DDevice.Instance.Width - (textureSize.Width * 0.15f) - 10,
-                       D3DDevice.Instance.Height - (textureSize.Height * 0.15f) - 600);
+                       D3DDevice.Instance.Height - (textureSize.Height * 0.15f) - (D3DDevice.Instance.Height * 0.6f));
             inventario3.Scaling = new Vector2(0.15f, 0.15f);
 
             //Crear Inventario4 512 x 512
@@ -113,7 +114,7 @@ namespace TGC.Group.Model.SpriteGame
             textureSize = inventario4.Bitmap.Size;
             inventario4.Position = new Vector2(
                        D3DDevice.Instance.Width - (textureSize.Width * 0.15f) - 10,
-                       D3DDevice.Instance.Height - (textureSize.Height * 0.15f) - 500);
+                       D3DDevice.Instance.Height - (textureSize.Height * 0.15f) - (D3DDevice.Instance.Height * 0.5f));
             inventario4.Scaling = new Vector2(0.15f, 0.15f);
 
             // Inicializo los puntos de vida
@@ -159,11 +160,11 @@ namespace TGC.Group.Model.SpriteGame
             InicializarTextos(txtHambre, Color.Red, TgcText2D.TextAlign.RIGHT, new Point(D3DDevice.Instance.Width - 125, D3DDevice.Instance.Height - 200), new Size(100, 100), new Font("TimesNewRoman", 25, FontStyle.Bold));
             InicializarTextos(txtCansancio, Color.Yellow, TgcText2D.TextAlign.RIGHT, new Point(D3DDevice.Instance.Width - 130, D3DDevice.Instance.Height - 120), new Size(100, 100), new Font("TimesNewRoman", 25, FontStyle.Bold));
 
-            InicializarTextos(inventario0text, Color.Black, TgcText2D.TextAlign.RIGHT, new Point(D3DDevice.Instance.Width - 60, D3DDevice.Instance.Height - 950), new Size(40, 40), new Font("TimesNewRoman", 25, FontStyle.Bold));
-            InicializarTextos(inventario1text, Color.Black, TgcText2D.TextAlign.RIGHT, new Point(D3DDevice.Instance.Width - 60, D3DDevice.Instance.Height - 850), new Size(40, 40), new Font("TimesNewRoman", 25, FontStyle.Bold));
-            InicializarTextos(inventario2text, Color.Black, TgcText2D.TextAlign.RIGHT, new Point(D3DDevice.Instance.Width - 60, D3DDevice.Instance.Height - 750), new Size(40, 40), new Font("TimesNewRoman", 25, FontStyle.Bold));
-            InicializarTextos(inventario3text, Color.Black, TgcText2D.TextAlign.RIGHT, new Point(D3DDevice.Instance.Width - 60, D3DDevice.Instance.Height - 650), new Size(40, 40), new Font("TimesNewRoman", 25, FontStyle.Bold));
-            InicializarTextos(inventario4text, Color.Black, TgcText2D.TextAlign.RIGHT, new Point(D3DDevice.Instance.Width - 60, D3DDevice.Instance.Height - 550), new Size(40, 40), new Font("TimesNewRoman", 25, FontStyle.Bold));
+            InicializarTextos(inventario0text, Color.Black, TgcText2D.TextAlign.RIGHT, new Point(D3DDevice.Instance.Width - 60, Convert.ToInt32(D3DDevice.Instance.Height * 0.05f)), new Size(40, 40), new Font("TimesNewRoman", 25, FontStyle.Bold));
+            InicializarTextos(inventario1text, Color.Black, TgcText2D.TextAlign.RIGHT, new Point(D3DDevice.Instance.Width - 60, Convert.ToInt32(D3DDevice.Instance.Height * 0.15f)), new Size(40, 40), new Font("TimesNewRoman", 25, FontStyle.Bold));
+            InicializarTextos(inventario2text, Color.Black, TgcText2D.TextAlign.RIGHT, new Point(D3DDevice.Instance.Width - 60, Convert.ToInt32(D3DDevice.Instance.Height * 0.25f)), new Size(40, 40), new Font("TimesNewRoman", 25, FontStyle.Bold));
+            InicializarTextos(inventario3text, Color.Black, TgcText2D.TextAlign.RIGHT, new Point(D3DDevice.Instance.Width - 60, Convert.ToInt32(D3DDevice.Instance.Height * 0.35f)), new Size(40, 40), new Font("TimesNewRoman", 25, FontStyle.Bold));
+            InicializarTextos(inventario4text, Color.Black, TgcText2D.TextAlign.RIGHT, new Point(D3DDevice.Instance.Width - 60, Convert.ToInt32(D3DDevice.Instance.Height * 0.45f)), new Size(40, 40), new Font("TimesNewRoman", 25, FontStyle.Bold));
         }
 
         public void Update(float ElapsedTime)

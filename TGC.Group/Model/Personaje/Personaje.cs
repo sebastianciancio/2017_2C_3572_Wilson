@@ -5,6 +5,7 @@ using TGC.Group.Model.Objetos;
 using TGC.Core.BoundingVolumes;
 using System.Drawing;
 using TGC.Core.SceneLoader;
+using Microsoft.DirectX.DirectInput;
 using TGC.Core.Utils;
 
 namespace TGC.Group.Model.Character
@@ -46,14 +47,14 @@ namespace TGC.Group.Model.Character
 
             var fruta = new ObjetoInventario {
                 objeto = new Fruta(),
-                cantidad = 0
+                cantidad = 20
             };
 
             Inventario.Add(fruta);
 
             var agua = new ObjetoInventario {
                 objeto = new Agua(),
-                cantidad = 0
+                cantidad = 20
             };
 
             Inventario.Add(agua);
@@ -91,14 +92,20 @@ namespace TGC.Group.Model.Character
             hachaPersonaje.rotateY(FastMath.PI_HALF);
         }
 
-        public void comer(int valor)
+        public void comer(int cantidad)
         {
-            this.Hambre = Hambre + valor;
+            if (Inventario[0].cantidad > 0) {
+                this.Hambre = Hambre + 15;
+                Inventario[0].cantidad--;
+            }
         }
 
-        public void beber(int valor)
+        public void beber(int cantidad)
         {
-            this.Sed = Sed + valor;
+            if (Inventario[1].cantidad > 0) {
+                this.Sed = Sed + 15;
+                Inventario[1].cantidad--;
+            }
         }
 
         public void descansar(int valor)
@@ -146,6 +153,17 @@ namespace TGC.Group.Model.Character
                 }
 
                 if (this.Sed < 1 || this.Cansancio < 1 || this.Hambre < 1) this.Muerto = true;
+            }
+        }
+
+        public void actualizarControles(float elapsedTime)
+        {
+            if (env.Input.keyPressed(Key.D1)) {
+                comer(1);
+            }
+
+            if (env.Input.keyPressed(Key.D2)) {
+                beber(1);
             }
         }
 
@@ -204,6 +222,8 @@ namespace TGC.Group.Model.Character
 
             // Actualizo las Variables de Estado del Personaje
             actualizarEstado(ElapsedTime);
+
+            actualizarControles(ElapsedTime);
 
             if (this.Muerto)
             {
