@@ -82,7 +82,7 @@ namespace TGC.Group.Model.SpriteGame
 
             //Crear Inventario1 512 x 512
             inventario1 = new CustomSprite();
-            inventario1.Bitmap = new CustomBitmap(env.MediaDir + "\\HUD\\food.png", D3DDevice.Instance.Device);
+            inventario1.Bitmap = new CustomBitmap(env.MediaDir + "\\HUD\\agua.png", D3DDevice.Instance.Device);
             textureSize = inventario1.Bitmap.Size;
             inventario1.Position = new Vector2(
                        D3DDevice.Instance.Width - (textureSize.Width * 0.15f) - 10,
@@ -91,7 +91,7 @@ namespace TGC.Group.Model.SpriteGame
 
             //Crear Inventario2 512 x 512
             inventario2 = new CustomSprite();
-            inventario2.Bitmap = new CustomBitmap(env.MediaDir + "\\HUD\\food.png", D3DDevice.Instance.Device);
+            inventario2.Bitmap = new CustomBitmap(env.MediaDir + "\\HUD\\wood.png", D3DDevice.Instance.Device);
             textureSize = inventario2.Bitmap.Size;
             inventario2.Position = new Vector2(
                        D3DDevice.Instance.Width - (textureSize.Width * 0.15f) - 10,
@@ -100,7 +100,7 @@ namespace TGC.Group.Model.SpriteGame
 
             //Crear Inventario3 512 x 512
             inventario3 = new CustomSprite();
-            inventario3.Bitmap = new CustomBitmap(env.MediaDir + "\\HUD\\food.png", D3DDevice.Instance.Device);
+            inventario3.Bitmap = new CustomBitmap(env.MediaDir + "\\HUD\\stone.png", D3DDevice.Instance.Device);
             textureSize = inventario3.Bitmap.Size;
             inventario3.Position = new Vector2(
                        D3DDevice.Instance.Width - (textureSize.Width * 0.15f) - 10,
@@ -109,7 +109,7 @@ namespace TGC.Group.Model.SpriteGame
 
             //Crear Inventario4 512 x 512
             inventario4 = new CustomSprite();
-            inventario4.Bitmap = new CustomBitmap(env.MediaDir + "\\HUD\\food.png", D3DDevice.Instance.Device);
+            inventario4.Bitmap = new CustomBitmap(env.MediaDir + "\\HUD\\fire.png", D3DDevice.Instance.Device);
             textureSize = inventario4.Bitmap.Size;
             inventario4.Position = new Vector2(
                        D3DDevice.Instance.Width - (textureSize.Width * 0.15f) - 10,
