@@ -197,6 +197,7 @@ namespace TGC.Group.Model.Camara
                 // Click del Mouse
                 if (Input.buttonDown(TgcD3dInput.MouseButtons.BUTTON_LEFT))
                 {
+                    env.sonidoHacha = true;
                     env.personaje.sonidoHacha(true);
                 }
             }
@@ -249,7 +250,7 @@ namespace TGC.Group.Model.Camara
                 var posicionCamaraTerrenoOriginal = env.terreno.CalcularAlturaTerreno(
                         FastMath.Ceiling(positionEye.X / env.terreno.SceneScaleXZ),
                         FastMath.Ceiling(positionEye.Z / env.terreno.SceneScaleXZ)
-                    ) + env.alturaCamara;
+                    ,true) + env.alturaCamara;
 
                 var newpositionEye = new Vector3(positionEye.X, posicionCamaraTerrenoOriginal * env.terreno.SceneScaleY, positionEye.Z);
                 var newcameraFinalTarget = newpositionEye + cameraRotatedTarget;

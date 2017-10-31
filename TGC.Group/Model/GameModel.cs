@@ -32,10 +32,13 @@ namespace TGC.Group.Model
 
         public float usoHorario;
         public float tiempoAcumLluvia;
+        public float tiempoAcumHacha;
         public int horaDelDia;
         public bool presentacion = true;
         public bool lloviendo = false;
         public bool modoDios = false;
+        public bool sonidoHacha = false;
+        public float objetosCerca = 0;
 
         TgcTexture lluviaTexture;
         Microsoft.DirectX.Direct3D.Effect effect;
@@ -85,6 +88,8 @@ namespace TGC.Group.Model
             // Para determinar que momento del día es
             usoHorario = 0;
             tiempoAcumLluvia = 0;
+            tiempoAcumHacha = 0;
+
             horaDelDia = 0; //0: dia, 1:tarde, 2:noche;
 
             terreno = new EscenarioGame.Escenario(this);
@@ -167,8 +172,6 @@ namespace TGC.Group.Model
 
         public override void Render()
         {
-            //PreRender();
-
             ClearTextures();
 
             //Cargamos el Render Targer al cual se va a dibujar la escena 3D. Antes nos guardamos el surface original
@@ -186,17 +189,12 @@ namespace TGC.Group.Model
             //Liberar memoria de surface de Render Target
             pSurf.Dispose();
 
-            //Si quisieramos ver que se dibujo, podemos guardar el resultado a una textura en un archivo para debugear su resultado (ojo, es lento)
-            //TextureLoader.Save(this.ShadersDir + "render_target.bmp", ImageFileFormat.Bmp, renderTarget2D);
-
             //Ahora volvemos a restaurar el Render Target original (osea dibujar a la pantalla)
             D3DDevice.Instance.Device.SetRenderTarget(0, pOldRT);
             D3DDevice.Instance.Device.DepthStencilSurface = pOldDS;
 
             //Luego tomamos lo dibujado antes y lo combinamos con una textura con efecto de alarma
             drawPostProcess(D3DDevice.Instance.Device);
-
-            // PostRender();
         }
 
 
@@ -223,26 +221,30 @@ namespace TGC.Group.Model
                 textoMenuPppal[1] = "Menú Principal";
                 textoMenuPppal[2] = "Movimiento Personaje: A W S D";
                 textoMenuPppal[3] = "Uso de Inventario: #1, #2, #3, #4, #5";
-                textoMenuPppal[4] = "Modos: Normal (N) - God (G)";
-                textoMenuPppal[5] = "Pausa: ESC";
-                textoMenuPppal[6] = "Comenzar: Espacio";
-                textoMenuPppal[7] = "Salir: Alt+F4";
+                textoMenuPppal[4] = "Acciones: Agarrar (T) - Destruir (Click Izq)";
+                textoMenuPppal[5] = "Modos: Normal (N) - God (G)";
+                textoMenuPppal[6] = "Pausa: ESC";
+                textoMenuPppal[7] = "Comenzar: Espacio";
+                textoMenuPppal[8] = "Salir: Alt+F4";
 
-                for (var j=1; j <= 7; j++)
+                for (var j=1; j <= 8; j++)
                 {
                     if (j == 1)
                     {
-                        DrawText.changeFont((new System.Drawing.Font("TimesNewRoman", 35, FontStyle.Underline)));
+                        DrawText.changeFont((new System.Drawing.Font("Tahoma", 35, FontStyle.Underline)));
                     }
                     else
                     {
-                        DrawText.changeFont((new System.Drawing.Font("TimesNewRoman", 35, FontStyle.Regular)));
+                        DrawText.changeFont((new System.Drawing.Font("Tahoma", 35, FontStyle.Regular)));
                     }
+                    DrawText.drawText(textoMenuPppal[j], (D3DDevice.Instance.Width / 2) - (textoMenuPppal[j].Length * 10) + 2, (70 * j) + 2, Color.Black);
                     DrawText.drawText(textoMenuPppal[j], (D3DDevice.Instance.Width / 2) - (textoMenuPppal[j].Length * 10), 70*j, Color.OrangeRed);
+                    
                 }
 
                 textoMenuPppal[10] = "Objetivo: Sobrevivir en la Isla y pedir ayuda al exterior.";
-                DrawText.drawText(textoMenuPppal[10], (D3DDevice.Instance.Width / 2) - (textoMenuPppal[10].Length * 10), D3DDevice.Instance.Height - 70, Color.OrangeRed);
+                DrawText.drawText(textoMenuPppal[10], (D3DDevice.Instance.Width / 2) - (textoMenuPppal[10].Length * 10) + 2, (D3DDevice.Instance.Height - 70) + 2, Color.Black);
+                DrawText.drawText(textoMenuPppal[10], (D3DDevice.Instance.Width / 2) - (textoMenuPppal[10].Length * 10), D3DDevice.Instance.Height - 70, Color.GreenYellow);
 
                 if (Input.keyDown(Key.Space))
                 {
@@ -346,8 +348,10 @@ namespace TGC.Group.Model
         private void RenderHelpText()
         {
             DrawText.changeFont((new System.Drawing.Font("TimesNewRoman", 12)));
-            DrawText.drawText("Mesh total: \n" + terreno.SceneMeshes.Count, 0, 20, Color.OrangeRed);
-            DrawText.drawText("Mesh renderizados: \n" + terreno.totalMeshesRenderizados, 0, 100, Color.OrangeRed);
+            DrawText.drawText("Objetos Total: \n" + terreno.SceneMeshes.Count, 0, 20, Color.OrangeRed);
+            DrawText.drawText("Objetos Renderizados: \n" + terreno.totalMeshesRenderizados, 0, 100, Color.OrangeRed);
+
+            DrawText.drawText("Objetos Cercanos: \n" + objetosCerca, 200, 20, Color.OrangeRed);
 
             /*
             DrawText.drawText("Camera (Coordenada X Original): \n" + (int)(Camara.Position.X / terreno.SceneScaleXZ), 200, 20, Color.OrangeRed);

@@ -140,11 +140,13 @@ namespace TGC.Group.Model.EscenarioGame
             loader = new TgcSceneLoader();
 
             rockModel = new Roca(env);
-            CreateObjectsFromModel(rockModel.mesh, 100, new Vector3(0, 0, 0), new Vector3(0.9f, 0.9f, 0.9f), (HeightmapSize.Width / 3), new float[] { 30f, 35f, 40f, 45f });
+            //CreateObjectsFromModel(rockModel.mesh, 100, new Vector3(0, 0, 0), new Vector3(0.9f, 0.9f, 0.9f), (HeightmapSize.Width / 3), new float[] { 30f, 35f, 40f, 45f });
+            CreateObjectsFromModel(rockModel.mesh, 300, new Vector3(0, 0, 0), new Vector3(0.9f, 1.3f, 1.7f), (HeightmapSize.Width / 2) - 10, new float[] { 30f, 35f, 40f, 45f });
 
             palmModel = new Palmera(env);
-            CreateObjectsFromModel(palmModel.mesh, 50, new Vector3((HeightmapSize.Width / 5)*-1, 0, 0), new Vector3(0.5f, 0.5f, 0.5f), (HeightmapSize.Width / 3), new float[] { 60f, 65f, 70f, 75f });
-            CreateObjectsFromModel(palmModel.mesh, 50, new Vector3((HeightmapSize.Width / 6), 0, (HeightmapSize.Width / 6)), new Vector3(0.5f, 0.5f, 0.5f), (HeightmapSize.Width / 6) * 2, new float[] { 60f, 65f, 70f, 75f });
+            //CreateObjectsFromModel(palmModel.mesh, 50, new Vector3((HeightmapSize.Width / 5)*-1, 0, 0), new Vector3(0.5f, 0.5f, 0.5f), (HeightmapSize.Width / 3), new float[] { 60f, 65f, 70f, 75f });
+            //CreateObjectsFromModel(palmModel.mesh, 50, new Vector3((HeightmapSize.Width / 6), 0, (HeightmapSize.Width / 6)), new Vector3(0.5f, 0.5f, 0.5f), (HeightmapSize.Width / 6) * 2, new float[] { 60f, 65f, 70f, 75f });
+            CreateObjectsFromModel(palmModel.mesh, 300, new Vector3(0,0,0), new Vector3(0.5f, 0.7f, 0.9f), (HeightmapSize.Width / 2) - 10, new float[] { 60f, 65f, 70f, 75f });
 
             //arbolModel = new Arbol(env);
             //CreateObjectsFromModel(arbolModel.mesh, 30, new Vector3(10, 0, 10), new Vector3(0.8f, 0.8f, 0.8f), 20, new float[] { 50f, 55f, 60f, 65f });
@@ -153,8 +155,9 @@ namespace TGC.Group.Model.EscenarioGame
             CreateObjectsFromModel(frutaModel.mesh, 150, new Vector3(0, 0, 0), new Vector3(0.8f, 0.8f, 0.8f), (HeightmapSize.Width / 2) - 10, new float[] { 2f, 2f, 2f, 2f });
 
             pinoModel = new Pino(env);
-            CreateObjectsFromModel(pinoModel.mesh, 100, new Vector3((HeightmapSize.Width / 4), 0, 0), new Vector3(0.8f, 0.8f, 0.8f), (HeightmapSize.Width / 4)-10, new float[] { 50, 55f, 60f, 65f });
-            CreateObjectsFromModel(pinoModel.mesh, 100, new Vector3(0, 0, (HeightmapSize.Width / 4)), new Vector3(0.8f, 0.8f, 0.8f), (HeightmapSize.Width / 4)-10, new float[] { 50, 55f, 60f, 65f });
+            //CreateObjectsFromModel(pinoModel.mesh, 100, new Vector3((HeightmapSize.Width / 4), 0, 0), new Vector3(0.8f, 0.8f, 0.8f), (HeightmapSize.Width / 4)-10, new float[] { 50, 55f, 60f, 65f });
+            //CreateObjectsFromModel(pinoModel.mesh, 100, new Vector3(0, 0, (HeightmapSize.Width / 4)), new Vector3(0.8f, 0.8f, 0.8f), (HeightmapSize.Width / 4)-10, new float[] { 50, 55f, 60f, 65f });
+            CreateObjectsFromModel(pinoModel.mesh, 100, new Vector3(0, 0,0), new Vector3(0.8f, 0.9f, 1.1f), (HeightmapSize.Width / 2) - 10, new float[] { 50, 55f, 60f, 65f });
 
             //plantModel = loader.loadSceneFromFile(plantMeshPath).Meshes[0];
             //CreateObjectsFromModel(plantModel, 70, new Vector3(75, 0, -75), new Vector3(0.8f, 0.8f, 0.8f), 75, new float[] { 50f, 55f, 60f, 65f });
@@ -219,9 +222,15 @@ namespace TGC.Group.Model.EscenarioGame
                 // Actualizo el momento del día (dia o noche)
                 if (env.usoHorario > 190) cambioHorario();
 
-                //Luego tomamos lo dibujado antes y lo combinamos con una textura con efecto de alarma
+                
                 if (env.tiempoAcumLluvia > 20) activarLluvia();
                 if (env.tiempoAcumLluvia > 40) desactivarLluvia();
+
+
+                // Detengo el sonido del Hacha si ya fue iniciado y supero el tiempo
+                if (env.sonidoHacha){ env.tiempoAcumHacha += elapsedTime; }
+                if (env.tiempoAcumHacha > 0.6) env.personaje.sonidoHacha(false);
+
             }
         }
 
@@ -372,17 +381,20 @@ namespace TGC.Group.Model.EscenarioGame
                 face.rotateY(env.ElapsedTime / 30);
             }
         }
-        
 
         private void activarLluvia()
         {
             env.lloviendo = true;
+
             env.musica.selectionSound("Sonido\\lluvia_trueno.mp3");
             env.musica.startSound();
 
         }
         public void desactivarLluvia()
         {
+            // Ingremento la cantidad de agua recolectada
+            env.personaje.Inventario[1].cantidad += 2;
+
             env.tiempoAcumLluvia = 0;
             env.lloviendo = false;
             env.musica.selectionSound("Sonido\\ambiente1.mp3");
@@ -391,7 +403,7 @@ namespace TGC.Group.Model.EscenarioGame
 
 
         // Las coordenas x,z son Originales (sin Escalado) y el z devuelto es Original también (sin Escalado)
-        public float CalcularAlturaTerreno(float x, float z)
+        public float CalcularAlturaTerreno(float x, float z, bool personaje = false)
         {
             // Calculo las coordenadas en la Matriz de Heightmap
             var pos_i = x + (HeightmapSize.Width /2);
@@ -419,13 +431,36 @@ namespace TGC.Group.Model.EscenarioGame
             if (pj1 > (HeightmapSize.Width-1))
                 pj1 = (HeightmapSize.Width-1);
 
+
+            var pi2 = pi - 1;
+            var pj2 = pj - 1;
+            if (pi2 < 0)
+                pi2 = 0;
+            if (pj2 < 0)
+                pj2 = 0;
+
             // 2x2 percent closest filtering usual:
             var H0 = terrain.HeightmapData[pi, pj];
             var H1 = terrain.HeightmapData[pi1, pj];
             var H2 = terrain.HeightmapData[pi, pj1];
             var H3 = terrain.HeightmapData[pi1, pj1];
+
+            var H4 = terrain.HeightmapData[pi2, pj];
+            var H5 = terrain.HeightmapData[pi2, pj1];
+            var H6 = terrain.HeightmapData[pi2, pj2];
+            var H7 = terrain.HeightmapData[pi, pj2];
+            var H8 = terrain.HeightmapData[pi1, pj2];
+
+
             var H = (H0 * (1 - fracc_i) + H1 * fracc_i) * (1 - fracc_j) +
                     (H2 * (1 - fracc_i) + H3 * fracc_i) * fracc_j;
+
+            if (personaje)
+            {
+                H = FastMath.Max(FastMath.Max(FastMath.Max(H0, H1), FastMath.Max(H2, H3)), FastMath.Max(H4, H5)) + 1;
+                //H = ((H0 + H1 + H2 + H3 + H4 + H5) / 6)+2;
+            }
+
 
             return H;
         }

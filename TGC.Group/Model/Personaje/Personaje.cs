@@ -7,7 +7,6 @@ using System.Drawing;
 using TGC.Core.SceneLoader;
 using Microsoft.DirectX.DirectInput;
 using TGC.Core.Utils;
-using System.Windows.Forms;
 
 namespace TGC.Group.Model.Character
 {
@@ -48,14 +47,14 @@ namespace TGC.Group.Model.Character
 
             var fruta = new ObjetoInventario {
                 objeto = new Fruta(),
-                cantidad = 20
+                cantidad = 0
             };
 
             Inventario.Add(fruta);
 
             var agua = new ObjetoInventario {
                 objeto = new Agua(),
-                cantidad = 20
+                cantidad = 0
             };
 
             Inventario.Add(agua);
@@ -96,7 +95,10 @@ namespace TGC.Group.Model.Character
         public void comer(int cantidad)
         {
             if (Inventario[0].cantidad > 0) {
-                this.Hambre = Hambre + 15;
+
+                if(this.Hambre < 84)
+                    this.Hambre = Hambre + 15;
+
                 Inventario[0].cantidad--;
             }
         }
@@ -104,7 +106,10 @@ namespace TGC.Group.Model.Character
         public void beber(int cantidad)
         {
             if (Inventario[1].cantidad > 0) {
-                this.Sed = Sed + 15;
+
+                if (this.Sed < 84)
+                    this.Sed = Sed + 15;
+
                 Inventario[1].cantidad--;
             }
         }
@@ -166,6 +171,8 @@ namespace TGC.Group.Model.Character
             if (env.Input.keyPressed(Key.D2)) {
                 beber(1);
             }
+
+
         }
 
         public void soltarObjeto()
@@ -200,37 +207,22 @@ namespace TGC.Group.Model.Character
         }
 
 
-        public void tomarObjeto()
-        {
-            /*
-            world.objects.ForEach(crafteable => {
-                if (crafteable.isNear(this))
-                {
-                    this.guardarObjetoInventario(crafteable);
-                }
-            });
-            */
-        }
-
         public void sonidoHacha(bool activado)
         {
             if (activado)
             {
-                //env.musica2.selectionSound("Sonido\\talar.mp3");
-                //env.musica2.startSoundOnce();
-            }else
+                env.musica.selectionSound("Sonido\\talar.mp3");
+                env.musica.startSound();
+            }
+            else
             {
-                //env.musica.selectionSound("Sonido\\ambiente1.mp3");
-                //env.musica.startSound();
+                env.musica.selectionSound("Sonido\\ambiente1.mp3");
+                env.musica.startSound();
+                env.sonidoHacha = false;
+                env.tiempoAcumHacha = 0;
             }
         }
-        public void desactivarLluvia()
-        {
-            env.tiempoAcumLluvia = 0;
-            env.lloviendo = false;
-            env.musica.selectionSound("Sonido\\ambiente1.mp3");
-            env.musica.startSound();
-        }
+
 
         public void Update(float ElapsedTime, TgcD3dInput Input)
         {
@@ -248,9 +240,76 @@ namespace TGC.Group.Model.Character
 
             if (this.Muerto)
             {
-                env.musica.playMp3(env.MediaDir + "Sonido\\game_over.mp3");
+                env.musica.selectionSound("Sonido\\game_over.mp3");
                 env.musica.startSound();
             }
+
+            // Verifico cuantos objetos estan Cerca
+            env.objetosCerca = 0;
+            foreach (var objeto in env.terreno.SceneMeshes)
+            {
+                if (estaCerca(objeto))
+                {
+                    env.objetosCerca++;
+
+                    // Si el objeto es una Fruta
+                    if(objeto.Name.StartsWith("Untitled") && env.Input.keyPressed(Key.T))
+                    {
+                        Inventario[0].cantidad++;
+
+                        // Desactivo el objeto y lo muevo a un lugar lejano ya que no puedo sacarlos de SceneMeshes
+                        objeto.Enabled = false;
+                        objeto.dispose();
+                        objeto.Position = new Vector3(0, 0, 0);
+                    }
+
+                    // Si el objeto es una Palmera
+                    if (objeto.Name.StartsWith("Palmera") && Input.buttonDown(TgcD3dInput.MouseButtons.BUTTON_LEFT))
+                    {
+                        Inventario[2].cantidad++;
+
+                        // Desactivo el objeto y lo muevo a un lugar lejano ya que no puedo sacarlos de SceneMeshes
+                        objeto.Enabled = false;
+                        objeto.dispose();
+                        objeto.Position = new Vector3(0, 0, 0);
+                    }
+
+                    // Si el objeto es una Pino
+                    if (objeto.Name.StartsWith("Pino") && Input.buttonDown(TgcD3dInput.MouseButtons.BUTTON_LEFT))
+                    {
+                        Inventario[2].cantidad++;
+
+                        // Desactivo el objeto y lo muevo a un lugar lejano ya que no puedo sacarlos de SceneMeshes
+                        objeto.Enabled = false;
+                        objeto.dispose();
+                        objeto.Position = new Vector3(0, 0, 0);
+                    }
+
+
+                    // Si el objeto es una Piedra
+                    if (objeto.Name.StartsWith("Roca") && Input.buttonDown(TgcD3dInput.MouseButtons.BUTTON_LEFT))
+                    {
+                        Inventario[3].cantidad++;
+
+                        // Desactivo el objeto y lo muevo a un lugar lejano ya que no puedo sacarlos de SceneMeshes
+                        objeto.Enabled = false;
+                        objeto.dispose();
+                        objeto.Position = new Vector3(0, 0, 0);
+                    }
+                }
+            }
+
+        }
+
+
+        public bool estaCerca(TgcMesh item)
+        {
+            Vector3 posicionPersonaje = this.Posicion;
+            Vector3 posicionObjeto = item.Position;
+
+            float distanciaCuadrada = Vector3.LengthSq(posicionObjeto - posicionPersonaje);
+
+            return distanciaCuadrada < 2500 * 2500;
         }
 
         public void Render(float ElapsedTime)
@@ -266,6 +325,8 @@ namespace TGC.Group.Model.Character
                // BoundingSphere.render();
                 //hachaPersonaje.render();
             }
+
+
         }
 
         public void Dispose()
