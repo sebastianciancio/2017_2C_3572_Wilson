@@ -109,7 +109,7 @@ namespace TGC.Group.Model.EscenarioGame
         {
             // Inicializo las Escalas
             SceneScaleY = 3 * 40f;
-            SceneScaleXZ = 20 * 400f;
+            SceneScaleXZ = 30 * 400f;
 
             //Cargar Heightmap y textura de la Escena
             HeightmapSize = new Bitmap(sceneHeightmapPath);

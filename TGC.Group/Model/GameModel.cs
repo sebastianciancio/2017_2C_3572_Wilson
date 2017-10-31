@@ -11,6 +11,7 @@ using TGC.Core.Textures;
 using Microsoft.DirectX.Direct3D;
 using Microsoft.DirectX.DirectInput;
 using TGC.Core.Utils;
+using System.Windows.Forms;
 
 namespace TGC.Group.Model
 {
@@ -24,6 +25,7 @@ namespace TGC.Group.Model
         public HUD hud;
         public Personaje personaje;
         public Musica musica;
+        public Musica musica2;
 
         private Drawer2D drawer2D;
         private CustomSprite menuPresentacion;
@@ -33,6 +35,7 @@ namespace TGC.Group.Model
         public int horaDelDia;
         public bool presentacion = true;
         public bool lloviendo = false;
+        public bool modoDios = false;
 
         TgcTexture lluviaTexture;
         Microsoft.DirectX.Direct3D.Effect effect;
@@ -42,7 +45,11 @@ namespace TGC.Group.Model
         private Texture renderTarget2D;
         private VertexBuffer screenQuadVB;
 
+        public float alturaCamara = 10f;
+        private float escaladoProporcionalX;
+        private float escaladoProporcionalY;
 
+        private string[] textoMenuPppal = new string[15];
 
         // ***********************************************************
 
@@ -61,11 +68,19 @@ namespace TGC.Group.Model
             // Defino el Menu presentacion
             drawer2D = new Drawer2D();
 
+
             menuPresentacion = new CustomSprite();
             menuPresentacion.Bitmap = new CustomBitmap(this.MediaDir + "\\HUD\\presentacion.jpg", D3DDevice.Instance.Device);
             Size textureSize = menuPresentacion.Bitmap.Size;
             menuPresentacion.Position = new Vector2(0,0);
-            menuPresentacion.Scaling = new Vector2(1.5f, 1.2f);
+
+            escaladoProporcionalX = (float)(D3DDevice.Instance.Width * 1f / menuPresentacion.Bitmap.Size.Width * 1f);
+            escaladoProporcionalY = (float)(D3DDevice.Instance.Height * 1f / menuPresentacion.Bitmap.Size.Height * 1f);
+
+            if(escaladoProporcionalX > escaladoProporcionalY)
+                menuPresentacion.Scaling = new Vector2(escaladoProporcionalX, escaladoProporcionalX);
+            else
+                menuPresentacion.Scaling = new Vector2(escaladoProporcionalY, escaladoProporcionalY);
 
             // Para determinar que momento del día es
             usoHorario = 0;
@@ -84,6 +99,9 @@ namespace TGC.Group.Model
             musica = new Musica(this.MediaDir);
             musica.selectionSound("Sonido\\ambiente1.mp3");
             musica.startSound();
+
+            musica2 = new Musica(this.MediaDir);
+            musica2.selectionSound("Sonido\\talar.mp3");
 
 
             // Inicializacion de PostProcess con Render Target
@@ -130,8 +148,8 @@ namespace TGC.Group.Model
             D3DDevice.Instance.Device.Transform.Projection =
                 Matrix.PerspectiveFovLH(D3DDevice.Instance.FieldOfView,
                     D3DDevice.Instance.AspectRatio,
-                    D3DDevice.Instance.ZNearPlaneDistance * 0.05f,
-                    D3DDevice.Instance.ZFarPlaneDistance * 560f);
+                    D3DDevice.Instance.ZNearPlaneDistance,
+                    D3DDevice.Instance.ZFarPlaneDistance * 2560f);
         }
 
         public override void Update()
@@ -152,7 +170,6 @@ namespace TGC.Group.Model
             //PreRender();
 
             ClearTextures();
-
 
             //Cargamos el Render Targer al cual se va a dibujar la escena 3D. Antes nos guardamos el surface original
             //En vez de dibujar a la pantalla, dibujamos a un buffer auxiliar, nuestro Render Target.
@@ -201,9 +218,31 @@ namespace TGC.Group.Model
                 drawer2D.DrawSprite(menuPresentacion);
                 drawer2D.EndDrawSprite();
 
-                DrawText.changeFont((new System.Drawing.Font("TimesNewRoman", 35, FontStyle.Bold | FontStyle.Italic)));
-                //DrawText.Size = new Size(300, 100);
-                DrawText.drawText("Presione [ESPACIO] para COMENZAR", 150, 150, Color.OrangeRed);
+                //DrawText.Size = new Size(D3DDevice.Instance.Width, 100);
+
+                textoMenuPppal[1] = "Menú Principal";
+                textoMenuPppal[2] = "Movimiento Personaje: A W S D";
+                textoMenuPppal[3] = "Uso de Inventario: #1, #2, #3, #4, #5";
+                textoMenuPppal[4] = "Modos: Normal (N) - God (G)";
+                textoMenuPppal[5] = "Pausa: ESC";
+                textoMenuPppal[6] = "Comenzar: Espacio";
+                textoMenuPppal[7] = "Salir: Alt+F4";
+
+                for (var j=1; j <= 7; j++)
+                {
+                    if (j == 1)
+                    {
+                        DrawText.changeFont((new System.Drawing.Font("TimesNewRoman", 35, FontStyle.Underline)));
+                    }
+                    else
+                    {
+                        DrawText.changeFont((new System.Drawing.Font("TimesNewRoman", 35, FontStyle.Regular)));
+                    }
+                    DrawText.drawText(textoMenuPppal[j], (D3DDevice.Instance.Width / 2) - (textoMenuPppal[j].Length * 10), 70*j, Color.OrangeRed);
+                }
+
+                textoMenuPppal[10] = "Objetivo: Sobrevivir en la Isla y pedir ayuda al exterior.";
+                DrawText.drawText(textoMenuPppal[10], (D3DDevice.Instance.Width / 2) - (textoMenuPppal[10].Length * 10), D3DDevice.Instance.Height - 70, Color.OrangeRed);
 
                 if (Input.keyDown(Key.Space))
                 {
@@ -278,7 +317,6 @@ namespace TGC.Group.Model
             personaje.Dispose();
             hud.Dispose();
 
-
             effect.Dispose();
             screenQuadVB.Dispose();
             renderTarget2D.Dispose();
@@ -289,8 +327,8 @@ namespace TGC.Group.Model
         private void InitCamera()
         {
             // Usar Coordenadas Originales del HeightMap [-32,32]
-            var posicionCamaraX = 11;
-            var posicionCamaraZ = 21;
+            var posicionCamaraX = -4;
+            var posicionCamaraZ = -6;
             var posicionCamaraY = terreno.CalcularAlturaTerreno(posicionCamaraX, posicionCamaraZ);
 
             var alturaOjos = 0f;
@@ -310,8 +348,10 @@ namespace TGC.Group.Model
             DrawText.changeFont((new System.Drawing.Font("TimesNewRoman", 12)));
             DrawText.drawText("Mesh total: \n" + terreno.SceneMeshes.Count, 0, 20, Color.OrangeRed);
             DrawText.drawText("Mesh renderizados: \n" + terreno.totalMeshesRenderizados, 0, 100, Color.OrangeRed);
-            
+
             /*
+            DrawText.drawText("Camera (Coordenada X Original): \n" + (int)(Camara.Position.X / terreno.SceneScaleXZ), 200, 20, Color.OrangeRed);
+            DrawText.drawText("Camera (Coordenada Z Original): \n" + (int)(Camara.Position.Z / terreno.SceneScaleXZ), 200, 100, Color.OrangeRed);
             DrawText.drawText("usoHorario: \n" + (usoHorario/570)*24, 200, 20, Color.OrangeRed);
             DrawText.drawText("usoHorario: \n" + usoHorario, 200, 20, Color.OrangeRed);
             DrawText.drawText("Camera position: \n" + Camara.Position, 0, 20, Color.OrangeRed);

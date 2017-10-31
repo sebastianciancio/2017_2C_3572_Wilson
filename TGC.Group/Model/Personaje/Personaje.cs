@@ -7,6 +7,7 @@ using System.Drawing;
 using TGC.Core.SceneLoader;
 using Microsoft.DirectX.DirectInput;
 using TGC.Core.Utils;
+using System.Windows.Forms;
 
 namespace TGC.Group.Model.Character
 {
@@ -211,6 +212,26 @@ namespace TGC.Group.Model.Character
             */
         }
 
+        public void sonidoHacha(bool activado)
+        {
+            if (activado)
+            {
+                //env.musica2.selectionSound("Sonido\\talar.mp3");
+                //env.musica2.startSoundOnce();
+            }else
+            {
+                //env.musica.selectionSound("Sonido\\ambiente1.mp3");
+                //env.musica.startSound();
+            }
+        }
+        public void desactivarLluvia()
+        {
+            env.tiempoAcumLluvia = 0;
+            env.lloviendo = false;
+            env.musica.selectionSound("Sonido\\ambiente1.mp3");
+            env.musica.startSound();
+        }
+
         public void Update(float ElapsedTime, TgcD3dInput Input)
         {
             // Actualizo la posicion del Hacha
@@ -243,7 +264,7 @@ namespace TGC.Group.Model.Character
             {
                 // Esfera para detectar las colisiones
                // BoundingSphere.render();
-                hachaPersonaje.render();
+                //hachaPersonaje.render();
             }
         }
 

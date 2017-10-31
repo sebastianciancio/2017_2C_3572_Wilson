@@ -25,8 +25,8 @@ namespace TGC.Group.Model.SoundsGame
         {
             MediaDir = mediaDir;
             sonidos = new System.Collections.Generic.List<String>();
-            sonidos.Add(MediaDir + "Sonido\\ambiente1.mp3");
-            sonidos.Add(MediaDir + "Sonido\\ambiente2.mp3");
+            //sonidos.Add(MediaDir + "Sonido\\ambiente1.mp3");
+            //sonidos.Add(MediaDir + "Sonido\\ambiente2.mp3");
             nroFile = 0;
             currentFile = null;
             mp3Player = new TgcMp3Player();
@@ -97,6 +97,28 @@ namespace TGC.Group.Model.SoundsGame
                 currentPlaying = mp3Player.FileName;
             }
            
+        }
+
+        public void startSoundOnce()
+        {
+            var currentState = mp3Player.getStatus();
+            if (currentState == TgcMp3Player.States.Playing)
+            {
+
+                if (currentFile != currentPlaying)
+                {
+                    //Parar y reproducir MP3
+                    mp3Player.closeFile();
+                    mp3Player.play(false);
+                    currentPlaying = mp3Player.FileName;
+                }
+            }
+            else
+            {
+                mp3Player.stop();
+                mp3Player.closeFile();
+            }
+
         }
 
         public void soundControl()

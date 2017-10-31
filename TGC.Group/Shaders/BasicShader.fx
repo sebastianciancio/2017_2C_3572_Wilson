@@ -71,7 +71,7 @@ VS_OUTPUT vs_main2(VS_INPUT Input)
 	// Animar posicion
 	Input.Position.z += (Input.Position.z *  sin(time) * 2 * 0.04 );
    	Input.Position.x += (Input.Position.x * cos(time) * 2 * 0.04 );
-   	Input.Position.y += (Input.Position.y * sin(time) * cos(time) * 0.2 );
+   	Input.Position.y += (Input.Position.y * sin(time) * cos(time) * 0.8 );
 
 	//Proyectar posicion
 	Output.Position = mul(Input.Position, matWorldViewProj);

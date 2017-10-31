@@ -30,6 +30,9 @@ namespace TGC.Group.Model.SpriteGame
         private TgcText2D txtSed;
         private TgcText2D txtCansancio;
 
+        private CustomSprite hacha;
+
+
         public HUD(GameModel env)
         {
         	this.env = env;
@@ -53,6 +56,16 @@ namespace TGC.Group.Model.SpriteGame
                        D3DDevice.Instance.Width - (textureSize.Width * 0.3f) - 10,
                        D3DDevice.Instance.Height - (textureSize.Height * 0.3f) - 10);
             personaje.Scaling = new Vector2(0.3f, 0.3f);
+
+            // Hacha
+            hacha = new CustomSprite();
+            hacha.Bitmap = new CustomBitmap(env.MediaDir + "\\hacha\\hacha.png", D3DDevice.Instance.Device);
+            textureSize = hacha.Bitmap.Size;
+            hacha.Position = new Vector2(
+                       D3DDevice.Instance.Width/2,
+                       D3DDevice.Instance.Height - textureSize.Height + 80);
+            //hacha.Scaling = new Vector2(0.3f, 0.3f);
+
 
             //Crear Vaso de Agua 512 x 512
             vaso = new CustomSprite();
@@ -182,33 +195,39 @@ namespace TGC.Group.Model.SpriteGame
 
         public void Render()
         {
-            //Iniciar dibujado de todos los Sprites del HUD
-            drawer2D.BeginDrawSprite();
+            if (!env.modoDios)
+            {
 
-            //Dibujar sprite (si hubiese mas, deberian ir todos aquí)
-            drawer2D.DrawSprite(backgroundHUD);
-            drawer2D.DrawSprite(personaje);
-            drawer2D.DrawSprite(comida);
-            drawer2D.DrawSprite(vaso);
-            drawer2D.DrawSprite(inventario0);
-            drawer2D.DrawSprite(inventario1);
-            drawer2D.DrawSprite(inventario2);
-            drawer2D.DrawSprite(inventario3);
-            drawer2D.DrawSprite(inventario4);
+                //Iniciar dibujado de todos los Sprites del HUD
+                drawer2D.BeginDrawSprite();
 
-            //Finalizar el dibujado de Sprites
-            drawer2D.EndDrawSprite();
 
-            // Renderizo los puntos de vida
-            txtCansancio.render();
-            txtSed.render();
-            txtHambre.render();
+                //Dibujar sprite (si hubiese mas, deberian ir todos aquí)
+                drawer2D.DrawSprite(backgroundHUD);
+                drawer2D.DrawSprite(personaje);
+                drawer2D.DrawSprite(hacha);
+                drawer2D.DrawSprite(comida);
+                drawer2D.DrawSprite(vaso);
+                drawer2D.DrawSprite(inventario0);
+                drawer2D.DrawSprite(inventario1);
+                drawer2D.DrawSprite(inventario2);
+                drawer2D.DrawSprite(inventario3);
+                drawer2D.DrawSprite(inventario4);
 
-            inventario0text.render();
-            inventario1text.render();
-            inventario2text.render();
-            inventario3text.render();
-            inventario4text.render();
+                //Finalizar el dibujado de Sprites
+                drawer2D.EndDrawSprite();
+
+                // Renderizo los puntos de vida
+                txtCansancio.render();
+                txtSed.render();
+                txtHambre.render();
+
+                inventario0text.render();
+                inventario1text.render();
+                inventario2text.render();
+                inventario3text.render();
+                inventario4text.render();
+            }
         }
 
         public void Dispose()
@@ -216,6 +235,7 @@ namespace TGC.Group.Model.SpriteGame
             personaje.Dispose();
             comida.Dispose();
             vaso.Dispose();
+            hacha.Dispose();
             backgroundHUD.Dispose();
             txtCansancio.Dispose();
             txtSed.Dispose();
