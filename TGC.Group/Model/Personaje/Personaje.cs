@@ -127,7 +127,7 @@ namespace TGC.Group.Model.Character
             this.Cansancio = Cansancio - valor;
         }
 
-        public void actualizarEstado(float elapsedTime, TgcD3dInput Input)
+        public void actualizarEstado(float elapsedTime)
         {
             if (!this.Muerto)
             {
@@ -135,7 +135,7 @@ namespace TGC.Group.Model.Character
                 tTranscurridoSed += elapsedTime;
 
                 var mult = 1;
-                if (Input.keyDown(Key.LeftShift)) {
+                if (env.Input.keyDown(Key.LeftShift)) {
                     mult = 8;
                 }
 
@@ -233,7 +233,7 @@ namespace TGC.Group.Model.Character
             BoundingSphere.setCenter(Posicion);
 
             // Actualizo las Variables de Estado del Personaje
-            actualizarEstado(ElapsedTime, Input);
+            actualizarEstado(ElapsedTime);
 
             actualizarControles(ElapsedTime);
 
