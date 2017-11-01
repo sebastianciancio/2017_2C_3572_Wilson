@@ -182,7 +182,7 @@ namespace TGC.Group.Model.Camara
 
 
                 //Run
-                if (Input.keyDown(Key.Space))
+                if (Input.keyDown(Key.LeftShift))
                 {
                     // Fuerzo a que el Personaje este siempre sobre la Isla
                     if (env.terreno.estaDentroTerreno())
@@ -195,12 +195,12 @@ namespace TGC.Group.Model.Camara
                 }
 
                 // Click del Mouse
-                if (Input.buttonDown(TgcD3dInput.MouseButtons.BUTTON_LEFT))
-                {
-                    env.sonidoHacha = true;
-                    env.personaje.sonidoHacha(true);
-                }
-            }
+                // if (Input.buttonDown(TgcD3dInput.MouseButtons.BUTTON_LEFT))
+                // {
+                //     env.sonidoHacha = true;
+                //     env.personaje.sonidoHacha(true);
+                // }
+        }
 
 
             //Detectar colisiones

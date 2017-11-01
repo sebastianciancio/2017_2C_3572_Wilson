@@ -20,12 +20,10 @@ namespace TGC.Group.Model.SpriteGame
         private CustomSprite inventario1;
         private CustomSprite inventario2;
         private CustomSprite inventario3;
-        private CustomSprite inventario4;
         private TgcText2D inventario0text;
         private TgcText2D inventario1text;
         private TgcText2D inventario2text;
         private TgcText2D inventario3text;
-        private TgcText2D inventario4text;
         private TgcText2D txtHambre;
         private TgcText2D txtSed;
         private TgcText2D txtCansancio;
@@ -121,15 +119,6 @@ namespace TGC.Group.Model.SpriteGame
                        D3DDevice.Instance.Height - (textureSize.Height * 0.15f) - (D3DDevice.Instance.Height * 0.6f));
             inventario3.Scaling = new Vector2(0.15f, 0.15f);
 
-            //Crear Inventario4 512 x 512
-            inventario4 = new CustomSprite();
-            inventario4.Bitmap = new CustomBitmap(env.MediaDir + "\\HUD\\fire.png", D3DDevice.Instance.Device);
-            textureSize = inventario4.Bitmap.Size;
-            inventario4.Position = new Vector2(
-                       D3DDevice.Instance.Width - (textureSize.Width * 0.15f) - 10,
-                       D3DDevice.Instance.Height - (textureSize.Height * 0.15f) - (D3DDevice.Instance.Height * 0.5f));
-            inventario4.Scaling = new Vector2(0.15f, 0.15f);
-
             // Inicializo los puntos de vida
             txtHambre = new TgcText2D();
             txtSed = new TgcText2D();
@@ -139,7 +128,6 @@ namespace TGC.Group.Model.SpriteGame
             inventario1text = new TgcText2D();
             inventario2text = new TgcText2D();
             inventario3text = new TgcText2D();
-            inventario4text = new TgcText2D();
 
             //Crear GameOver 549 x 245
             gameover = new CustomSprite();
@@ -177,7 +165,6 @@ namespace TGC.Group.Model.SpriteGame
             InicializarTextos(inventario1text, Color.Black, TgcText2D.TextAlign.RIGHT, new Point(D3DDevice.Instance.Width - 60, Convert.ToInt32(D3DDevice.Instance.Height * 0.15f)), new Size(40, 40), new Font("TimesNewRoman", 25, FontStyle.Bold));
             InicializarTextos(inventario2text, Color.Black, TgcText2D.TextAlign.RIGHT, new Point(D3DDevice.Instance.Width - 60, Convert.ToInt32(D3DDevice.Instance.Height * 0.25f)), new Size(40, 40), new Font("TimesNewRoman", 25, FontStyle.Bold));
             InicializarTextos(inventario3text, Color.Black, TgcText2D.TextAlign.RIGHT, new Point(D3DDevice.Instance.Width - 60, Convert.ToInt32(D3DDevice.Instance.Height * 0.35f)), new Size(40, 40), new Font("TimesNewRoman", 25, FontStyle.Bold));
-            InicializarTextos(inventario4text, Color.Black, TgcText2D.TextAlign.RIGHT, new Point(D3DDevice.Instance.Width - 60, Convert.ToInt32(D3DDevice.Instance.Height * 0.45f)), new Size(40, 40), new Font("TimesNewRoman", 25, FontStyle.Bold));
         }
 
         public void Update(float ElapsedTime)
@@ -190,7 +177,6 @@ namespace TGC.Group.Model.SpriteGame
             inventario1text.Text = env.personaje.Inventario[1].cantidad.ToString();
             inventario2text.Text = env.personaje.Inventario[2].cantidad.ToString();
             inventario3text.Text = env.personaje.Inventario[3].cantidad.ToString();
-            inventario4text.Text = env.personaje.Inventario[4].cantidad.ToString();
         }
 
         public void Render()
@@ -212,7 +198,6 @@ namespace TGC.Group.Model.SpriteGame
                 drawer2D.DrawSprite(inventario1);
                 drawer2D.DrawSprite(inventario2);
                 drawer2D.DrawSprite(inventario3);
-                drawer2D.DrawSprite(inventario4);
 
                 //Finalizar el dibujado de Sprites
                 drawer2D.EndDrawSprite();
@@ -226,7 +211,6 @@ namespace TGC.Group.Model.SpriteGame
                 inventario1text.render();
                 inventario2text.render();
                 inventario3text.render();
-                inventario4text.render();
             }
         }
 

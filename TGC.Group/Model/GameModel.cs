@@ -219,9 +219,9 @@ namespace TGC.Group.Model
                 //DrawText.Size = new Size(D3DDevice.Instance.Width, 100);
 
                 textoMenuPppal[1] = "Menú Principal";
-                textoMenuPppal[2] = "Movimiento Personaje: A W S D";
-                textoMenuPppal[3] = "Uso de Inventario: #1, #2, #3, #4, #5";
-                textoMenuPppal[4] = "Acciones: Agarrar (T) - Destruir (Click Izq)";
+                textoMenuPppal[2] = "Movimiento Personaje: W A S D";
+                textoMenuPppal[3] = "Comer (1), Beber (2)";
+                textoMenuPppal[4] = "Acciones: Agarrar (E) - Destruir (Click Izq) - Correr (Shift Izq)";
                 textoMenuPppal[5] = "Modos: Normal (N) - God (G)";
                 textoMenuPppal[6] = "Pausa: ESC";
                 textoMenuPppal[7] = "Comenzar: Espacio";
@@ -337,8 +337,8 @@ namespace TGC.Group.Model
 
             var cameraPosition = new Vector3(posicionCamaraX * terreno.SceneScaleXZ, posicionCamaraY * terreno.SceneScaleY + alturaOjos, posicionCamaraZ * terreno.SceneScaleXZ);
             var cameraLookAt = new Vector3(0, 0.5f, -1);
-            var cameraMoveSpeed = 1000f;
-            var cameraJumpSpeed = 10000f;
+            var cameraMoveSpeed = 7000;
+            var cameraJumpSpeed = 30000f;
 
             // Creo la cámara y defino la Posición y LookAt
             Camara = new TgcFpsCamera(this,cameraPosition, cameraMoveSpeed, cameraJumpSpeed, Input);

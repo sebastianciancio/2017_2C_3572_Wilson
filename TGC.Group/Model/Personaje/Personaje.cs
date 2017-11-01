@@ -73,13 +73,6 @@ namespace TGC.Group.Model.Character
 
             Inventario.Add(piedra);
 
-            var encendedor = new ObjetoInventario {
-                objeto = new Encendedor(),
-                cantidad = 0
-            };
-
-            Inventario.Add(encendedor);
-
             // Creo la Espera que envuelve al personaje para detectar colisiones
             BoundingSphere = new TgcBoundingSphere(new Vector3(this.Posicion.X * env.terreno.SceneScaleXZ, env.terreno.CalcularAlturaTerreno(this.Posicion.X, this.Posicion.Z) * env.terreno.SceneScaleY + 10, this.Posicion.Z * env.terreno.SceneScaleXZ), 0.1f);
             BoundingSphere.setRenderColor(Color.Yellow);
@@ -134,25 +127,31 @@ namespace TGC.Group.Model.Character
             this.Cansancio = Cansancio - valor;
         }
 
-        public void actualizarEstado(float elapsedTime)
+        public void actualizarEstado(float elapsedTime, TgcD3dInput Input)
         {
             if (!this.Muerto)
             {
                 tTranscurridoHambre += elapsedTime;
                 tTranscurridoSed += elapsedTime;
-                tTranscurridoCansancio += elapsedTime;
 
-                if (tTranscurridoHambre > 6)
+                var mult = 1;
+                if (Input.keyDown(Key.LeftShift)) {
+                    mult = 8;
+                }
+
+                tTranscurridoCansancio += elapsedTime * mult;
+
+                if (tTranscurridoHambre > 2)
                 {
                     this.Hambre = Hambre - 2;
                     tTranscurridoHambre = 0;
                 }
-                if (tTranscurridoSed > 12)
+                if (tTranscurridoSed > 4)
                 {
                     this.Sed = this.Sed - 2;
                     tTranscurridoSed = 0;
                 }
-                if (tTranscurridoCansancio > 30)
+                if (tTranscurridoCansancio > 12)
                 {
                     this.Cansancio = this.Cansancio - 3;
                     tTranscurridoCansancio = 0;
@@ -171,8 +170,12 @@ namespace TGC.Group.Model.Character
             if (env.Input.keyPressed(Key.D2)) {
                 beber(1);
             }
-
-
+            if (env.Input.keyPressed(Key.F)) {
+                if (Inventario[2].cantidad > 150) {
+                    Inventario[2].cantidad -= 150;
+                    // instanciar fogata apagada
+                }
+            }
         }
 
         public void soltarObjeto()
@@ -199,10 +202,6 @@ namespace TGC.Group.Model.Character
 
             if (item is Piedra) {
                 Inventario[3].cantidad++;
-            }
-
-            if (item is Encendedor) {
-                Inventario[4].cantidad++;
             }
         }
 
@@ -234,7 +233,7 @@ namespace TGC.Group.Model.Character
             BoundingSphere.setCenter(Posicion);
 
             // Actualizo las Variables de Estado del Personaje
-            actualizarEstado(ElapsedTime);
+            actualizarEstado(ElapsedTime, Input);
 
             actualizarControles(ElapsedTime);
 
@@ -253,7 +252,7 @@ namespace TGC.Group.Model.Character
                     env.objetosCerca++;
 
                     // Si el objeto es una Fruta
-                    if(objeto.Name.StartsWith("Untitled") && env.Input.keyPressed(Key.T))
+                    if(objeto.Name.StartsWith("Untitled") && env.Input.keyPressed(Key.E))
                     {
                         Inventario[0].cantidad++;
 
@@ -266,6 +265,9 @@ namespace TGC.Group.Model.Character
                     // Si el objeto es una Palmera
                     if (objeto.Name.StartsWith("Palmera") && Input.buttonDown(TgcD3dInput.MouseButtons.BUTTON_LEFT))
                     {
+                        sonidoHacha(true);
+                        env.sonidoHacha = true;
+
                         Inventario[2].cantidad++;
 
                         // Desactivo el objeto y lo muevo a un lugar lejano ya que no puedo sacarlos de SceneMeshes
@@ -274,9 +276,12 @@ namespace TGC.Group.Model.Character
                         objeto.Position = new Vector3(0, 0, 0);
                     }
 
-                    // Si el objeto es una Pino
+                    // Si el objeto es un Pino
                     if (objeto.Name.StartsWith("Pino") && Input.buttonDown(TgcD3dInput.MouseButtons.BUTTON_LEFT))
                     {
+                        sonidoHacha(true);
+                        env.sonidoHacha = true;
+
                         Inventario[2].cantidad++;
 
                         // Desactivo el objeto y lo muevo a un lugar lejano ya que no puedo sacarlos de SceneMeshes
@@ -284,11 +289,13 @@ namespace TGC.Group.Model.Character
                         objeto.dispose();
                         objeto.Position = new Vector3(0, 0, 0);
                     }
-
 
                     // Si el objeto es una Piedra
                     if (objeto.Name.StartsWith("Roca") && Input.buttonDown(TgcD3dInput.MouseButtons.BUTTON_LEFT))
                     {
+                        sonidoHacha(true);
+                        env.sonidoHacha = true;
+
                         Inventario[3].cantidad++;
 
                         // Desactivo el objeto y lo muevo a un lugar lejano ya que no puedo sacarlos de SceneMeshes
@@ -296,11 +303,19 @@ namespace TGC.Group.Model.Character
                         objeto.dispose();
                         objeto.Position = new Vector3(0, 0, 0);
                     }
+
+                    // Si el objeto es una fogata apagada
+                    if (/*objeto.Name.StartsWith("Roca")*/ false && Input.keyPressed(Key.Space)) {
+                        if (Inventario[3].cantidad > 2) {
+                            // un random para que tenga que probar de prenderla varias veces?
+                            // borrar la fogata apagada
+                            // instanciar fogata prendida
+                            // terminar juego? aguantar n minutos con el fuego prendido?
+                        }
+                    }
                 }
             }
-
         }
-
 
         public bool estaCerca(TgcMesh item)
         {
@@ -309,7 +324,7 @@ namespace TGC.Group.Model.Character
 
             float distanciaCuadrada = Vector3.LengthSq(posicionObjeto - posicionPersonaje);
 
-            return distanciaCuadrada < 2500 * 2500;
+            return distanciaCuadrada < 2500 * 20000;
         }
 
         public void Render(float ElapsedTime)
