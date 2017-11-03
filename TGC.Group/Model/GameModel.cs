@@ -359,9 +359,9 @@ namespace TGC.Group.Model
             DrawText.drawText("Objetos Total: \n" + terreno.SceneMeshes.Count, 0, 20, Color.OrangeRed);
             DrawText.drawText("Objetos Renderizados: \n" + terreno.totalMeshesRenderizados, 0, 100, Color.OrangeRed);
 
-            DrawText.drawText("Objetos Cercanos: \n" + objetosCerca, 200, 20, Color.OrangeRed);
-            DrawText.drawText("Camera position: \n" + Camara.Position, 0, 200, Color.OrangeRed);
-            DrawText.drawText("Fogata position: \n" + terreno.fogata.Position, 0, 300, Color.OrangeRed);
+            //DrawText.drawText("Objetos Cercanos: \n" + objetosCerca, 200, 20, Color.OrangeRed);
+            //DrawText.drawText("Camera position: \n" + Camara.Position, 0, 200, Color.OrangeRed);
+            //DrawText.drawText("Fogata position: \n" + terreno.fogata.Position, 0, 300, Color.OrangeRed);
 
             /*
             DrawText.drawText("Camera (Coordenada X Original): \n" + (int)(Camara.Position.X / terreno.SceneScaleXZ), 200, 20, Color.OrangeRed);

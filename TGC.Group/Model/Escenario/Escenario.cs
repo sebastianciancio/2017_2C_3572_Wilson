@@ -195,7 +195,7 @@ namespace TGC.Group.Model.EscenarioGame
             emisorFuego.ParticleTimeToLive = 1.5f;
             emisorFuego.CreationFrecuency = 0.25f;
             emisorFuego.Dispersion = 50;
-            emisorFuego.Speed = new Vector3(50f, 50f, 50f);
+            emisorFuego.Speed = new Vector3(50f, 50f*SceneScaleY, 50f);
 
 
             //Crear Quadtree: Defino el BoundinBox del Escenario
@@ -282,6 +282,10 @@ namespace TGC.Group.Model.EscenarioGame
 
             if (env.fogataEncendido)
             {
+                //IMPORTANTE PARA PERMITIR ESTE EFECTO.
+                D3DDevice.Instance.ParticlesEnabled = true;
+                D3DDevice.Instance.EnableParticles();
+
                 //Render de emisor
                 emisorFuego.render(elapsedTime);
             }
