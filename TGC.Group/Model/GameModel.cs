@@ -38,6 +38,7 @@ namespace TGC.Group.Model
         public bool lloviendo = false;
         public bool modoDios = false;
         public bool sonidoHacha = false;
+        public bool fogataEncendido = false;
         public float objetosCerca = 0;
 
         TgcTexture lluviaTexture;
@@ -259,6 +260,13 @@ namespace TGC.Group.Model
                 }
 
                 terreno.Render(ElapsedTime);
+
+                // Creo la fogata
+                if (terreno.activarFogata)
+                {
+                    terreno.fogata.render();
+                }
+
                 hud.Render();
                 RenderHelpText();
                 personaje.Render(ElapsedTime);
@@ -352,6 +360,8 @@ namespace TGC.Group.Model
             DrawText.drawText("Objetos Renderizados: \n" + terreno.totalMeshesRenderizados, 0, 100, Color.OrangeRed);
 
             DrawText.drawText("Objetos Cercanos: \n" + objetosCerca, 200, 20, Color.OrangeRed);
+            DrawText.drawText("Camera position: \n" + Camara.Position, 0, 200, Color.OrangeRed);
+            DrawText.drawText("Fogata position: \n" + terreno.fogata.Position, 0, 300, Color.OrangeRed);
 
             /*
             DrawText.drawText("Camera (Coordenada X Original): \n" + (int)(Camara.Position.X / terreno.SceneScaleXZ), 200, 20, Color.OrangeRed);

@@ -171,11 +171,29 @@ namespace TGC.Group.Model.Character
                 beber(1);
             }
             if (env.Input.keyPressed(Key.F)) {
-                if (Inventario[2].cantidad > 150) {
-                    Inventario[2].cantidad -= 150;
+                if (Inventario[2].cantidad > 100) {
+                    Inventario[2].cantidad -= 100;
+
                     // instanciar fogata apagada
+                    env.terreno.activarFogata = true;
                 }
             }
+
+            // Verifico si la fogata esta cerca
+            if (estaCerca(env.terreno.fogata))
+            {
+                // Si el objeto es una fogata apagada
+                if (env.Input.keyPressed(Key.D4))
+                {
+                    if (Inventario[3].cantidad > 5)
+                    {
+                        env.fogataEncendido = true;
+                        Inventario[3].cantidad--;
+                    }
+                }
+
+            }
+
         }
 
         public void soltarObjeto()
@@ -241,79 +259,83 @@ namespace TGC.Group.Model.Character
             {
                 env.musica.selectionSound("Sonido\\game_over.mp3");
                 env.musica.startSound();
-            }
-
-            // Verifico cuantos objetos estan Cerca
-            env.objetosCerca = 0;
-            foreach (var objeto in env.terreno.SceneMeshes)
+            }else
             {
-                if (estaCerca(objeto))
+
+                // Creo la fogata
+                if (env.terreno.activarFogata && !env.terreno.ubicacionFogataFija)
                 {
-                    env.objetosCerca++;
+                    env.terreno.fogata.Position = new Vector3(env.Camara.Position.X - (1 * env.terreno.SceneScaleXZ), env.terreno.CalcularAlturaTerreno((env.Camara.Position.X - (1 * env.terreno.SceneScaleXZ)) / env.terreno.SceneScaleXZ, env.Camara.Position.Z / env.terreno.SceneScaleXZ) * env.terreno.SceneScaleY, env.Camara.Position.Z);
+                    env.terreno.ubicacionFogataFija = true;
+                }
 
-                    // Si el objeto es una Fruta
-                    if(objeto.Name.StartsWith("Untitled") && env.Input.keyPressed(Key.E))
+
+
+                // Verifico cuantos objetos estan Cerca
+                env.objetosCerca = 0;
+                foreach (var objeto in env.terreno.SceneMeshes)
+                {
+                    if (estaCerca(objeto))
                     {
-                        Inventario[0].cantidad++;
+                        env.objetosCerca++;
 
-                        // Desactivo el objeto y lo muevo a un lugar lejano ya que no puedo sacarlos de SceneMeshes
-                        objeto.Enabled = false;
-                        objeto.dispose();
-                        objeto.Position = new Vector3(0, 0, 0);
-                    }
+                        // Si el objeto es una Fruta
+                        if (objeto.Name.StartsWith("Fruta") && env.Input.keyPressed(Key.E))
+                        {
+                            Inventario[0].cantidad++;
 
-                    // Si el objeto es una Palmera
-                    if (objeto.Name.StartsWith("Palmera") && Input.buttonDown(TgcD3dInput.MouseButtons.BUTTON_LEFT))
-                    {
-                        sonidoHacha(true);
-                        env.sonidoHacha = true;
-
-                        Inventario[2].cantidad++;
-
-                        // Desactivo el objeto y lo muevo a un lugar lejano ya que no puedo sacarlos de SceneMeshes
-                        objeto.Enabled = false;
-                        objeto.dispose();
-                        objeto.Position = new Vector3(0, 0, 0);
-                    }
-
-                    // Si el objeto es un Pino
-                    if (objeto.Name.StartsWith("Pino") && Input.buttonDown(TgcD3dInput.MouseButtons.BUTTON_LEFT))
-                    {
-                        sonidoHacha(true);
-                        env.sonidoHacha = true;
-
-                        Inventario[2].cantidad++;
-
-                        // Desactivo el objeto y lo muevo a un lugar lejano ya que no puedo sacarlos de SceneMeshes
-                        objeto.Enabled = false;
-                        objeto.dispose();
-                        objeto.Position = new Vector3(0, 0, 0);
-                    }
-
-                    // Si el objeto es una Piedra
-                    if (objeto.Name.StartsWith("Roca") && Input.buttonDown(TgcD3dInput.MouseButtons.BUTTON_LEFT))
-                    {
-                        sonidoHacha(true);
-                        env.sonidoHacha = true;
-
-                        Inventario[3].cantidad++;
-
-                        // Desactivo el objeto y lo muevo a un lugar lejano ya que no puedo sacarlos de SceneMeshes
-                        objeto.Enabled = false;
-                        objeto.dispose();
-                        objeto.Position = new Vector3(0, 0, 0);
-                    }
-
-                    // Si el objeto es una fogata apagada
-                    if (/*objeto.Name.StartsWith("Roca")*/ false && Input.keyPressed(Key.Space)) {
-                        if (Inventario[3].cantidad > 2) {
-                            // un random para que tenga que probar de prenderla varias veces?
-                            // borrar la fogata apagada
-                            // instanciar fogata prendida
-                            // terminar juego? aguantar n minutos con el fuego prendido?
+                            // Desactivo el objeto y lo muevo a un lugar lejano ya que no puedo sacarlos de SceneMeshes
+                            objeto.Enabled = false;
+                            objeto.dispose();
+                            objeto.Position = new Vector3(0, 0, 0);
                         }
+
+                        // Si el objeto es una Palmera
+                        if (objeto.Name.StartsWith("Palmera") && Input.buttonDown(TgcD3dInput.MouseButtons.BUTTON_LEFT))
+                        {
+                            sonidoHacha(true);
+                            env.sonidoHacha = true;
+
+                            Inventario[2].cantidad++;
+
+                            // Desactivo el objeto y lo muevo a un lugar lejano ya que no puedo sacarlos de SceneMeshes
+                            objeto.Enabled = false;
+                            objeto.dispose();
+                            objeto.Position = new Vector3(0, 0, 0);
+                        }
+
+                        // Si el objeto es un Pino
+                        if (objeto.Name.StartsWith("Pino") && Input.buttonDown(TgcD3dInput.MouseButtons.BUTTON_LEFT))
+                        {
+                            sonidoHacha(true);
+                            env.sonidoHacha = true;
+
+                            Inventario[2].cantidad++;
+
+                            // Desactivo el objeto y lo muevo a un lugar lejano ya que no puedo sacarlos de SceneMeshes
+                            objeto.Enabled = false;
+                            objeto.dispose();
+                            objeto.Position = new Vector3(0, 0, 0);
+                        }
+
+                        // Si el objeto es una Piedra
+                        if (objeto.Name.StartsWith("Roca") && Input.buttonDown(TgcD3dInput.MouseButtons.BUTTON_LEFT))
+                        {
+                            sonidoHacha(true);
+                            env.sonidoHacha = true;
+
+                            Inventario[3].cantidad++;
+
+                            // Desactivo el objeto y lo muevo a un lugar lejano ya que no puedo sacarlos de SceneMeshes
+                            objeto.Enabled = false;
+                            objeto.dispose();
+                            objeto.Position = new Vector3(0, 0, 0);
+                        }
+
                     }
                 }
+
+
             }
         }
 
@@ -336,12 +358,16 @@ namespace TGC.Group.Model.Character
             }
             else
             {
+                // Verifico si la fogata esta cerca
+                if (estaCerca(env.terreno.fogata))
+                {
+                    env.DrawText.drawText("Prueba encender la fogata con las piedras... \n", 400, 20, Color.OrangeRed);
+                }
+
                 // Esfera para detectar las colisiones
-               // BoundingSphere.render();
+                // BoundingSphere.render();
                 //hachaPersonaje.render();
             }
-
-
         }
 
         public void Dispose()

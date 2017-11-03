@@ -16,6 +16,7 @@ using TGC.Core.Fog;
 using TGC.Core.Geometry;
 using TGC.Core.Textures;
 using TGC.Core.Direct3D;
+using TGC.Core.Particle;
 
 namespace TGC.Group.Model.EscenarioGame
 {
@@ -65,8 +66,9 @@ namespace TGC.Group.Model.EscenarioGame
         private TgcSceneLoader loader;
         private bool ShowBoundingBox { get; set; }
 
-
+        public TgcMesh fogata;
         private string fogataPath;
+        private ParticleEmitter emisorFuego;
 
         private Palmera palmModel;
         private Roca rockModel;
@@ -80,6 +82,9 @@ namespace TGC.Group.Model.EscenarioGame
 
         private Effect effectAgua;
         private float time;
+
+        public bool activarFogata = false;
+        public bool ubicacionFogataFija = false;
 
         public int totalMeshesRenderizados;
 
@@ -102,7 +107,7 @@ namespace TGC.Group.Model.EscenarioGame
             marHeightmapPath = env.MediaDir + "Isla\\height_mar.jpg";
             marTexturePath = env.MediaDir + "Isla\\agua.jpg";
 
-            fogataPath = env.MediaDir + "Fogata\\Fogata-TgcScene.xml";
+            fogataPath = env.MediaDir + "Fogata2\\Split+firewood-TgcScene.xml";
         }
 
         public void Init()
@@ -171,8 +176,26 @@ namespace TGC.Group.Model.EscenarioGame
             //palm3Model = loader.loadSceneFromFile(palm3MeshPath).Meshes[0];
             //CreateObjectsFromModel(palm3Model, 70, new Vector3(-10, 0, -60), new Vector3(0.8f, 0.8f, 0.8f), 80, new float[] { 10f, 15f, 20f, 25f });
 
-            fogataModel = loader.loadSceneFromFile(fogataPath).Meshes[0];
-            CreateObjectsFromModel(fogataModel, 1, new Vector3((HeightmapSize.Width / 3), 0, (HeightmapSize.Width / 3)), new Vector3(0.8f, 0.8f, 0.8f), 10, new float[] { 50, 55f, 60f, 65f });
+
+            var fogataModel = loader.loadSceneFromFile(fogataPath);
+            fogata = fogataModel.Meshes[0];
+
+            fogata.AutoTransformEnable = true;
+            fogata.Scale = new Vector3(30f,30f,30f);
+            fogata.Position = new Vector3(0, 0, 0);
+            fogata.AlphaBlendEnable = true;
+            fogata.Enabled = true;            
+
+            // Inicializo el Fuego
+            emisorFuego = new ParticleEmitter(env.MediaDir + "Fogata2\\fuego.png", 30);
+            emisorFuego.Position = new Vector3(0, 0, 0);
+
+            emisorFuego.MinSizeParticle = 5.5f;            
+            emisorFuego.MaxSizeParticle = 10f;
+            emisorFuego.ParticleTimeToLive = 1.5f;
+            emisorFuego.CreationFrecuency = 0.25f;
+            emisorFuego.Dispersion = 50;
+            emisorFuego.Speed = new Vector3(50f, 50f, 50f);
 
 
             //Crear Quadtree: Defino el BoundinBox del Escenario
@@ -231,6 +254,12 @@ namespace TGC.Group.Model.EscenarioGame
                 if (env.sonidoHacha){ env.tiempoAcumHacha += elapsedTime; }
                 if (env.tiempoAcumHacha > 0.6) env.personaje.sonidoHacha(false);
 
+
+                if (env.fogataEncendido)
+                {
+                    //Render de emisor
+                    emisorFuego.Position = fogata.Position;
+                }
             }
         }
 
@@ -244,6 +273,19 @@ namespace TGC.Group.Model.EscenarioGame
             mar.render();
             RenderSceneMeshes();
             quadtree.render(env.Frustum, false);
+
+            if (activarFogata)
+            {
+                fogata.render();
+            }
+
+
+            if (env.fogataEncendido)
+            {
+                //Render de emisor
+                emisorFuego.render(elapsedTime);
+            }
+                
         }
 
         public void Dispose()
@@ -251,6 +293,9 @@ namespace TGC.Group.Model.EscenarioGame
             // Se libera el Terreno
             terrain.dispose();
             mar.dispose();
+            fogata.dispose();
+            emisorFuego.dispose();
+
 
             // Se liberan los elementos de la escena
             foreach (var mesh in SceneMeshes)
@@ -477,6 +522,7 @@ namespace TGC.Group.Model.EscenarioGame
                 {
                     mesh.render();
                     totalMeshesRenderizados++;
+
                 }
             }
 

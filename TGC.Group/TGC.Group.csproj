@@ -110,6 +110,7 @@
     <Compile Include="Model\Escenario\Objetos\Pino.cs" />
     <Compile Include="Model\Escenario\Objetos\Roca.cs" />
     <Compile Include="Model\Escenario\Objetos\Palmera.cs" />
+    <Compile Include="Model\Escenario\Objetos\Fogata.cs" />    
     <Compile Include="Model\Objetos\Encendedor.cs" />
     <Compile Include="Model\Objetos\Agua.cs" />
     <Compile Include="Model\Objetos\Fruta.cs" />
