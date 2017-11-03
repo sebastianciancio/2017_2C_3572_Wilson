@@ -221,7 +221,7 @@ namespace TGC.Group.Model
 
                 textoMenuPppal[1] = "Menú Principal";
                 textoMenuPppal[2] = "Movimiento Personaje: W A S D";
-                textoMenuPppal[3] = "Comer (1), Beber (2)";
+                textoMenuPppal[3] = "Comer (1), Beber (2), Usar Madera (3), Usar Piedra (4)";
                 textoMenuPppal[4] = "Acciones: Agarrar (E) - Destruir (Click Izq) - Correr (Shift Izq)";
                 textoMenuPppal[5] = "Modos: Normal (N) - God (G)";
                 textoMenuPppal[6] = "Pausa: ESC";

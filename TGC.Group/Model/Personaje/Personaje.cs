@@ -171,7 +171,7 @@ namespace TGC.Group.Model.Character
                 beber(1);
             }
             if (env.Input.keyPressed(Key.D3)) {
-                if (Inventario[2].cantidad > 1) {
+                if (Inventario[2].cantidad > 100) {
                     Inventario[2].cantidad -= 100;
 
                     // instanciar fogata apagada
@@ -185,7 +185,7 @@ namespace TGC.Group.Model.Character
                 // Si el objeto es una fogata apagada
                 if (env.Input.keyPressed(Key.D4))
                 {
-                    if (Inventario[3].cantidad > 1)
+                    if (Inventario[3].cantidad > 5)
                     {
                         env.fogataEncendido = true;
                         Inventario[3].cantidad--;
