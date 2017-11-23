@@ -117,3 +117,61 @@ technique RenderScene
 		PixelShader = compile ps_2_0 ps_main();
 	}
 }
+
+
+
+// Ejemplo de un vertex shader que anima la posicion de los vertices
+// ------------------------------------------------------------------
+VS_OUTPUT vs_laguna(VS_INPUT Input)
+{
+	VS_OUTPUT Output;
+
+	// Animar posicion
+	//Input.Position.z += (Input.Position.z *  sin(time) * 2 * 0.04 );
+   	//Input.Position.x += (Input.Position.x * cos(time) * 2 * 0.04 );
+   	Input.Position.y = Input.Position.y / 10;
+
+	//Proyectar posicion
+	Output.Position = mul(Input.Position, matWorldViewProj);
+
+	//Propago las coordenadas de textura
+	Output.Texcoord = Input.Texcoord;
+
+	//Propago el color x vertice
+	Output.Color = Input.Color;
+
+	return(Output);
+}
+
+//Pixel Shader
+float4 ps_laguna(float2 Texcoord: TEXCOORD0, float3 WPos : TEXCOORD1, float4 Color : COLOR0) : COLOR0
+{
+
+	float ondas_vertical_length = 200;
+	float ondas_size = 0.01;
+
+	//Alterar coordenadas de textura
+	Texcoord.y = Texcoord.y + ( sin( Texcoord.x * ondas_vertical_length ) * ondas_size);
+	
+	//Obtener color de textura
+	float4 color = tex2D( diffuseMap, Texcoord );
+	return color;
+
+
+	// Obtener el texel de textura
+	// diffuseMap es el sampler, Texcoord son las coordenadas interpoladas
+	float4 fvBaseColor = tex2D(diffuseMap, Texcoord);
+	// combino color y textura
+	// en este ejemplo combino un 80% el color de la textura y un 20%el del vertice
+	return 0.9*fvBaseColor + 0.1*Color;
+}
+
+// ------------------------------------------------------------------
+technique RenderLaguna
+{
+	pass Pass_0
+	{
+		VertexShader = compile vs_2_0 vs_laguna();
+		PixelShader = compile ps_2_0 ps_laguna();
+	}
+}

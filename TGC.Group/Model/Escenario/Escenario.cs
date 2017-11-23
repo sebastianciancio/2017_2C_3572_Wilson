@@ -34,6 +34,7 @@ namespace TGC.Group.Model.EscenarioGame
 
         public TerrenoCustom terrain;
         public TerrenoCustom mar;
+        public TerrenoCustom laguna;
         private Vector3 terrainCenter;
         private string sceneHeightmapPath;
         private string terrainTexturePath;
@@ -41,6 +42,8 @@ namespace TGC.Group.Model.EscenarioGame
 
         private string marHeightmapPath;
         private string marTexturePath;
+        private string lagunaHeightmapPath;
+        private string lagunaTexturePath;
 
         // ***********************************************************
         // Parametros del SkyBox
@@ -108,6 +111,9 @@ namespace TGC.Group.Model.EscenarioGame
             marHeightmapPath = env.MediaDir + "Isla\\height_mar.jpg";
             marTexturePath = env.MediaDir + "Isla\\agua.jpg";
 
+            lagunaHeightmapPath = env.MediaDir + "Isla\\height_mar.jpg";
+            lagunaTexturePath = env.MediaDir + "Isla\\agua.jpg";
+
             fogataPath = env.MediaDir + "Fogata2\\Split+firewood-TgcScene.xml";
         }
 
@@ -135,6 +141,13 @@ namespace TGC.Group.Model.EscenarioGame
             mar.loadTexture(marTexturePath);
             mar.Effect = effectAgua;
             mar.Technique = "RenderScene";
+
+            laguna = new TerrenoCustom();
+            laguna.AlphaBlendEnable = true;
+            laguna.loadHeightmap(lagunaHeightmapPath, SceneScaleXZ/4, SceneScaleY/2, new Vector3(10, 10, 40));
+            laguna.loadTexture(lagunaTexturePath);
+            laguna.Effect = effectAgua;
+            laguna.Technique = "RenderLaguna";
 
 
             // Creo el SkyBox
@@ -272,6 +285,7 @@ namespace TGC.Group.Model.EscenarioGame
             skyBoxGame[env.horaDelDia].render();
             terrain.render();
             mar.render();
+            laguna.render();
             RenderSceneMeshes();
             quadtree.render(env.Frustum, false);
 
@@ -307,6 +321,7 @@ namespace TGC.Group.Model.EscenarioGame
             // Se libera el Terreno
             terrain.dispose();
             mar.dispose();
+            laguna.dispose();
             fogata.dispose();
             emisorFuego.dispose();
 
