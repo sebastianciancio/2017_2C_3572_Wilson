@@ -33,6 +33,7 @@ namespace TGC.Group.Model
         private CustomSprite menuPresentacion;
         public CustomSprite buttonUnselected;
         public CustomSprite buttonSelected;
+        public CustomSprite logoWilson;
 
         public float usoHorario;
         public float tiempoAcumLluvia;
@@ -43,8 +44,10 @@ namespace TGC.Group.Model
         public bool modoDios = false;
         public bool sonidoHacha = false;
         public bool fogataEncendido = false;
+        public bool partidoGanado;
         public float objetosCerca = 0;
         public int opcionMenuSelecionado;
+        public float tiempoFogataEncendida;
 
         TgcTexture lluviaTexture;
         //TgcTexture menuCaja;
@@ -75,12 +78,14 @@ namespace TGC.Group.Model
             // Defino que se muestre la presentacion
             presentacion = true;
             opcionMenuSelecionado = 0;
+            tiempoFogataEncendida = 0;
+            partidoGanado = false;
 
             // Defino el Menu presentacion
             drawer2D = new Drawer2D();
 
             menuPresentacion = new CustomSprite();
-            menuPresentacion.Bitmap = new CustomBitmap(this.MediaDir + "\\HUD\\presentacion.jpg", D3DDevice.Instance.Device);
+            menuPresentacion.Bitmap = new CustomBitmap(this.MediaDir + "\\HUD\\presentacion.png", D3DDevice.Instance.Device);
             Size textureSize = menuPresentacion.Bitmap.Size;
             menuPresentacion.Position = new Vector2(0,0);
 
@@ -100,6 +105,10 @@ namespace TGC.Group.Model
             buttonSelected.Bitmap = new CustomBitmap(MediaDir + "\\HUD\\btn-on.png", D3DDevice.Instance.Device);
             buttonSelected.Scaling = new Vector2(0.2f, 0.2f);
 
+            logoWilson = new CustomSprite();
+            logoWilson.Bitmap = new CustomBitmap(MediaDir + "\\HUD\\wilson.png", D3DDevice.Instance.Device);
+            logoWilson.Scaling = new Vector2(0.5f, 0.5f);
+            logoWilson.Position = new Vector2(0, 0);
 
             // Para determinar que momento del día es
             usoHorario = 0;
@@ -191,15 +200,38 @@ namespace TGC.Group.Model
 
             if (!presentacion)
             {
-                terreno.Update(ElapsedTime);
-                personaje.Update(ElapsedTime, Input);
-                Camara.UpdateCamera(ElapsedTime);
-                hud.Update(ElapsedTime);
+
+                // Si se da la condicion de partido ganado
+                if (partidoGanado)
+                {
+                    terreno.desactivarLluvia();
+                    musica.selectionSound("Sonido\\victoria.mp3");
+                    musica.startSound();
+                }
+                else
+                {
+                    terreno.Update(ElapsedTime);
+                    personaje.Update(ElapsedTime, Input);
+                    Camara.UpdateCamera(ElapsedTime);
+                    hud.Update(ElapsedTime);
+
+                    // Si la fogata está activa, reproduzco el sonido
+                    if (terreno.activarFogata)
+                    {
+                        musica.selectionSound("Sonido\\fuego.mp3");
+                        musica.startSound();
+
+                    }
+
+
+                }
+
             }
         }
 
         public override void Render()
         {
+
             ClearTextures();
 
             //Cargamos el Render Targer al cual se va a dibujar la escena 3D. Antes nos guardamos el surface original
@@ -223,6 +255,8 @@ namespace TGC.Group.Model
 
             //Luego tomamos lo dibujado antes y lo combinamos con una textura con efecto de alarma
             drawPostProcess(D3DDevice.Instance.Device);
+
+
         }
 
 
@@ -254,6 +288,7 @@ namespace TGC.Group.Model
                 buttonUnselected.Position = new Vector2(((float)D3DDevice.Instance.Width / 2) - 150, 350);
                 drawer2D.DrawSprite(buttonUnselected);
                 drawer2D.DrawSprite(buttonSelected);
+                drawer2D.DrawSprite(logoWilson);
 
                 drawer2D.EndDrawSprite();
 
@@ -327,25 +362,35 @@ namespace TGC.Group.Model
             }
             else
             {
+
                 if (Input.keyDown(Key.Escape))
                 {
                     presentacion = true;
                 }
 
-                terreno.Render(ElapsedTime);
-
-                // Creo la fogata
-                if (terreno.activarFogata)
+                // Si se da la condicion de partido ganado
+                if (partidoGanado)
                 {
-                    terreno.fogata.render();
+                    hud.ganarJuego();
+                }else
+                {
+
+                    terreno.Render(ElapsedTime);
+
+                    // Creo la fogata
+                    if (terreno.activarFogata)
+                    {
+                        terreno.fogata.render();
+                    }
+
+                    //cajaMenu.render();
+                    RenderHelpText();
+                    personaje.Render(ElapsedTime);
+                    RenderFPS();
+                    RenderAxis();
                 }
 
                 hud.Render();
-                //cajaMenu.render();
-                RenderHelpText();
-                personaje.Render(ElapsedTime);
-                RenderFPS();
-                RenderAxis();
             }
 
             //Terminamos manualmente el renderizado de esta escena. Esto manda todo a dibujar al GPU al Render Target que cargamos antes
@@ -434,6 +479,8 @@ namespace TGC.Group.Model
             DrawText.drawText("Objetos Total: \n" + terreno.SceneMeshes.Count, 0, 20, Color.OrangeRed);
             DrawText.drawText("Objetos Renderizados: \n" + terreno.totalMeshesRenderizados, 0, 100, Color.OrangeRed);
 
+            DrawText.drawText("tiempoFogataEncendida: \n" + tiempoFogataEncendida, 200, 20, Color.OrangeRed);
+            
 
             //DrawText.drawText("Objetos Cercanos: \n" + objetosCerca, 200, 20, Color.OrangeRed);
             //DrawText.drawText("Camera position: \n" + Camara.Position, 0, 200, Color.OrangeRed);

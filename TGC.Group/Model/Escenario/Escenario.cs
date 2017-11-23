@@ -289,6 +289,15 @@ namespace TGC.Group.Model.EscenarioGame
 
                 //Render de emisor
                 emisorFuego.render(elapsedTime);
+
+                // Comienzo a contar el tiempo del fuego para determinar el fin del juego
+                env.tiempoFogataEncendida += elapsedTime;
+
+                // Determino la condicion de partido ganado
+                if(env.tiempoFogataEncendida > 15){
+                    env.partidoGanado = true;
+                }
+                
             }
                 
         }

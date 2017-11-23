@@ -14,6 +14,7 @@ namespace TGC.Group.Model.SpriteGame
         private CustomSprite personaje;
         private CustomSprite backgroundHUD;
         private CustomSprite gameover;
+        private CustomSprite youwin;
         private CustomSprite vaso;
         private CustomSprite comida;
         private CustomSprite inventario0;
@@ -137,6 +138,16 @@ namespace TGC.Group.Model.SpriteGame
                        D3DDevice.Instance.Width / 2 - (textureSize.Width / 2),
                        D3DDevice.Instance.Height / 2 - (textureSize.Height / 2));
             gameover.Scaling = new Vector2(1f, 1f);
+
+            youwin = new CustomSprite();
+            youwin.Bitmap = new CustomBitmap(env.MediaDir + "\\HUD\\winner.png", D3DDevice.Instance.Device);
+            textureSize = youwin.Bitmap.Size;
+            youwin.Position = new Vector2(
+                       D3DDevice.Instance.Width / 2 - (textureSize.Width / 2),
+                       D3DDevice.Instance.Height / 2 - (textureSize.Height / 2));
+            youwin.Scaling = new Vector2(1f, 1f);
+
+
         }
 
 
@@ -155,6 +166,14 @@ namespace TGC.Group.Model.SpriteGame
             drawer2D.DrawSprite(gameover);
             drawer2D.EndDrawSprite();
         }
+
+        public void ganarJuego()
+        {
+            drawer2D.BeginDrawSprite();
+            drawer2D.DrawSprite(youwin);
+            drawer2D.EndDrawSprite();
+        }
+
         public void Init()
         {
             InicializarTextos(txtSed, Color.Blue, TgcText2D.TextAlign.RIGHT, new Point(D3DDevice.Instance.Width - 130, D3DDevice.Instance.Height - 300), new Size(100, 100), new Font("TimesNewRoman", 25, FontStyle.Bold));

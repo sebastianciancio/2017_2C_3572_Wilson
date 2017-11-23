@@ -111,7 +111,7 @@ namespace TGC.Group.Model.Camara
             //Aplicar movimiento hacia adelante o atras segun la orientacion actual del Mesh
             var lastPos = this.Position;
 
-            if (!env.personaje.Muerto)
+            if (!env.personaje.Muerto && !env.partidoGanado)
             {
 
                 //Forward
@@ -231,7 +231,7 @@ namespace TGC.Group.Model.Camara
                 }
             }
 
-            if (!env.personaje.Muerto)
+            if (!env.personaje.Muerto && !env.partidoGanado)
             {
                 //Si hubo colision, restaurar la posicion anterior de la camara
                 if (collide)

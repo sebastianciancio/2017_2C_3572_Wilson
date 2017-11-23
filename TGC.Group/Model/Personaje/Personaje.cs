@@ -171,8 +171,8 @@ namespace TGC.Group.Model.Character
                 beber(1);
             }
             if (env.Input.keyPressed(Key.D3)) {
-                if (Inventario[2].cantidad > 100) {
-                    Inventario[2].cantidad -= 100;
+                if (Inventario[2].cantidad > 10) {
+                    Inventario[2].cantidad -= 10;
 
                     // instanciar fogata apagada
                     env.terreno.activarFogata = true;
@@ -268,8 +268,6 @@ namespace TGC.Group.Model.Character
                     env.terreno.fogata.Position = new Vector3(env.Camara.Position.X - (1 * env.terreno.SceneScaleXZ), env.terreno.CalcularAlturaTerreno((env.Camara.Position.X - (1 * env.terreno.SceneScaleXZ)) / env.terreno.SceneScaleXZ, env.Camara.Position.Z / env.terreno.SceneScaleXZ) * env.terreno.SceneScaleY, env.Camara.Position.Z);
                     env.terreno.ubicacionFogataFija = true;
                 }
-
-
 
                 // Verifico cuantos objetos estan Cerca
                 env.objetosCerca = 0;
