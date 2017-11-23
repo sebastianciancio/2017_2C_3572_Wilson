@@ -17,6 +17,7 @@ using TGC.Core.Geometry;
 using TGC.Core.Textures;
 using TGC.Core.Direct3D;
 using TGC.Core.Particle;
+using static TGC.Core.Geometry.TgcPlane;
 
 namespace TGC.Group.Model.EscenarioGame
 {

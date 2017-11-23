@@ -12,6 +12,7 @@ using Microsoft.DirectX.Direct3D;
 using Microsoft.DirectX.DirectInput;
 using TGC.Core.Utils;
 using System.Windows.Forms;
+using TGC.Core.Geometry;
 
 namespace TGC.Group.Model
 {
@@ -23,12 +24,15 @@ namespace TGC.Group.Model
 
         public EscenarioGame.Escenario terreno;
         public HUD hud;
+        public TgcBox cajaMenu;
         public Personaje personaje;
         public Musica musica;
         public Musica musica2;
 
         private Drawer2D drawer2D;
         private CustomSprite menuPresentacion;
+        public CustomSprite buttonUnselected;
+        public CustomSprite buttonSelected;
 
         public float usoHorario;
         public float tiempoAcumLluvia;
@@ -40,8 +44,10 @@ namespace TGC.Group.Model
         public bool sonidoHacha = false;
         public bool fogataEncendido = false;
         public float objetosCerca = 0;
+        public int opcionMenuSelecionado;
 
         TgcTexture lluviaTexture;
+        //TgcTexture menuCaja;
         Microsoft.DirectX.Direct3D.Effect effect;
         private Surface depthStencil; // Depth-stencil buffer
         private Surface pOldRT;
@@ -68,10 +74,10 @@ namespace TGC.Group.Model
         {
             // Defino que se muestre la presentacion
             presentacion = true;
+            opcionMenuSelecionado = 0;
 
             // Defino el Menu presentacion
             drawer2D = new Drawer2D();
-
 
             menuPresentacion = new CustomSprite();
             menuPresentacion.Bitmap = new CustomBitmap(this.MediaDir + "\\HUD\\presentacion.jpg", D3DDevice.Instance.Device);
@@ -85,6 +91,15 @@ namespace TGC.Group.Model
                 menuPresentacion.Scaling = new Vector2(escaladoProporcionalX, escaladoProporcionalX);
             else
                 menuPresentacion.Scaling = new Vector2(escaladoProporcionalY, escaladoProporcionalY);
+
+            buttonUnselected = new CustomSprite();
+            buttonUnselected.Bitmap = new CustomBitmap(MediaDir + "\\HUD\\btn-off.png", D3DDevice.Instance.Device);
+            buttonUnselected.Scaling = new Vector2(0.2f, 0.2f);
+
+            buttonSelected = new CustomSprite();
+            buttonSelected.Bitmap = new CustomBitmap(MediaDir + "\\HUD\\btn-on.png", D3DDevice.Instance.Device);
+            buttonSelected.Scaling = new Vector2(0.2f, 0.2f);
+
 
             // Para determinar que momento del día es
             usoHorario = 0;
@@ -146,9 +161,9 @@ namespace TGC.Group.Model
 
             //Cargar textura que se va a dibujar arriba de la escena del Render Target
             lluviaTexture = TgcTexture.createTexture(D3DDevice.Instance.Device, this.MediaDir + "Isla\\efecto_rain.png");
-
             // Inicializo la camara
             InitCamera();
+
 
             // SkyBox: Se cambia el valor por defecto del farplane para evitar cliping de farplane.
             D3DDevice.Instance.Device.Transform.Projection =
@@ -156,6 +171,18 @@ namespace TGC.Group.Model
                     D3DDevice.Instance.AspectRatio,
                     D3DDevice.Instance.ZNearPlaneDistance,
                     D3DDevice.Instance.ZFarPlaneDistance * 2560f);
+
+            
+            //cajaMenu = new TgcBox();
+            //cajaMenu.Position = new Vector3(0, 0, 0);
+            //cajaMenu.Size = new Vector3(1000, 1000, 1000);
+            //cajaMenu.AutoTransformEnable = true;
+            
+
+            //menuCaja = TgcTexture.createTexture(D3DDevice.Instance.Device, this.MediaDir + "\\HUD\\presentacion.jpg");
+            //cajaMenu.setTexture(menuCaja);
+            //cajaMenu.updateValues();
+
         }
 
         public override void Update()
@@ -214,21 +241,40 @@ namespace TGC.Group.Model
             if (presentacion)
             {
                 drawer2D.BeginDrawSprite();
+
+                //buttonUnselected.Position = new Vector2((D3DDevice.Instance.Width / 16) * 6, ((float)D3DDevice.Instance.Height / 4) * 1.5f);
                 drawer2D.DrawSprite(menuPresentacion);
+
+                buttonUnselected.Position = new Vector2(((float)D3DDevice.Instance.Width / 2) - 150, 210 );
+                drawer2D.DrawSprite(buttonUnselected);
+
+                buttonUnselected.Position = new Vector2(((float)D3DDevice.Instance.Width / 2) - 150, 280);
+                drawer2D.DrawSprite(buttonUnselected);
+
+                buttonUnselected.Position = new Vector2(((float)D3DDevice.Instance.Width / 2) - 150, 350);
+                drawer2D.DrawSprite(buttonUnselected);
+                drawer2D.DrawSprite(buttonSelected);
+
                 drawer2D.EndDrawSprite();
 
-                //DrawText.Size = new Size(D3DDevice.Instance.Width, 100);
+                /*
+                                textoMenuPppal[1] = "Menú Principal";
+                                textoMenuPppal[2] = "Movimiento Personaje: W A S D";
+                                textoMenuPppal[3] = "Comer (1), Beber (2), Usar Madera (3), Usar Piedra (4)";
+                                textoMenuPppal[4] = "Acciones: Agarrar (E) - Destruir (Click Izq) - Correr (Shift Izq)";
+                                textoMenuPppal[5] = "Modos: Normal (N) - God (G)";
+                                textoMenuPppal[6] = "Pausa: ESC";
+                                textoMenuPppal[7] = "Comenzar: Espacio";
+                                textoMenuPppal[8] = "Salir: Alt+F4";
+                */
 
                 textoMenuPppal[1] = "Menú Principal";
-                textoMenuPppal[2] = "Movimiento Personaje: W A S D";
-                textoMenuPppal[3] = "Comer (1), Beber (2), Usar Madera (3), Usar Piedra (4)";
-                textoMenuPppal[4] = "Acciones: Agarrar (E) - Destruir (Click Izq) - Correr (Shift Izq)";
-                textoMenuPppal[5] = "Modos: Normal (N) - God (G)";
-                textoMenuPppal[6] = "Pausa: ESC";
-                textoMenuPppal[7] = "Comenzar: Espacio";
-                textoMenuPppal[8] = "Salir: Alt+F4";
+                textoMenuPppal[2] = "";
+                textoMenuPppal[3] = "Comenzar ";
+                textoMenuPppal[4] = "Reiniciar";
+                textoMenuPppal[5] = "Salir    ";
 
-                for (var j=1; j <= 8; j++)
+                for (var j=1; j <= 5; j++)
                 {
                     if (j == 1)
                     {
@@ -243,12 +289,39 @@ namespace TGC.Group.Model
                     
                 }
 
-                textoMenuPppal[10] = "Objetivo: Sobrevivir en la Isla y pedir ayuda al exterior.";
-                DrawText.drawText(textoMenuPppal[10], (D3DDevice.Instance.Width / 2) - (textoMenuPppal[10].Length * 10) + 2, (D3DDevice.Instance.Height - 70) + 2, Color.Black);
-                DrawText.drawText(textoMenuPppal[10], (D3DDevice.Instance.Width / 2) - (textoMenuPppal[10].Length * 10), D3DDevice.Instance.Height - 70, Color.GreenYellow);
+                textoMenuPppal[7] = "Acciones: Agarrar (E), Destruir (Click Izq), Correr (Shift)";
+                textoMenuPppal[8] = "Interacción Inventario: Comer (1), Beber (2), Usar Madera (3), Usar Piedra (4)";
+                textoMenuPppal[9] = "Modos del Juego: Normal (N) - God (G)";
 
-                if (Input.keyDown(Key.Space))
+                for (var j = 7; j <= 9; j++)
                 {
+                    DrawText.changeFont((new System.Drawing.Font("Tahoma", 25, FontStyle.Regular)));
+                    DrawText.drawText(textoMenuPppal[j], (D3DDevice.Instance.Width / 2) - (textoMenuPppal[j].Length * 7) + 2, (68 * j) + 2 - 20, Color.Black);
+                    DrawText.drawText(textoMenuPppal[j], (D3DDevice.Instance.Width / 2) - (textoMenuPppal[j].Length * 7), (68 * j) - 20, Color.BlueViolet);
+                }
+
+                textoMenuPppal[10] = "Objetivo: Sobrevivir en la Isla y pedir ayuda al exterior.";
+                DrawText.drawText(textoMenuPppal[10], (D3DDevice.Instance.Width / 2) - (textoMenuPppal[10].Length * 7) + 2, (D3DDevice.Instance.Height - 70) + 2, Color.Black);
+                DrawText.drawText(textoMenuPppal[10], (D3DDevice.Instance.Width / 2) - (textoMenuPppal[10].Length * 7), D3DDevice.Instance.Height - 70, Color.GreenYellow);
+
+                if (Input.keyDown(Key.Space) || Input.keyDown(Key.Return))
+                {
+
+                    switch (opcionMenuSelecionado)
+                    {
+                        case 0: // Comenzar Juego
+                            presentacion = false;
+                            break;
+                        case 1:
+                            presentacion = false;
+                            Reiniciar();
+                            break;
+                        case 2:
+                            Dispose();
+                            //Program.Terminate();
+                            break;
+                    }
+
                     presentacion = false;
                 }
             }
@@ -268,6 +341,7 @@ namespace TGC.Group.Model
                 }
 
                 hud.Render();
+                //cajaMenu.render();
                 RenderHelpText();
                 personaje.Render(ElapsedTime);
                 RenderFPS();
@@ -326,8 +400,9 @@ namespace TGC.Group.Model
             terreno.Dispose();
             personaje.Dispose();
             hud.Dispose();
+            //cajaMenu.dispose();
 
-            effect.Dispose();
+            //effect.Dispose();
             screenQuadVB.Dispose();
             renderTarget2D.Dispose();
             depthStencil.Dispose();
@@ -359,6 +434,7 @@ namespace TGC.Group.Model
             DrawText.drawText("Objetos Total: \n" + terreno.SceneMeshes.Count, 0, 20, Color.OrangeRed);
             DrawText.drawText("Objetos Renderizados: \n" + terreno.totalMeshesRenderizados, 0, 100, Color.OrangeRed);
 
+
             //DrawText.drawText("Objetos Cercanos: \n" + objetosCerca, 200, 20, Color.OrangeRed);
             //DrawText.drawText("Camera position: \n" + Camara.Position, 0, 200, Color.OrangeRed);
             //DrawText.drawText("Fogata position: \n" + terreno.fogata.Position, 0, 300, Color.OrangeRed);
@@ -375,6 +451,12 @@ namespace TGC.Group.Model
             DrawText.drawText("Camera (Coordenada Y Terreno): \n" + terreno.CalcularAlturaTerreno((int)(Camara.Position.X / terreno.SceneScaleXZ), (int)(Camara.Position.Z / terreno.SceneScaleXZ)), 200, 180, Color.OrangeRed);
             DrawText.drawText("Posicion Personaje: \n" + personaje.Posicion, 0, 300, Color.OrangeRed);
             */
+        }
+
+        private void Reiniciar()
+        {
+            this.Dispose();
+            this.Init();
         }
     }
 }

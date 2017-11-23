@@ -179,7 +179,29 @@ namespace TGC.Group.Model.Camara
                     env.modoDios = false;
                 }
 
+                // Teclas de Menu
+                if (Input.keyPressed(Key.UpArrow) && env.opcionMenuSelecionado > 0)
+                {
+                    env.opcionMenuSelecionado -= 1;
+                }
+                if (Input.keyPressed(Key.DownArrow) && env.opcionMenuSelecionado < 2)
+                {
+                    env.opcionMenuSelecionado += 1;
+                }
 
+
+                switch (env.opcionMenuSelecionado)
+                {
+                    case 0:
+                        env.buttonSelected.Position = new Vector2(((float)D3DDevice.Instance.Width / 2) - 150, 210);
+                        break;
+                    case 1:
+                        env.buttonSelected.Position = new Vector2(((float)D3DDevice.Instance.Width / 2) - 150, 280);
+                        break;
+                    case 2:
+                        env.buttonSelected.Position = new Vector2(((float)D3DDevice.Instance.Width / 2) - 150, 350);
+                        break;
+                }
 
                 //Run
                 if (Input.keyDown(Key.LeftShift))
@@ -193,13 +215,6 @@ namespace TGC.Group.Model.Camara
                         moveVector -= new Vector3(0, 10, 0) * JumpSpeed;
                     }
                 }
-
-                // Click del Mouse
-                // if (Input.buttonDown(TgcD3dInput.MouseButtons.BUTTON_LEFT))
-                // {
-                //     env.sonidoHacha = true;
-                //     env.personaje.sonidoHacha(true);
-                // }
         }
 
 
@@ -258,9 +273,16 @@ namespace TGC.Group.Model.Camara
                 base.SetCamera(newpositionEye, newcameraFinalTarget, cameraRotatedUpVector);
 
 
-                 //env.personaje.hachaPersonaje.Position = new Vector3(env.personaje.hachaPersonaje.Position.X + leftrightRot-1, env.personaje.hachaPersonaje.Position.Y, env.personaje.hachaPersonaje.Position.Z);
-                //env.personaje.hachaPersonaje.Rotation = cameraRotatedUpVector;
+                //var posicionHacha = new Vector3(env.personaje.hachaPersonaje.Position.X + leftrightRot - 1, env.personaje.hachaPersonaje.Position.Y, env.personaje.hachaPersonaje.Position.Z);
+                
+
+                //Vector3 dirView = env.Camara.LookAt - env.Camara.Position;
+
+                //env.personaje.hachaPersonaje.Transform = Matrix.Translation(posicionHacha) * cameraRotation;
+
+                //env.personaje.hachaPersonaje.Transform = env.Camara.LookAt;
                 //env.personaje.hachaPersonaje.Rotation = cameraRotatedPositionEye; 
+                //env.personaje.hachaPersonaje.Rotation = dirView;
 
             }
 
