@@ -10,7 +10,6 @@ Video Juego basado en **Survival Craft** desarrollado con el Framework **TGCView
 Ciancio, Juan Sebastián  |  Paglialunga, Leonardo Fabian
 ------------ | -------------
 <img src="https://github.com/sebastianciancio/2017_2C_3572_Wilson/blob/master/TGC.Group/Media/Documentacion/Tato.jpeg" height="500"> | <img src="https://github.com/sebastianciancio/2017_2C_3572_Wilson/blob/master/TGC.Group/Media/Documentacion/Leo.jpeg" height="500">
-![Image of Yaktocat](https://github.com/sebastianciancio/2017_2C_3572_Wilson/blob/master/TGC.Group/Media/Documentacion/Tato.jpeg) | ![Image of Yaktocat](https://github.com/sebastianciancio/2017_2C_3572_Wilson/blob/master/TGC.Group/Media/Documentacion/Leo.jpeg)
 
 ## ScreenShot ##
 
