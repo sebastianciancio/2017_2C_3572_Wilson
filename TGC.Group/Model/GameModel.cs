@@ -479,7 +479,7 @@ namespace TGC.Group.Model
             DrawText.drawText("Objetos Total: \n" + terreno.SceneMeshes.Count, 0, 20, Color.OrangeRed);
             DrawText.drawText("Objetos Renderizados: \n" + terreno.totalMeshesRenderizados, 0, 100, Color.OrangeRed);
 
-            DrawText.drawText("tiempoFogataEncendida: \n" + tiempoFogataEncendida, 200, 20, Color.OrangeRed);
+            //DrawText.drawText("tiempoFogataEncendida: \n" + tiempoFogataEncendida, 200, 20, Color.OrangeRed);
             
 
             //DrawText.drawText("Objetos Cercanos: \n" + objetosCerca, 200, 20, Color.OrangeRed);
