@@ -5,8 +5,8 @@
 /* Variables comunes */
 /**************************************************************************************/
 
+float hora;
 float time;
-
 
 /**************************************************************************************/
 /* DEFAULT */
@@ -83,23 +83,30 @@ technique DefaultTechnique
 /* OSCURECER */
 /**************************************************************************************/
 
-float scaleFactor = 1;
-
 //Pixel Shader de Oscurecer
 float4 ps_oscurecer( PS_INPUT_DEFAULT Input ) : COLOR0
 {     
-	//Obtener color segun textura
+	float lightFactor;
+	
+	if(hora > 0 && hora < 120) {
+	    lightFactor = 0.0025 * hora + 0.4;
+	}
+	
+	if(hora >= 120 && hora <= 240) {
+		lightFactor = -0.0048 * hora + 1.27;
+	}
+	
+	if(hora > 240 && hora < 300) {
+		lightFactor = 0.0046 * hora - 1; 
+	}
+
 	float4 color = tex2D( RenderTarget, Input.Texcoord );
 	
-	//Escalar el color para oscurecerlo
-	float value = ((color.r + color.g + color.b) / 3) * scaleFactor; 
-	color.rgb = color.rgb * (1 - scaleFactor) + value * scaleFactor;
+	float value = ((color.r + color.g + color.b) / 3) * lightFactor; 
+	color.rgb = color.rgb * lightFactor + value * lightFactor;
 
 	return color;
 }
-
-
-
 
 technique OscurecerTechnique
 {
@@ -109,7 +116,6 @@ technique OscurecerTechnique
 	  PixelShader = compile ps_2_0 ps_oscurecer();
    }
 }
-
 
 /**************************************************************************************/
 /* ALARMA */

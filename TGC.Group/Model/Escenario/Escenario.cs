@@ -76,13 +76,8 @@ namespace TGC.Group.Model.EscenarioGame
 
         private Palmera palmModel;
         private Roca rockModel;
-        //private Planta plantModel;
-        //private Arbol arbolModel;
-        //private TgcMesh arbolFrutalModel;
         private Fruta frutaModel;
         private Pino pinoModel;
-        //private TgcMesh palm2Model;
-        private TgcMesh fogataModel;
 
         private Effect effectAgua;
         private float time;
@@ -93,6 +88,7 @@ namespace TGC.Group.Model.EscenarioGame
         public int totalMeshesRenderizados;
 
         // ***********************************************************
+
         public List<TgcMesh> SceneMeshes { get; set; }
         public List<ObjetoEscena> Destroyables { get; set; }
         private GameModel env;
@@ -149,7 +145,6 @@ namespace TGC.Group.Model.EscenarioGame
             laguna.Effect = effectAgua;
             laguna.Technique = "RenderLaguna";
 
-
             // Creo el SkyBox
             CreateSkyBox();
 
@@ -159,37 +154,16 @@ namespace TGC.Group.Model.EscenarioGame
             loader = new TgcSceneLoader();
 
             rockModel = new Roca(env);
-            //CreateObjectsFromModel(rockModel.mesh, 100, new Vector3(0, 0, 0), new Vector3(0.9f, 0.9f, 0.9f), (HeightmapSize.Width / 3), new float[] { 30f, 35f, 40f, 45f });
             CreateObjectsFromModel(rockModel.mesh, 300, new Vector3(0, 0, 0), new Vector3(0.9f, 1.3f, 1.7f), (HeightmapSize.Width / 2) - 10, new float[] { 30f, 35f, 40f, 45f });
 
             palmModel = new Palmera(env);
-            //CreateObjectsFromModel(palmModel.mesh, 50, new Vector3((HeightmapSize.Width / 5)*-1, 0, 0), new Vector3(0.5f, 0.5f, 0.5f), (HeightmapSize.Width / 3), new float[] { 60f, 65f, 70f, 75f });
-            //CreateObjectsFromModel(palmModel.mesh, 50, new Vector3((HeightmapSize.Width / 6), 0, (HeightmapSize.Width / 6)), new Vector3(0.5f, 0.5f, 0.5f), (HeightmapSize.Width / 6) * 2, new float[] { 60f, 65f, 70f, 75f });
             CreateObjectsFromModel(palmModel.mesh, 300, new Vector3(0,0,0), new Vector3(0.5f, 0.7f, 0.9f), (HeightmapSize.Width / 2) - 10, new float[] { 60f, 65f, 70f, 75f });
-
-            //arbolModel = new Arbol(env);
-            //CreateObjectsFromModel(arbolModel.mesh, 30, new Vector3(10, 0, 10), new Vector3(0.8f, 0.8f, 0.8f), 20, new float[] { 50f, 55f, 60f, 65f });
 
             frutaModel = new Fruta(env);
             CreateObjectsFromModel(frutaModel.mesh, 150, new Vector3(0, 0, 0), new Vector3(0.8f, 0.8f, 0.8f), (HeightmapSize.Width / 2) - 10, new float[] { 2f, 2f, 2f, 2f });
 
             pinoModel = new Pino(env);
-            //CreateObjectsFromModel(pinoModel.mesh, 100, new Vector3((HeightmapSize.Width / 4), 0, 0), new Vector3(0.8f, 0.8f, 0.8f), (HeightmapSize.Width / 4)-10, new float[] { 50, 55f, 60f, 65f });
-            //CreateObjectsFromModel(pinoModel.mesh, 100, new Vector3(0, 0, (HeightmapSize.Width / 4)), new Vector3(0.8f, 0.8f, 0.8f), (HeightmapSize.Width / 4)-10, new float[] { 50, 55f, 60f, 65f });
             CreateObjectsFromModel(pinoModel.mesh, 100, new Vector3(0, 0,0), new Vector3(0.8f, 0.9f, 1.1f), (HeightmapSize.Width / 2) - 10, new float[] { 50, 55f, 60f, 65f });
-
-            //plantModel = loader.loadSceneFromFile(plantMeshPath).Meshes[0];
-            //CreateObjectsFromModel(plantModel, 70, new Vector3(75, 0, -75), new Vector3(0.8f, 0.8f, 0.8f), 75, new float[] { 50f, 55f, 60f, 65f });
-
-            //palm2Model = loader.loadSceneFromFile(palm2MeshPath).Meshes[0];
-            //CreateObjectsFromModel(palm2Model, 70, new Vector3(-20, 0, -50), new Vector3(0.8f, 0.8f, 0.8f), 80, new float[] { 10f, 15f, 20f, 25f });
-
-            //arbolFrutalModel = loader.loadSceneFromFile(arbolFrutalMeshPath).Meshes[0];
-            //CreateObjectsFromModel(arbolFrutalModel, 30, new Vector3(-75, 0, 75), new Vector3(0.8f, 0.8f, 0.8f), 50, new float[] { 50, 55f, 60f, 65f });
-
-            //palm3Model = loader.loadSceneFromFile(palm3MeshPath).Meshes[0];
-            //CreateObjectsFromModel(palm3Model, 70, new Vector3(-10, 0, -60), new Vector3(0.8f, 0.8f, 0.8f), 80, new float[] { 10f, 15f, 20f, 25f });
-
 
             var fogataModel = loader.loadSceneFromFile(fogataPath);
             fogata = fogataModel.Meshes[0];
@@ -198,19 +172,18 @@ namespace TGC.Group.Model.EscenarioGame
             fogata.Scale = new Vector3(30f,30f,30f);
             fogata.Position = new Vector3(0, 0, 0);
             fogata.AlphaBlendEnable = true;
-            fogata.Enabled = true;            
+            fogata.Enabled = true;
 
             // Inicializo el Fuego
-            emisorFuego = new ParticleEmitter(env.MediaDir + "Fogata2\\fuego.png", 30);
-            emisorFuego.Position = new Vector3(0, 0, 0);
-
-            emisorFuego.MinSizeParticle = 5.5f;            
-            emisorFuego.MaxSizeParticle = 10f;
-            emisorFuego.ParticleTimeToLive = 1.5f;
-            emisorFuego.CreationFrecuency = 0.25f;
-            emisorFuego.Dispersion = 50;
-            emisorFuego.Speed = new Vector3(50f, 50f*SceneScaleY, 50f);
-
+            emisorFuego = new ParticleEmitter(env.MediaDir + "Fogata2\\fuego.png", 120) {
+                Position = new Vector3(0, 0, 0),
+                MinSizeParticle = 70f,
+                MaxSizeParticle = 100f,
+                ParticleTimeToLive = 0.6f,
+                CreationFrecuency = 0.1f,
+                Dispersion = 175,
+                Speed = new Vector3(60f, 60f * SceneScaleY, 60f)
+            };
 
             //Crear Quadtree: Defino el BoundinBox del Escenario
             triangle = new CustomVertex.PositionColored[5];
@@ -233,7 +206,7 @@ namespace TGC.Group.Model.EscenarioGame
         private void cambioHorario()
         {
             env.usoHorario = 0;
-            if (env.horaDelDia < 2)
+            if (env.horaDelDia < 299)
             {
                 env.horaDelDia++;
             }
@@ -248,7 +221,7 @@ namespace TGC.Group.Model.EscenarioGame
             if (!env.personaje.Muerto) { 
 
                 // Para determinar el momento del día
-                env.usoHorario += elapsedTime;
+                env.usoHorario += elapsedTime * 100;
 
                 // Para determinar el momento de la lluvia
                 env.tiempoAcumLluvia += elapsedTime;
@@ -257,22 +230,18 @@ namespace TGC.Group.Model.EscenarioGame
                 ActualizarSkyBox();
 
                 // Actualizo el momento del día (dia o noche)
-                if (env.usoHorario > 190) cambioHorario();
-
-                
-                if (env.tiempoAcumLluvia > 20) activarLluvia();
-                if (env.tiempoAcumLluvia > 40) desactivarLluvia();
-
+                if (env.usoHorario > 5) cambioHorario();
+                if (env.tiempoAcumLluvia > 40) activarLluvia(); // Llueve cada 8 horas
+                if (env.tiempoAcumLluvia > 40 + 15) desactivarLluvia(); // Llueve durante hora y media
 
                 // Detengo el sonido del Hacha si ya fue iniciado y supero el tiempo
-                if (env.sonidoHacha){ env.tiempoAcumHacha += elapsedTime; }
+                if (env.sonidoHacha) env.tiempoAcumHacha += elapsedTime;
                 if (env.tiempoAcumHacha > 0.6) env.personaje.sonidoHacha(false);
-
 
                 if (env.fogataEncendido)
                 {
                     //Render de emisor
-                    emisorFuego.Position = fogata.Position;
+                    emisorFuego.Position = fogata.Position + new Vector3(0.20f * env.terreno.SceneScaleXZ, 0, 0.15f * env.terreno.SceneScaleXZ);
                 }
             }
         }
@@ -282,18 +251,16 @@ namespace TGC.Group.Model.EscenarioGame
             time += elapsedTime;
             effectAgua.SetValue("time", time);
 
-            skyBoxGame[env.horaDelDia].render();
+            var skyboxIndex = env.horaDelDia / 100;
+
+            skyBoxGame[skyboxIndex].render();
             terrain.render();
             mar.render();
             laguna.render();
             RenderSceneMeshes();
             quadtree.render(env.Frustum, false);
 
-            if (activarFogata)
-            {
-                fogata.render();
-            }
-
+            if (activarFogata) fogata.render();
 
             if (env.fogataEncendido)
             {
@@ -308,12 +275,10 @@ namespace TGC.Group.Model.EscenarioGame
                 env.tiempoFogataEncendida += elapsedTime;
 
                 // Determino la condicion de partido ganado
-                if(env.tiempoFogataEncendida > 15){
+                if(env.tiempoFogataEncendida > 40) {
                     env.partidoGanado = true;
-                }
-                
+                } 
             }
-                
         }
 
         public void Dispose()
@@ -324,7 +289,6 @@ namespace TGC.Group.Model.EscenarioGame
             laguna.dispose();
             fogata.dispose();
             emisorFuego.dispose();
-
 
             // Se liberan los elementos de la escena
             foreach (var mesh in SceneMeshes)
@@ -341,7 +305,8 @@ namespace TGC.Group.Model.EscenarioGame
             SceneMeshes.Clear();
 
             //Liberar recursos del SkyBox
-            skyBoxGame[env.horaDelDia].dispose();
+            var skyboxIndex = env.horaDelDia / 100;
+            skyBoxGame[skyboxIndex].dispose();
         }
 
         private void CreateObjectsFromModel(TgcMesh model, int count, Vector3 center, Vector3 scale, int sparse, float[] scalaVariableObjetos)
@@ -449,7 +414,9 @@ namespace TGC.Group.Model.EscenarioGame
         // Se actualiza el SkyBox (se genera efecto de paso del día)
         public void ActualizarSkyBox()
         {
-            foreach (TgcMesh face in skyBoxGame[env.horaDelDia].Faces)
+            var skyboxIndex = env.horaDelDia / 100;
+
+            foreach (TgcMesh face in skyBoxGame[skyboxIndex].Faces)
             {
                 face.AutoTransformEnable = true;
                 face.rotateY(env.ElapsedTime / 30);
@@ -460,8 +427,8 @@ namespace TGC.Group.Model.EscenarioGame
         {
             env.lloviendo = true;
 
-            env.musica.selectionSound("Sonido\\lluvia_trueno.mp3");
-            env.musica.startSound();
+            env.sonidoAmbiente.selectionSound("Sonido\\lluvia_trueno.mp3");
+            env.sonidoAmbiente.startSound();
 
         }
         public void desactivarLluvia()
@@ -471,8 +438,8 @@ namespace TGC.Group.Model.EscenarioGame
 
             env.tiempoAcumLluvia = 0;
             env.lloviendo = false;
-            env.musica.selectionSound("Sonido\\ambiente1.mp3");
-            env.musica.startSound();
+            env.sonidoAmbiente.selectionSound("Sonido\\ambiente1.mp3");
+            env.sonidoAmbiente.startSound();
         }
 
 
@@ -554,7 +521,6 @@ namespace TGC.Group.Model.EscenarioGame
 
                 }
             }
-
         }
 
         public bool estaDentroTerreno()

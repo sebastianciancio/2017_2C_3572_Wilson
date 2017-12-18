@@ -26,8 +26,8 @@ namespace TGC.Group.Model
         public HUD hud;
         public TgcBox cajaMenu;
         public Personaje personaje;
-        public Musica musica;
-        public Musica musica2;
+        public Musica sonidoAmbiente;
+        public Musica sonido1;
 
         private Drawer2D drawer2D;
         private CustomSprite menuPresentacion;
@@ -50,7 +50,6 @@ namespace TGC.Group.Model
         public float tiempoFogataEncendida;
 
         TgcTexture lluviaTexture;
-        //TgcTexture menuCaja;
         Microsoft.DirectX.Direct3D.Effect effect;
         private Surface depthStencil; // Depth-stencil buffer
         private Surface pOldRT;
@@ -92,10 +91,12 @@ namespace TGC.Group.Model
             escaladoProporcionalX = (float)(D3DDevice.Instance.Width * 1f / menuPresentacion.Bitmap.Size.Width * 1f);
             escaladoProporcionalY = (float)(D3DDevice.Instance.Height * 1f / menuPresentacion.Bitmap.Size.Height * 1f);
 
-            if(escaladoProporcionalX > escaladoProporcionalY)
+            if(escaladoProporcionalX > escaladoProporcionalY) {
                 menuPresentacion.Scaling = new Vector2(escaladoProporcionalX, escaladoProporcionalX);
-            else
+            }
+            else {
                 menuPresentacion.Scaling = new Vector2(escaladoProporcionalY, escaladoProporcionalY);
+            }
 
             buttonUnselected = new CustomSprite();
             buttonUnselected.Bitmap = new CustomBitmap(MediaDir + "\\HUD\\btn-off.png", D3DDevice.Instance.Device);
@@ -115,7 +116,7 @@ namespace TGC.Group.Model
             tiempoAcumLluvia = 0;
             tiempoAcumHacha = 0;
 
-            horaDelDia = 0; //0: dia, 1:tarde, 2:noche;
+            horaDelDia = 0; //0-10: dia, 10-19: tarde, 20-29: noche;
 
             terreno = new EscenarioGame.Escenario(this);
             terreno.Init();
@@ -126,16 +127,14 @@ namespace TGC.Group.Model
             hud = new HUD(this);
             hud.Init();
 
-            musica = new Musica(this.MediaDir);
-            musica.selectionSound("Sonido\\ambiente1.mp3");
-            musica.startSound();
+            sonidoAmbiente = new Musica(this.MediaDir);
+            sonidoAmbiente.selectionSound("Sonido\\ambiente1.mp3");
+            sonidoAmbiente.startSound();
 
-            musica2 = new Musica(this.MediaDir);
-            musica2.selectionSound("Sonido\\talar.mp3");
-
+            sonido1 = new Musica(this.MediaDir);
+            sonido1.selectionSound("Sonido\\talar.mp3");
 
             // Inicializacion de PostProcess con Render Target
-
             CustomVertex.PositionTextured[] screenQuadVertices =
             {
                 new CustomVertex.PositionTextured(-1, 1, 1, 0, 0),
@@ -143,6 +142,7 @@ namespace TGC.Group.Model
                 new CustomVertex.PositionTextured(-1, -1, 1, 0, 1),
                 new CustomVertex.PositionTextured(1, -1, 1, 1, 1)
             };
+
             //vertex buffer de los triangulos
             screenQuadVB = new VertexBuffer(typeof(CustomVertex.PositionTextured),
                 4, D3DDevice.Instance.Device, Usage.Dynamic | Usage.WriteOnly,
@@ -150,48 +150,38 @@ namespace TGC.Group.Model
             screenQuadVB.SetData(screenQuadVertices, 0, LockFlags.None);
 
             //Creamos un Render Targer sobre el cual se va a dibujar la pantalla
-            renderTarget2D = new Texture(D3DDevice.Instance.Device,
-                D3DDevice.Instance.Device.PresentationParameters.BackBufferWidth
-                , D3DDevice.Instance.Device.PresentationParameters.BackBufferHeight, 1, Usage.RenderTarget,
-                Format.X8R8G8B8, Pool.Default);
+            renderTarget2D = new Texture(
+                D3DDevice.Instance.Device,
+                D3DDevice.Instance.Device.PresentationParameters.BackBufferWidth,
+                D3DDevice.Instance.Device.PresentationParameters.BackBufferHeight, 1, Usage.RenderTarget,
+                Format.X8R8G8B8, Pool.Default
+            );
 
             //Creamos un DepthStencil que debe ser compatible con nuestra definicion de renderTarget2D.
-            depthStencil =
-                D3DDevice.Instance.Device.CreateDepthStencilSurface(
-                    D3DDevice.Instance.Device.PresentationParameters.BackBufferWidth,
-                    D3DDevice.Instance.Device.PresentationParameters.BackBufferHeight,
-                    DepthFormat.D24S8, MultiSampleType.None, 0, true);
+            depthStencil = D3DDevice.Instance.Device.CreateDepthStencilSurface(
+                D3DDevice.Instance.Device.PresentationParameters.BackBufferWidth,
+                D3DDevice.Instance.Device.PresentationParameters.BackBufferHeight,
+                DepthFormat.D24S8, MultiSampleType.None, 0, true
+            );
 
             //Cargar shader con efectos de Post-Procesado
             effect = TgcShaders.loadEffect(ShadersDir + "PostProcess.fx");
 
             //Configurar Technique dentro del shader
-            effect.Technique = "RainTechnique";
+            effect.Technique = "DefaultTechnique";
 
             //Cargar textura que se va a dibujar arriba de la escena del Render Target
             lluviaTexture = TgcTexture.createTexture(D3DDevice.Instance.Device, this.MediaDir + "Isla\\efecto_rain.png");
             // Inicializo la camara
             InitCamera();
 
-
             // SkyBox: Se cambia el valor por defecto del farplane para evitar cliping de farplane.
-            D3DDevice.Instance.Device.Transform.Projection =
-                Matrix.PerspectiveFovLH(D3DDevice.Instance.FieldOfView,
-                    D3DDevice.Instance.AspectRatio,
-                    D3DDevice.Instance.ZNearPlaneDistance,
-                    D3DDevice.Instance.ZFarPlaneDistance * 2560f);
-
-            
-            //cajaMenu = new TgcBox();
-            //cajaMenu.Position = new Vector3(0, 0, 0);
-            //cajaMenu.Size = new Vector3(1000, 1000, 1000);
-            //cajaMenu.AutoTransformEnable = true;
-            
-
-            //menuCaja = TgcTexture.createTexture(D3DDevice.Instance.Device, this.MediaDir + "\\HUD\\presentacion.jpg");
-            //cajaMenu.setTexture(menuCaja);
-            //cajaMenu.updateValues();
-
+            D3DDevice.Instance.Device.Transform.Projection = Matrix.PerspectiveFovLH(
+                D3DDevice.Instance.FieldOfView,
+                D3DDevice.Instance.AspectRatio,
+                D3DDevice.Instance.ZNearPlaneDistance,
+                D3DDevice.Instance.ZFarPlaneDistance * 2560f
+            );
         }
 
         public override void Update()
@@ -200,13 +190,12 @@ namespace TGC.Group.Model
 
             if (!presentacion)
             {
-
                 // Si se da la condicion de partido ganado
                 if (partidoGanado)
                 {
                     terreno.desactivarLluvia();
-                    musica.selectionSound("Sonido\\victoria.mp3");
-                    musica.startSound();
+                    sonidoAmbiente.selectionSound("Sonido\\victoria.mp3");
+                    sonidoAmbiente.startSound();
                 }
                 else
                 {
@@ -216,22 +205,18 @@ namespace TGC.Group.Model
                     hud.Update(ElapsedTime);
 
                     // Si la fogata está activa, reproduzco el sonido
-                    if (terreno.activarFogata)
+                    if (fogataEncendido)
                     {
-                        musica.selectionSound("Sonido\\fuego.mp3");
-                        musica.startSound();
+                        sonidoAmbiente.selectionSound("Sonido\\fuego.mp3");
+                        sonidoAmbiente.startSound();
 
                     }
-
-
                 }
-
             }
         }
 
         public override void Render()
         {
-
             ClearTextures();
 
             //Cargamos el Render Targer al cual se va a dibujar la escena 3D. Antes nos guardamos el surface original
@@ -255,10 +240,7 @@ namespace TGC.Group.Model
 
             //Luego tomamos lo dibujado antes y lo combinamos con una textura con efecto de alarma
             drawPostProcess(D3DDevice.Instance.Device);
-
-
         }
-
 
         /// <summary>
         ///     Dibujamos toda la escena pero en vez de a la pantalla, la dibujamos al Render Target que se cargo antes.
@@ -292,17 +274,6 @@ namespace TGC.Group.Model
 
                 drawer2D.EndDrawSprite();
 
-                /*
-                                textoMenuPppal[1] = "Menú Principal";
-                                textoMenuPppal[2] = "Movimiento Personaje: W A S D";
-                                textoMenuPppal[3] = "Comer (1), Beber (2), Usar Madera (3), Usar Piedra (4)";
-                                textoMenuPppal[4] = "Acciones: Agarrar (E) - Destruir (Click Izq) - Correr (Shift Izq)";
-                                textoMenuPppal[5] = "Modos: Normal (N) - God (G)";
-                                textoMenuPppal[6] = "Pausa: ESC";
-                                textoMenuPppal[7] = "Comenzar: Espacio";
-                                textoMenuPppal[8] = "Salir: Alt+F4";
-                */
-
                 textoMenuPppal[1] = "Menú Principal";
                 textoMenuPppal[2] = "";
                 textoMenuPppal[3] = "Comenzar ";
@@ -320,8 +291,7 @@ namespace TGC.Group.Model
                         DrawText.changeFont((new System.Drawing.Font("Tahoma", 35, FontStyle.Regular)));
                     }
                     DrawText.drawText(textoMenuPppal[j], (D3DDevice.Instance.Width / 2) - (textoMenuPppal[j].Length * 10) + 2, (70 * j) + 2, Color.Black);
-                    DrawText.drawText(textoMenuPppal[j], (D3DDevice.Instance.Width / 2) - (textoMenuPppal[j].Length * 10), 70*j, Color.OrangeRed);
-                    
+                    DrawText.drawText(textoMenuPppal[j], (D3DDevice.Instance.Width / 2) - (textoMenuPppal[j].Length * 10), 70*j, Color.OrangeRed);  
                 }
 
                 textoMenuPppal[7] = "Acciones: Agarrar (E), Destruir (Click Izq), Correr (Shift)";
@@ -341,7 +311,6 @@ namespace TGC.Group.Model
 
                 if (Input.keyDown(Key.Space) || Input.keyDown(Key.Return))
                 {
-
                     switch (opcionMenuSelecionado)
                     {
                         case 0: // Comenzar Juego
@@ -362,7 +331,6 @@ namespace TGC.Group.Model
             }
             else
             {
-
                 if (Input.keyDown(Key.Escape))
                 {
                     presentacion = true;
@@ -411,18 +379,18 @@ namespace TGC.Group.Model
 
             //Ver si el efecto de oscurecer esta activado, configurar Technique del shader segun corresponda
 
-            effect.Technique = "RainTechnique";
-
-            if (!presentacion && lloviendo)
-            {
-                effect.Technique = "RainTechnique";
-            }
-            else
-            {
+            if(!presentacion) {
+                if (lloviendo) {
+                    effect.Technique = "RainTechnique";
+                } else {
+                    effect.Technique = "OscurecerTechnique";
+                }
+            } else {
                 effect.Technique = "DefaultTechnique";
             }
 
             //Cargamos parametros en el shader de Post-Procesado
+            effect.SetValue("hora", this.horaDelDia);
             effect.SetValue("render_target2D", renderTarget2D);
             effect.SetValue("textura_alarma", lluviaTexture.D3dTexture);
             effect.SetValue("time", this.ElapsedTime);
@@ -445,13 +413,10 @@ namespace TGC.Group.Model
             terreno.Dispose();
             personaje.Dispose();
             hud.Dispose();
-            //cajaMenu.dispose();
 
-            //effect.Dispose();
             screenQuadVB.Dispose();
             renderTarget2D.Dispose();
             depthStencil.Dispose();
-
         }
 
         private void InitCamera()
@@ -478,26 +443,9 @@ namespace TGC.Group.Model
             DrawText.changeFont((new System.Drawing.Font("TimesNewRoman", 12)));
             DrawText.drawText("Objetos Total: \n" + terreno.SceneMeshes.Count, 0, 20, Color.OrangeRed);
             DrawText.drawText("Objetos Renderizados: \n" + terreno.totalMeshesRenderizados, 0, 100, Color.OrangeRed);
-
-            //DrawText.drawText("tiempoFogataEncendida: \n" + tiempoFogataEncendida, 200, 20, Color.OrangeRed);
-            
-
-            //DrawText.drawText("Objetos Cercanos: \n" + objetosCerca, 200, 20, Color.OrangeRed);
-            //DrawText.drawText("Camera position: \n" + Camara.Position, 0, 200, Color.OrangeRed);
-            //DrawText.drawText("Fogata position: \n" + terreno.fogata.Position, 0, 300, Color.OrangeRed);
-
-            /*
-            DrawText.drawText("Camera (Coordenada X Original): \n" + (int)(Camara.Position.X / terreno.SceneScaleXZ), 200, 20, Color.OrangeRed);
-            DrawText.drawText("Camera (Coordenada Z Original): \n" + (int)(Camara.Position.Z / terreno.SceneScaleXZ), 200, 100, Color.OrangeRed);
-            DrawText.drawText("usoHorario: \n" + (usoHorario/570)*24, 200, 20, Color.OrangeRed);
-            DrawText.drawText("usoHorario: \n" + usoHorario, 200, 20, Color.OrangeRed);
-            DrawText.drawText("Camera position: \n" + Camara.Position, 0, 20, Color.OrangeRed);
-            DrawText.drawText("Camera LookAt: \n" + Camara.LookAt, 0, 100, Color.OrangeRed);
-            DrawText.drawText("Camera (Coordenada X Original): \n" + (int)(Camara.Position.X / terreno.SceneScaleXZ), 200, 20, Color.OrangeRed);
-            DrawText.drawText("Camera (Coordenada Z Original): \n" + (int)(Camara.Position.Z / terreno.SceneScaleXZ), 200, 100, Color.OrangeRed);
-            DrawText.drawText("Camera (Coordenada Y Terreno): \n" + terreno.CalcularAlturaTerreno((int)(Camara.Position.X / terreno.SceneScaleXZ), (int)(Camara.Position.Z / terreno.SceneScaleXZ)), 200, 180, Color.OrangeRed);
-            DrawText.drawText("Posicion Personaje: \n" + personaje.Posicion, 0, 300, Color.OrangeRed);
-            */
+            DrawText.drawText("Hora: \n" + horaDelDia, 0, 180, Color.OrangeRed);
+            DrawText.drawText("Tiempo lluvia: " + tiempoAcumLluvia + "/10 \n", 0, 260, Color.OrangeRed);
+            DrawText.drawText("Lloviendo: \n" + lloviendo, 0, 340, Color.OrangeRed);
         }
 
         private void Reiniciar()

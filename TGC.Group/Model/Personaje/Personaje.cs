@@ -191,17 +191,10 @@ namespace TGC.Group.Model.Character
                         Inventario[3].cantidad--;
                     }
                 }
-
             }
-
         }
 
-        public void soltarObjeto()
-        {
-            //if(Inventario[algo].cantidad > 0)
-            //env.terreno.SceneMeshes.Add( algo );
-            //Inventario[algo].cantidad--;
-        }
+        public void soltarObjeto() {}
 
         public void guardarObjetoInventario(Objeto item)
         {
@@ -228,13 +221,13 @@ namespace TGC.Group.Model.Character
         {
             if (activado)
             {
-                env.musica.selectionSound("Sonido\\talar.mp3");
-                env.musica.startSound();
+                env.sonidoAmbiente.selectionSound("Sonido\\talar.mp3");
+                env.sonidoAmbiente.startSound();
             }
             else
             {
-                env.musica.selectionSound("Sonido\\ambiente1.mp3");
-                env.musica.startSound();
+                env.sonidoAmbiente.selectionSound("Sonido\\ambiente1.mp3");
+                env.sonidoAmbiente.startSound();
                 env.sonidoHacha = false;
                 env.tiempoAcumHacha = 0;
             }
@@ -257,15 +250,18 @@ namespace TGC.Group.Model.Character
 
             if (this.Muerto)
             {
-                env.musica.selectionSound("Sonido\\game_over.mp3");
-                env.musica.startSound();
-            }else
-            {
-
+                env.sonidoAmbiente.selectionSound("Sonido\\game_over.mp3");
+                env.sonidoAmbiente.startSound();
+            }
+            else {
                 // Creo la fogata
                 if (env.terreno.activarFogata && !env.terreno.ubicacionFogataFija)
                 {
-                    env.terreno.fogata.Position = new Vector3(env.Camara.Position.X - (1 * env.terreno.SceneScaleXZ), env.terreno.CalcularAlturaTerreno((env.Camara.Position.X - (1 * env.terreno.SceneScaleXZ)) / env.terreno.SceneScaleXZ, env.Camara.Position.Z / env.terreno.SceneScaleXZ) * env.terreno.SceneScaleY, env.Camara.Position.Z);
+                    env.terreno.fogata.Position = new Vector3(
+                        env.Camara.Position.X - (1 * env.terreno.SceneScaleXZ), 
+                        env.terreno.CalcularAlturaTerreno((env.Camara.Position.X - (1 * env.terreno.SceneScaleXZ)) / env.terreno.SceneScaleXZ, 
+                        env.Camara.Position.Z / env.terreno.SceneScaleXZ) * env.terreno.SceneScaleY, env.Camara.Position.Z
+                    );
                     env.terreno.ubicacionFogataFija = true;
                 }
 
@@ -332,8 +328,6 @@ namespace TGC.Group.Model.Character
 
                     }
                 }
-
-
             }
         }
 
@@ -361,10 +355,6 @@ namespace TGC.Group.Model.Character
                 {
                     env.DrawText.drawText("Prueba encender la fogata con las piedras... \n", 400, 20, Color.OrangeRed);
                 }
-
-                // Esfera para detectar las colisiones
-                // BoundingSphere.render();
-                //hachaPersonaje.render();
             }
         }
 
