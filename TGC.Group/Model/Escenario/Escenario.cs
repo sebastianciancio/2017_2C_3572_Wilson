@@ -128,7 +128,8 @@ namespace TGC.Group.Model.EscenarioGame
 
             lightMesh = TgcBox.fromSize(new Vector3(10, 10, 10), Color.Red);
             var Posicion = env.Camara.Position;
-            lightMesh.Position = new Vector3(Posicion.X - 1, Posicion.Y - 0.8f, Posicion.Z);
+            lightMesh.Position = new Vector3(Posicion.X, Posicion.Y - 100f, Posicion.Z);
+            lightMesh.AutoTransformEnable = true;
             
             terrainCenter = new Vector3(0, 0, 0);
             terrain = new TerrenoCustom();
@@ -251,39 +252,33 @@ namespace TGC.Group.Model.EscenarioGame
                     //Render de emisor
                     emisorFuego.Position = fogata.Position + new Vector3(0.20f * env.terreno.SceneScaleXZ, 0, 0.15f * env.terreno.SceneScaleXZ);
                 }
-
-                var Posicion = env.Camara.Position;
-                //lightMesh.Position = new Vector3(Posicion.X - 1, Posicion.Y - 0.8f, Posicion.Z);
-
-                Effect currentShader;
-                if (env.linterna) {
-                    currentShader = TgcShaders.Instance.TgcMeshSpotLightShader;
-
-                    var lightIntensity = 50;
-                    currentShader.SetValue("lightColor", Color.LightSteelBlue.ToArgb());
-                    currentShader.SetValue("eyePosition", TgcParserUtils.vector3ToFloat4Array(env.Camara.Position));
-                    var lightDir = env.Camara.LookAt - env.Camara.Position;
-                    lightDir.Normalize();
-                    currentShader.SetValue("lightIntensity", lightIntensity > 10 ? lightIntensity : 10);
-                    currentShader.SetValue("lightAttenuation", 0.1f);
-                    currentShader.SetValue("materialEmissiveColor", Color.Black.ToArgb());
-                } else {
-                    currentShader = TgcShaders.Instance.TgcMeshShader;
-                }
-
-                lightMesh.Effect = currentShader;
-                lightMesh.Technique = "DIFFUSE_MAP";
             }
         }
 
         public void Render(float elapsedTime)
         {
+            Effect currentShader;
+
+            if (env.linterna) {
+                currentShader = TgcShaders.Instance.TgcMeshPointLightShader;
+            } else {
+                currentShader = TgcShaders.Instance.TgcMeshShader;
+            }
+
+            // terrain.Effect = currentShader;
+            // terrain.Technique = "VERTEX_COLOR";
+
+            // terrain.Effect.SetValue("lightColor", ColorValue.FromColor(Color.Blue));
+            // terrain.Effect.SetValue("lightPosition", Vector3ToFloat4Array(lightMesh.Position));
+            // terrain.Effect.SetValue("eyePosition", Vector3ToFloat4Array(env.Camara.Position));
+            // terrain.Effect.SetValue("lightIntensity", 19f);
+            // terrain.Effect.SetValue("lightAttenuation", 1f);
+
             time += elapsedTime;
             effectAgua.SetValue("time", time);
 
             var skyboxIndex = env.horaDelDia / 100;
 
-            //lightMesh.render();
             skyBoxGame[skyboxIndex].render();
             terrain.render();
             mar.render();
@@ -310,6 +305,10 @@ namespace TGC.Group.Model.EscenarioGame
                     env.partidoGanado = true;
                 } 
             }
+        }
+
+        private float[] Vector3ToFloat4Array(Vector3 v) {
+            return new[] { v.X, v.Y, v.Z, 1f };
         }
 
         public void Dispose()
