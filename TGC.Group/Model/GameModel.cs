@@ -50,7 +50,10 @@ namespace TGC.Group.Model
         public float tiempoFogataEncendida;
 
         TgcTexture lluviaTexture;
-        Microsoft.DirectX.Direct3D.Effect effect;
+
+        Microsoft.DirectX.Direct3D.Effect postEffect;
+        Microsoft.DirectX.Direct3D.Effect lightspotEffect;
+
         private Surface depthStencil; // Depth-stencil buffer
         private Surface pOldRT;
         private Surface pOldDS;
@@ -165,10 +168,10 @@ namespace TGC.Group.Model
             );
 
             //Cargar shader con efectos de Post-Procesado
-            effect = TgcShaders.loadEffect(ShadersDir + "PostProcess.fx");
+            postEffect = TgcShaders.loadEffect(ShadersDir + "PostProcess.fx");
 
             //Configurar Technique dentro del shader
-            effect.Technique = "DefaultTechnique";
+            postEffect.Technique = "OscurecerTechnique";
 
             //Cargar textura que se va a dibujar arriba de la escena del Render Target
             lluviaTexture = TgcTexture.createTexture(D3DDevice.Instance.Device, this.MediaDir + "Isla\\efecto_rain.png");
@@ -380,28 +383,29 @@ namespace TGC.Group.Model
             //Ver si el efecto de oscurecer esta activado, configurar Technique del shader segun corresponda
 
             if(!presentacion) {
-                if (lloviendo) {
-                    effect.Technique = "RainTechnique";
-                } else {
-                    effect.Technique = "OscurecerTechnique";
+                postEffect.Technique = "OscurecerTechnique";
+                if(lloviendo) {
+                    postEffect.Technique = "OscurecerAndRainTechnique";
                 }
             } else {
-                effect.Technique = "DefaultTechnique";
+                postEffect.Technique = "DefaultTechnique";
             }
 
             //Cargamos parametros en el shader de Post-Procesado
-            effect.SetValue("hora", this.horaDelDia);
-            effect.SetValue("render_target2D", renderTarget2D);
-            effect.SetValue("textura_alarma", lluviaTexture.D3dTexture);
-            effect.SetValue("time", this.ElapsedTime);
+            postEffect.SetValue("hora", this.horaDelDia);
+            postEffect.SetValue("render_target2D", renderTarget2D);
+            postEffect.SetValue("textura_alarma", lluviaTexture.D3dTexture);
+            postEffect.SetValue("time", this.ElapsedTime);
 
             //Limiamos la pantalla y ejecutamos el render del shader
             d3dDevice.Clear(ClearFlags.Target | ClearFlags.ZBuffer, Color.Black, 1.0f, 0);
-            effect.Begin(FX.None);
-            effect.BeginPass(0);
+            postEffect.Begin(FX.None);
+
+            postEffect.BeginPass(0);           
             d3dDevice.DrawPrimitives(PrimitiveType.TriangleStrip, 0, 2);
-            effect.EndPass();
-            effect.End();
+
+            postEffect.EndPass();
+            postEffect.End();
 
             //Terminamos el renderizado de la escena
             d3dDevice.EndScene();

@@ -68,8 +68,6 @@ float4 ps_default( PS_INPUT_DEFAULT Input ) : COLOR0
 	return color;
 }
 
-
-
 technique DefaultTechnique
 {
    pass Pass_0
@@ -118,7 +116,7 @@ technique OscurecerTechnique
 }
 
 /**************************************************************************************/
-/* ALARMA */
+/* RAIN */
 /**************************************************************************************/
 
 float alarmaScaleFactor = 0.1;
@@ -129,19 +127,6 @@ sampler sampler_alarma = sampler_state
 {
     Texture = (textura_alarma);
 };
-
-//Pixel Shader de Alarma
-float4 ps_rain( PS_INPUT_DEFAULT Input ) : COLOR0
-{     
-	//Obtener color segun textura
-	float4 color = tex2D( RenderTarget, Input.Texcoord );
-	
-	//Obtener color de textura de alarma, escalado por un factor
-	float4 color2 = tex2D( sampler_alarma, Input.Texcoord ) * alarmaScaleFactor;
-	
-	//Mezclar ambos texels
-	return color + color2;
-}
 
 //Pixel Shader de Lluvia
 float4 ps_rainMejorado( PS_INPUT_DEFAULT Input ) : COLOR0
@@ -168,70 +153,47 @@ technique RainTechnique
    }
 }
 
-
 /**************************************************************************************/
-/* ONDAS */
+/* OSCURECER */
 /**************************************************************************************/
 
-
-float ondas_vertical_length;
-float ondas_size;
-
-//Pixel Shader de Ondas
-float4 ps_ondas( PS_INPUT_DEFAULT Input ) : COLOR0
+//Pixel Shader de Oscurecer
+float4 ps_oscurecer_plus_lluvia( PS_INPUT_DEFAULT Input ) : COLOR0
 {     
-	//Alterar coordenadas de textura
-	Input.Texcoord.y = Input.Texcoord.y + ( sin( Input.Texcoord.x * ondas_vertical_length ) * ondas_size);
+	float lightFactor;
 	
-	//Obtener color de textura
+	if(hora > 0 && hora < 120) {
+	    lightFactor = 0.0025 * hora + 0.4;
+	}
+	
+	if(hora >= 120 && hora <= 240) {
+		lightFactor = -0.0048 * hora + 1.27;
+	}
+	
+	if(hora > 240 && hora < 300) {
+		lightFactor = 0.0046 * hora - 1; 
+	}
+
 	float4 color = tex2D( RenderTarget, Input.Texcoord );
-	return color;
+	
+	float value = ((color.r + color.g + color.b) / 3) * lightFactor; 
+	color.rgb = color.rgb * lightFactor + value * lightFactor;
+
+	// end darken
+	
+	float2 offset = (0, time * 500);
+	
+	float4 color2 = tex2D( sampler_alarma, Input.Texcoord + offset );
+	
+	//Mezclar ambos texels
+	return color+ color2;;
 }
 
-
-
-
-technique OndasTechnique
+technique OscurecerAndRainTechnique
 {
    pass Pass_0
    {
 	  VertexShader = compile vs_2_0 vs_default();
-	  PixelShader = compile ps_2_0 ps_ondas();
-   }
-}
-
-
-/**************************************************************************************/
-/* BLUR */
-/**************************************************************************************/
-
-float blur_intensity;
-
-//Pixel Shader de Blur
-float4 ps_blur( PS_INPUT_DEFAULT Input ) : COLOR0
-{     
-	//Obtener color de textura
-	float4 color = tex2D( RenderTarget, Input.Texcoord );
-	
-	//Tomar samples adicionales de texels vecinos y sumarlos (formamos una cruz)
-	color += tex2D( RenderTarget, float2(Input.Texcoord.x + blur_intensity, Input.Texcoord.y));
-	color += tex2D( RenderTarget, float2(Input.Texcoord.x - blur_intensity, Input.Texcoord.y));
-	color += tex2D( RenderTarget, float2(Input.Texcoord.x, Input.Texcoord.y + blur_intensity));
-	color += tex2D( RenderTarget, float2(Input.Texcoord.x, Input.Texcoord.y - blur_intensity));
-	
-	//Promediar todos
-	color = color / 5;
-	return color;
-}
-
-
-
-
-technique BlurTechnique
-{
-   pass Pass_0
-   {
-	  VertexShader = compile vs_2_0 vs_default();
-	  PixelShader = compile ps_2_0 ps_blur();
+	  PixelShader = compile ps_2_0 ps_oscurecer_plus_lluvia();
    }
 }
