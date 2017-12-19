@@ -80,6 +80,10 @@ namespace TGC.Group.Model.EscenarioGame
         private Pino pinoModel;
 
         private Effect effectAgua;
+
+        private TgcBox lightMesh;
+        private Effect lightspotEffect;
+
         private float time;
 
         public bool activarFogata = false;
@@ -122,6 +126,10 @@ namespace TGC.Group.Model.EscenarioGame
             //Cargar Heightmap y textura de la Escena
             HeightmapSize = new Bitmap(sceneHeightmapPath);
 
+            lightMesh = TgcBox.fromSize(new Vector3(10, 10, 10), Color.Red);
+            var Posicion = env.Camara.Position;
+            lightMesh.Position = new Vector3(Posicion.X - 1, Posicion.Y - 0.8f, Posicion.Z);
+            
             terrainCenter = new Vector3(0, 0, 0);
             terrain = new TerrenoCustom();
             terrain.AlphaBlendEnable = true;
@@ -243,6 +251,28 @@ namespace TGC.Group.Model.EscenarioGame
                     //Render de emisor
                     emisorFuego.Position = fogata.Position + new Vector3(0.20f * env.terreno.SceneScaleXZ, 0, 0.15f * env.terreno.SceneScaleXZ);
                 }
+
+                var Posicion = env.Camara.Position;
+                //lightMesh.Position = new Vector3(Posicion.X - 1, Posicion.Y - 0.8f, Posicion.Z);
+
+                Effect currentShader;
+                if (env.linterna) {
+                    currentShader = TgcShaders.Instance.TgcMeshSpotLightShader;
+
+                    var lightIntensity = 50;
+                    currentShader.SetValue("lightColor", Color.LightSteelBlue.ToArgb());
+                    currentShader.SetValue("eyePosition", TgcParserUtils.vector3ToFloat4Array(env.Camara.Position));
+                    var lightDir = env.Camara.LookAt - env.Camara.Position;
+                    lightDir.Normalize();
+                    currentShader.SetValue("lightIntensity", lightIntensity > 10 ? lightIntensity : 10);
+                    currentShader.SetValue("lightAttenuation", 0.1f);
+                    currentShader.SetValue("materialEmissiveColor", Color.Black.ToArgb());
+                } else {
+                    currentShader = TgcShaders.Instance.TgcMeshShader;
+                }
+
+                lightMesh.Effect = currentShader;
+                lightMesh.Technique = "DIFFUSE_MAP";
             }
         }
 
@@ -253,6 +283,7 @@ namespace TGC.Group.Model.EscenarioGame
 
             var skyboxIndex = env.horaDelDia / 100;
 
+            //lightMesh.render();
             skyBoxGame[skyboxIndex].render();
             terrain.render();
             mar.render();

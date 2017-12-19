@@ -35,6 +35,8 @@ namespace TGC.Group.Model
         public CustomSprite buttonSelected;
         public CustomSprite logoWilson;
 
+        public bool linterna = false;
+
         public float usoHorario;
         public float tiempoAcumLluvia;
         public float tiempoAcumHacha;
@@ -52,7 +54,6 @@ namespace TGC.Group.Model
         TgcTexture lluviaTexture;
 
         Microsoft.DirectX.Direct3D.Effect postEffect;
-        Microsoft.DirectX.Direct3D.Effect lightspotEffect;
 
         private Surface depthStencil; // Depth-stencil buffer
         private Surface pOldRT;
@@ -343,9 +344,9 @@ namespace TGC.Group.Model
                 if (partidoGanado)
                 {
                     hud.ganarJuego();
-                }else
+                }
+                else
                 {
-
                     terreno.Render(ElapsedTime);
 
                     // Creo la fogata
@@ -448,8 +449,9 @@ namespace TGC.Group.Model
             DrawText.drawText("Objetos Total: \n" + terreno.SceneMeshes.Count, 0, 20, Color.OrangeRed);
             DrawText.drawText("Objetos Renderizados: \n" + terreno.totalMeshesRenderizados, 0, 100, Color.OrangeRed);
             DrawText.drawText("Hora: \n" + horaDelDia, 0, 180, Color.OrangeRed);
-            DrawText.drawText("Tiempo lluvia: " + tiempoAcumLluvia + "/10 \n", 0, 260, Color.OrangeRed);
+            DrawText.drawText("Tiempo lluvia: \n" + tiempoAcumLluvia, 0, 260, Color.OrangeRed);
             DrawText.drawText("Lloviendo: \n" + lloviendo, 0, 340, Color.OrangeRed);
+            DrawText.drawText("Linterna: \n" + linterna, 0, 420, Color.OrangeRed);
         }
 
         private void Reiniciar()

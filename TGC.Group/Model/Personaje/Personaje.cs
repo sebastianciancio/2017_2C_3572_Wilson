@@ -163,6 +163,10 @@ namespace TGC.Group.Model.Character
 
         public void actualizarControles(float elapsedTime)
         {
+            if (env.Input.keyPressed(Key.L)) {
+                env.linterna = !env.linterna;
+            }
+
             if (env.Input.keyPressed(Key.D1)) {
                 comer(1);
             }
