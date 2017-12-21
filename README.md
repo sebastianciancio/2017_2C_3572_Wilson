@@ -14,9 +14,9 @@ Ciancio, Juan Sebastián  |  Paglialunga, Leonardo Fabian
 ## ScreenShot ##
 
 ![Image of Yaktocat](https://github.com/sebastianciancio/2017_2C_3572_Wilson/blob/master/TGC.Group/Media/HUD/presentacion2.jpg)
-![Image of Yaktocat](https://github.com/sebastianciancio/2017_2C_3572_Wilson/blob/master/TGC.Group/Media/Documentacion/screenshot1.png)
-![Image of Yaktocat](https://github.com/sebastianciancio/2017_2C_3572_Wilson/blob/master/TGC.Group/Media/Documentacion/screenshot2.png)
-![Image of Yaktocat](https://github.com/sebastianciancio/2017_2C_3572_Wilson/blob/master/TGC.Group/Media/Documentacion/screenshot3.png)
+![Image of Yaktocat](https://github.com/sebastianciancio/2017_2C_3572_Wilson/blob/master/TGC.Group/Media/Documentacion/sc.png)
+![Image of Yaktocat](https://github.com/sebastianciancio/2017_2C_3572_Wilson/blob/master/TGC.Group/Media/Documentacion/sc2.png)
+![Image of Yaktocat](https://github.com/sebastianciancio/2017_2C_3572_Wilson/blob/master/TGC.Group/Media/Documentacion/sc3.png)
 
 ## Game Play ##
 
