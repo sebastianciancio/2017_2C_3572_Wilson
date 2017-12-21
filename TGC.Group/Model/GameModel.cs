@@ -356,9 +356,9 @@ namespace TGC.Group.Model
                     }
 
                     //cajaMenu.render();
-                    RenderHelpText();
+                    //RenderHelpText();
                     personaje.Render(ElapsedTime);
-                    RenderFPS();
+                    //RenderFPS();
                     RenderAxis();
                 }
 
